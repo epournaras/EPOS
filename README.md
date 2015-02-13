@@ -16,5 +16,5 @@ Distributed management of complex large-scale infrastructures, such as power dis
 Keywords
 ---
 
-software agent; adaptation; tree overlay; resource utilisation; sta- bilisation; energy management; thermostatic devices.
+software agent; adaptation; tree overlay; resource utilisation; sta- bilisation; energy management; thermostatic device.
 
