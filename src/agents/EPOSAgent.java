@@ -91,7 +91,9 @@ public class EPOSAgent extends BasePeerlet implements TreeApplicationInterface {
         MINIMIZING_ERROR,
         MAXIMIZING_CORRELATION,
         RANDOM_SELECTION,
-        MINIMIZE_DISCOMFORT
+        MINIMIZE_DISCOMFORT,
+        MATCHING_UPPER_BOUND_1,
+        MATCHING_UPPER_BOUND_2,
     }
     public static enum EnergyPlanType{
         POSSIBLE_PLAN,
@@ -398,6 +400,12 @@ public class EPOSAgent extends BasePeerlet implements TreeApplicationInterface {
                 break;
             case MINIMIZE_DISCOMFORT:
                 this.minimizeDiscomfort();
+                break;
+            case MATCHING_UPPER_BOUND_1:
+                this.matchUpperBound1();
+                break;
+            case MATCHING_UPPER_BOUND_2:
+                this.matchUpperBound2();
                 break;
             default:
                 // Something wrong!
@@ -825,6 +833,104 @@ public class EPOSAgent extends BasePeerlet implements TreeApplicationInterface {
         this.historicSelectedPlan=this.sumPlans(this.historicSelectedPlan, rootSelectedPlanMatchDev);
     }
     
+    private void matchUpperBound1(){
+        double minRootMeanSquaredError=Double.MAX_VALUE;
+        for(ArithmeticListState combinationalPlan:combinationalPlans){
+            ArithmeticListState testAggregatePlan=this.setupEnergyPlan(EnergyPlanType.AGGREGATE_PLAN, aggregationPhase, energyPlanSize);
+            testAggregatePlan=this.sumPlans(testAggregatePlan, aggregatePlan);
+            testAggregatePlan=this.sumPlans(testAggregatePlan, combinationalPlan);
+            ArithmeticListState normalizedPatternPlan=this.setupEnergyPlan(EnergyPlanType.GLOBAL_PLAN, aggregationPhase, energyPlanSize);
+            normalizedPatternPlan=this.sumPlans(normalizedPatternPlan, patternEnergyPlan);
+            this.reversePlan(normalizedPatternPlan);
+            double avgTestAggregatePlan=this.getAverage(testAggregatePlan.getArithmeticStates());
+            double avgNormalizedPatternPlan=this.getAverage(normalizedPatternPlan.getArithmeticStates());
+            this.multiplyPlan(normalizedPatternPlan, avgTestAggregatePlan/avgNormalizedPatternPlan);
+            double rootMeanSquaredError=this.getRootMeanSquareError(normalizedPatternPlan.getArithmeticStates(), testAggregatePlan.getArithmeticStates());
+            if(rootMeanSquaredError<minRootMeanSquaredError){
+                minRootMeanSquaredError=rootMeanSquaredError;
+                this.selectedCombinationalPlan=combinationalPlan;
+            }
+        }
+    }
+    
+    private void matchUpperBound1Root(){
+        ArithmeticListState rootSelectedPlanMatchDev=null;
+        double minRootMeanSquaredError=Double.MAX_VALUE;
+        for(ArithmeticListState possiblePlan:possiblePlans){
+            ArithmeticListState testAggregatePlan=this.setupEnergyPlan(EnergyPlanType.AGGREGATE_PLAN, aggregationPhase, energyPlanSize);
+            testAggregatePlan=this.sumPlans(testAggregatePlan, aggregatePlan);
+            testAggregatePlan=this.sumPlans(testAggregatePlan, possiblePlan);
+            ArithmeticListState normalizedPatternPlan=this.setupEnergyPlan(EnergyPlanType.GLOBAL_PLAN, aggregationPhase, energyPlanSize);
+            normalizedPatternPlan=this.sumPlans(normalizedPatternPlan, patternEnergyPlan);
+            this.reversePlan(normalizedPatternPlan);
+            double avgTestAggregatePlan=this.getAverage(testAggregatePlan.getArithmeticStates());
+            double avgNormalizedPatternPlan=this.getAverage(normalizedPatternPlan.getArithmeticStates());
+            this.multiplyPlan(normalizedPatternPlan, avgTestAggregatePlan/avgNormalizedPatternPlan);
+            double rootMeanSquaredError=this.getRootMeanSquareError(normalizedPatternPlan.getArithmeticStates(), testAggregatePlan.getArithmeticStates());
+            if(rootMeanSquaredError<minRootMeanSquaredError){
+                minRootMeanSquaredError=rootMeanSquaredError;
+                rootSelectedPlanMatchDev=possiblePlan;
+            }
+            
+        }
+        this.selectedPlan=this.sumPlans(this.selectedPlan, rootSelectedPlanMatchDev);
+        this.selectedPlan.addProperty(EnergyPlanInformation.DISCOMFORT, ((Double)rootSelectedPlanMatchDev.getProperty(EnergyPlanInformation.DISCOMFORT)).doubleValue());
+        this.historicSelectedPlan=this.sumPlans(this.historicSelectedPlan, rootSelectedPlanMatchDev);
+    }
+    
+    private void matchUpperBound2(){
+        double minRootMeanSquaredError=Double.MAX_VALUE;
+        for(ArithmeticListState combinationalPlan:combinationalPlans){
+            ArithmeticListState testAggregatePlan=this.setupEnergyPlan(EnergyPlanType.AGGREGATE_PLAN, aggregationPhase, energyPlanSize);
+            testAggregatePlan=this.sumPlans(testAggregatePlan, aggregatePlan);
+            testAggregatePlan=this.sumPlans(testAggregatePlan, combinationalPlan);
+            ArithmeticListState normalizedPatternPlan=this.setupEnergyPlan(EnergyPlanType.GLOBAL_PLAN, aggregationPhase, energyPlanSize);
+            normalizedPatternPlan=this.sumPlans(normalizedPatternPlan, patternEnergyPlan);
+            this.reversePlan(normalizedPatternPlan);
+            double avgNormalizedPatternPlan=this.getAverage(normalizedPatternPlan.getArithmeticStates());
+            double avgTestAggregatePlan=this.getAverage(testAggregatePlan.getArithmeticStates());
+            double stdevNormalizedPatternPlan=this.getStandardDeviation(normalizedPatternPlan.getArithmeticStates());
+            double stdevTestAggregatePlan=this.getStandardDeviation(testAggregatePlan.getArithmeticStates());
+            this.substractPlan(normalizedPatternPlan, avgNormalizedPatternPlan);
+            this.multiplyPlan(normalizedPatternPlan, stdevTestAggregatePlan/stdevNormalizedPatternPlan);
+            this.sumPlan(normalizedPatternPlan, avgTestAggregatePlan);
+            double rootMeanSquaredError=this.getRootMeanSquareError(normalizedPatternPlan.getArithmeticStates(), testAggregatePlan.getArithmeticStates());
+            if(rootMeanSquaredError<minRootMeanSquaredError){
+                minRootMeanSquaredError=rootMeanSquaredError;
+                this.selectedCombinationalPlan=combinationalPlan;
+            }
+        }
+    }
+    
+    private void matchUpperBound2Root(){
+        ArithmeticListState rootSelectedPlanMatchDev=null;
+        double minRootMeanSquaredError=Double.MAX_VALUE;
+        for(ArithmeticListState possiblePlan:possiblePlans){
+            ArithmeticListState testAggregatePlan=this.setupEnergyPlan(EnergyPlanType.AGGREGATE_PLAN, aggregationPhase, energyPlanSize);
+            testAggregatePlan=this.sumPlans(testAggregatePlan, aggregatePlan);
+            testAggregatePlan=this.sumPlans(testAggregatePlan, possiblePlan);
+            ArithmeticListState normalizedPatternPlan=this.setupEnergyPlan(EnergyPlanType.GLOBAL_PLAN, aggregationPhase, energyPlanSize);
+            normalizedPatternPlan=this.sumPlans(normalizedPatternPlan, patternEnergyPlan);
+            this.reversePlan(normalizedPatternPlan);
+            double avgTestAggregatePlan=this.getAverage(testAggregatePlan.getArithmeticStates());
+            double avgNormalizedPatternPlan=this.getAverage(normalizedPatternPlan.getArithmeticStates());
+            double stdevNormalizedPatternPlan=this.getStandardDeviation(normalizedPatternPlan.getArithmeticStates());
+            double stdevTestAggregatePlan=this.getStandardDeviation(testAggregatePlan.getArithmeticStates());
+            this.substractPlan(normalizedPatternPlan, avgNormalizedPatternPlan);
+            this.multiplyPlan(normalizedPatternPlan, stdevTestAggregatePlan/stdevNormalizedPatternPlan);
+            this.sumPlan(normalizedPatternPlan, avgTestAggregatePlan);
+            double rootMeanSquaredError=this.getRootMeanSquareError(normalizedPatternPlan.getArithmeticStates(), testAggregatePlan.getArithmeticStates());
+            if(rootMeanSquaredError<minRootMeanSquaredError){
+                minRootMeanSquaredError=rootMeanSquaredError;
+                rootSelectedPlanMatchDev=possiblePlan;
+            }
+            
+        }
+        this.selectedPlan=this.sumPlans(this.selectedPlan, rootSelectedPlanMatchDev);
+        this.selectedPlan.addProperty(EnergyPlanInformation.DISCOMFORT, ((Double)rootSelectedPlanMatchDev.getProperty(EnergyPlanInformation.DISCOMFORT)).doubleValue());
+        this.historicSelectedPlan=this.sumPlans(this.historicSelectedPlan, rootSelectedPlanMatchDev);
+    }
+    
     private void minimizeDiscomfort(){
         double minDiscomfort=Double.MAX_VALUE;
         for(ArithmeticListState combinationalPlan:combinationalPlans){
@@ -884,6 +990,12 @@ public class EPOSAgent extends BasePeerlet implements TreeApplicationInterface {
                 this.robustness=this.getAverage(this.globalPlan.getArithmeticStates())/this.getMaximum(this.globalPlan.getArithmeticStates());
                 break;
             case MINIMIZING_ERROR:
+                this.robustness=this.getRootMeanSquareError(this.globalPlan.getArithmeticStates(), this.patternEnergyPlan.getArithmeticStates());
+                break;
+            case MATCHING_UPPER_BOUND_1:
+                this.robustness=this.getRootMeanSquareError(this.globalPlan.getArithmeticStates(), this.patternEnergyPlan.getArithmeticStates());
+                break;
+            case MATCHING_UPPER_BOUND_2:
                 this.robustness=this.getRootMeanSquareError(this.globalPlan.getArithmeticStates(), this.patternEnergyPlan.getArithmeticStates());
                 break;
             case MAXIMIZING_CORRELATION:
@@ -1100,10 +1212,19 @@ public class EPOSAgent extends BasePeerlet implements TreeApplicationInterface {
     }
     
     public ArithmeticListState sumPlans(ArithmeticListState aggregateEnergyPlan, ArithmeticListState aggregatedEnergyPlan){
+//        try{
         for(int i=0;i<aggregateEnergyPlan.getNumberOfStates();i++){
             double aggregateConsumption=aggregateEnergyPlan.getArithmeticState(i).getValue()+aggregatedEnergyPlan.getArithmeticState(i).getValue();
             aggregateEnergyPlan.setArithmeticState(i, aggregateConsumption);
         }
+//        }
+//        catch(IndexOutOfBoundsException e){
+//            System.out.println("***");
+//            System.out.println("Agent: "+this.agentMeterID);
+//                System.out.println(aggregateEnergyPlan.getArithmeticStates().size());
+//                System.out.println(aggregatedEnergyPlan.getArithmeticStates().size());
+//                System.out.println(this.possiblePlans.size());
+//        }
         return aggregateEnergyPlan;
     }
     
@@ -1131,9 +1252,32 @@ public class EPOSAgent extends BasePeerlet implements TreeApplicationInterface {
         return aggregateEnergyPlan;
     }
     
+    public ArithmeticListState substractPlan(ArithmeticListState aggregateEnergyPlan, double substractFactor){
+        for(int i=0;i<aggregateEnergyPlan.getNumberOfStates();i++){
+            double aggregateConsumption=aggregateEnergyPlan.getArithmeticState(i).getValue()-substractFactor;
+            aggregateEnergyPlan.setArithmeticState(i, aggregateConsumption);
+        }
+        return aggregateEnergyPlan;
+    }
+    
     public ArithmeticListState sumPlan(ArithmeticListState aggregateEnergyPlan, double summationFactor){
         for(int i=0;i<aggregateEnergyPlan.getNumberOfStates();i++){
             double aggregateConsumption=aggregateEnergyPlan.getArithmeticState(i).getValue()+summationFactor;
+            aggregateEnergyPlan.setArithmeticState(i, aggregateConsumption);
+        }
+        return aggregateEnergyPlan;
+    }
+    
+    public ArithmeticListState reversePlan(ArithmeticListState aggregateEnergyPlan){
+        double average=this.getAverage(aggregateEnergyPlan.getArithmeticStates());
+        for(int i=0;i<aggregateEnergyPlan.getNumberOfStates();i++){
+            double aggregateConsumption=aggregateEnergyPlan.getArithmeticState(i).getValue();
+            if(aggregateConsumption>average){
+                aggregateConsumption=average-(aggregateConsumption-average);
+            }
+            else{
+                aggregateConsumption=average+(average-aggregateConsumption);
+            }
             aggregateEnergyPlan.setArithmeticState(i, aggregateConsumption);
         }
         return aggregateEnergyPlan;
@@ -1192,6 +1336,12 @@ public class EPOSAgent extends BasePeerlet implements TreeApplicationInterface {
                         case MINIMIZE_DISCOMFORT:
                             this.minimizeDiscomfortRoot();
                             break;
+                        case MATCHING_UPPER_BOUND_1:
+                            this.matchUpperBound1Root();
+                            break;
+                        case MATCHING_UPPER_BOUND_2:
+                            this.matchUpperBound2Root();
+                            break;
                         default:
                             // Something wrong!
                     }
@@ -1205,7 +1355,7 @@ public class EPOSAgent extends BasePeerlet implements TreeApplicationInterface {
                     historicPlans.put(HistoricEnergyPlans.SELECTED_PLAN, historicSelectedPlan);
                     this.historicEnergyPlans.put(this.aggregationPhase, historicPlans);
                     this.computeRobustness();
-                    System.out.print(aggregationPhase.toString("yyyy-MM-dd")+",");
+                    System.out.print(globalPlan.getNumberOfStates()+","+aggregationPhase.toString("yyyy-MM-dd")+",");
                     for(ArithmeticState value:globalPlan.getArithmeticStates()){
                         System.out.print(value.getValue()+",");
                     }
@@ -1296,7 +1446,7 @@ public class EPOSAgent extends BasePeerlet implements TreeApplicationInterface {
         this.measurementDumper=new MeasurementFileDumper("peersLog/"+this.experimentID+getPeer().getIdentifier().toString());
         getPeer().getMeasurementLogger().addMeasurementLoggerListener(new MeasurementLoggerListener(){
             public void measurementEpochEnded(MeasurementLog log, int epochNumber){
-                if(epochNumber>=2){
+                if(epochNumber==2){
                     if(topologicalState==TopologicalState.ROOT){
                         log.log(epochNumber, globalPlan, 1.0);
                         log.log(epochNumber, Measurements.PLAN_SIZE, energyPlanSize);
@@ -1305,10 +1455,43 @@ public class EPOSAgent extends BasePeerlet implements TreeApplicationInterface {
                     log.log(epochNumber, selectedPlan, 1.0);
                     log.log(epochNumber, Measurements.DISCOMFORT, ((Double)selectedPlan.getProperty(EnergyPlanInformation.DISCOMFORT)).doubleValue());
 //                    log.log(epochNumber, Measurements.SELECTED_PLAN_VALUE, selectedPlan.getArithmeticState(0).getValue());
+                writeGraphData(epochNumber);
                 }
                 measurementDumper.measurementEpochEnded(log, epochNumber);
                 log.shrink(epochNumber, epochNumber+1);
             }
         });
+    }
+    
+    /**
+     * Problems encountered: 
+     * 
+     * 1. Root plan cannot be detected in MIN-COST
+     * 2. There are nodes in the EDF dataset that have possible plans with more than 144 size. 
+     * 
+     * @param epochNumber 
+     */
+    private void writeGraphData(int epochNumber){
+        System.out.println(getPeer().getNetworkAddress().toString()+","+
+                ((parent!=null)?parent.getNetworkAddress().toString():"-")+","+
+                findSelectedPlan());
+    }
+    
+    private boolean isEqual(ArithmeticListState planA, ArithmeticListState planB){
+        for(int i=0;i<planA.getArithmeticStates().size();i++){
+            if(planA.getArithmeticState(i).getValue()!=planB.getArithmeticState(i).getValue()){
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private int findSelectedPlan(){
+        for(int i=0;i<possiblePlans.size();i++){
+            if(isEqual(possiblePlans.get(i),selectedPlan)){
+                return i;
+            }
+        }
+        return -1;
     }
 }

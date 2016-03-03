@@ -163,9 +163,9 @@ public class EPOSEvaluator {
                 epochNum+coma+
                 coordinationPhase+coma+
                 planSize+coma+
-                hourValues+
-                robustness+coma+
-                discomfort
+                hourValues//+
+//                robustness+coma+
+//                discomfort
                 );
     }
     
