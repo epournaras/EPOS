@@ -27,7 +27,7 @@ import java.util.logging.Logger;
  *
  * @author Peter
  */
-public class Vector implements Value<Vector> {
+public class Vector implements DataType<Vector> {
 
     private double[] values;
 

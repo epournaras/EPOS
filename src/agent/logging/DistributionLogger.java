@@ -17,11 +17,11 @@
  */
 package agent.logging;
 
-import data.Value;
 import agent.Agent;
 import java.io.Serializable;
 import java.util.TreeMap;
 import protopeer.measurement.MeasurementLog;
+import data.DataType;
 
 /**
  * Writes the histogram of selected plan indices in the last iteration to
@@ -29,7 +29,7 @@ import protopeer.measurement.MeasurementLog;
  *
  * @author Peter
  */
-public class DistributionLogger<V extends Value<V>> extends AgentLogger<Agent<V>> {
+public class DistributionLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> {
 
     @Override
     public void init(Agent<V> agent) {

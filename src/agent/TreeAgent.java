@@ -6,7 +6,6 @@
 package agent;
 
 import data.Plan;
-import data.Value;
 import dsutil.protopeer.services.topology.trees.TreeApplicationInterface;
 import func.CostFunction;
 import func.PlanCostFunction;
@@ -14,13 +13,14 @@ import agent.logging.AgentLoggingProvider;
 import java.util.ArrayList;
 import java.util.List;
 import protopeer.Finger;
+import data.DataType;
 
 /**
  *
  * @author Peter
  * @param <A>
  */
-public abstract class TreeAgent<V extends Value<V>> extends Agent<V> implements TreeApplicationInterface {
+public abstract class TreeAgent<V extends DataType<V>> extends Agent<V> implements TreeApplicationInterface {
 
     // tree properties
     Finger parent = null;

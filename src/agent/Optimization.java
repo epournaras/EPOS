@@ -6,11 +6,11 @@
 package agent;
 
 import data.HasValue;
-import data.Value;
 import func.CostFunction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import data.DataType;
 
 /**
  *
@@ -24,7 +24,7 @@ public class Optimization {
         this.random = random;
     }
 
-    public <V extends Value<V>> List<V> calcAllCombinations(List<List<V>> choicesPerAgent) {
+    public <V extends DataType<V>> List<V> calcAllCombinations(List<List<V>> choicesPerAgent) {
         List<V> combinations = new ArrayList<>();
         
         if(choicesPerAgent.isEmpty() || choicesPerAgent.get(0).isEmpty()) {
@@ -53,7 +53,7 @@ public class Optimization {
         return combinations;
     }
 
-    public <V extends Value<V>> List<Integer> combinationToSelections(int combinationIdx, List<List<V>> choicesPerAgent) {
+    public <V extends DataType<V>> List<Integer> combinationToSelections(int combinationIdx, List<List<V>> choicesPerAgent) {
         List<Integer> selected = new ArrayList<>();
 
         int factor = 1;
@@ -66,19 +66,19 @@ public class Optimization {
         return selected;
     }
     
-    public <V extends Value<V>> int argmin(CostFunction<V> costFunction, List<? extends HasValue<? extends V>> choices) {
+    public <V extends DataType<V>> int argmin(CostFunction<V> costFunction, List<? extends HasValue<? extends V>> choices) {
         return argmin(costFunction, choices, null);
     }
     
-    public <V extends Value<V>> int argmin(CostFunction<V> costFunction, List<? extends HasValue<? extends V>> choices, double lambda) {
+    public <V extends DataType<V>> int argmin(CostFunction<V> costFunction, List<? extends HasValue<? extends V>> choices, double lambda) {
         return argmin(costFunction, choices, null, lambda);
     }
 
-    public <V extends Value<V>> int argmin(CostFunction<V> costFunction, List<? extends HasValue<? extends V>> choices, V constant) {
+    public <V extends DataType<V>> int argmin(CostFunction<V> costFunction, List<? extends HasValue<? extends V>> choices, V constant) {
         return argmin(costFunction, choices, constant, 0);
     }
         
-    public <V extends Value<V>> int argmin(CostFunction<V> costFunction, List<? extends HasValue<? extends V>> choices, V constant, double lambda) {
+    public <V extends DataType<V>> int argmin(CostFunction<V> costFunction, List<? extends HasValue<? extends V>> choices, V constant, double lambda) {
         double minCost = Double.POSITIVE_INFINITY;
         int selected = -1;
         int numOpt = 0;

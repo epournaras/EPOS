@@ -1,7 +1,5 @@
 package experiment;
 
-import agent.Agent;
-import agent.EposAgent;
 import agent.logging.GlobalCostLogger;
 import agent.logging.TerminationLogger;
 import agent.logging.LoggingProvider;
@@ -9,9 +7,8 @@ import agent.logging.ProgressIndicator;
 import agent.logging.AgentLoggingProvider;
 import agent.logging.JFreeChartLogger;
 import agent.dataset.Dataset;
-import agent.dataset.AgentDataset;
-import agent.dataset.NoiseDataset;
 import agent.*;
+import agent.dataset.GaussianDataset;
 import data.Plan;
 import data.Vector;
 import dsutil.generic.RankPriority;
@@ -42,7 +39,7 @@ import util.TreeArchitecture;
  */
 public class SimpleExperiment extends SimulatedExperiment {
 
-    private Random random = new Random();
+    private final Random random = new Random();
 
     public static void main(String[] args) {
         new SimpleExperiment().run();
@@ -70,10 +67,8 @@ public class SimpleExperiment extends SimulatedExperiment {
         //loggingProvider.add(new FileWriter("simple.log"));
 
         // dataset
-        Dataset<Vector> dataset = new NoiseDataset(p, p, d, 0, 1, d, d, null);
-        //Dataset<Vector> dataset = new SchedulingDataset(d, 50, 5, 1, 1, (x, y) -> Double.compare(x.getDiscomfort(), y.getDiscomfort()));
-        //Dataset<Vector> dataset = new SchedulingDataset(d, 50, 5, 0, 0, (x,y) -> Double.compare(x.getDiscomfort(), y.getDiscomfort()));
-
+        //Dataset<Vector> dataset = new GaussianDataset(p, d, 0, 1, new Random(0));
+        
         // network
         TreeArchitecture architecture = new TreeArchitecture();
         architecture.balance = BalanceType.WEIGHT_BALANCED;
@@ -83,24 +78,20 @@ public class SimpleExperiment extends SimulatedExperiment {
         architecture.rankGenerator = (idx, agent) -> (double) idx;
         architecture.type = TreeType.SORTED_HtL;
 
-        loggingProvider.initExperiment("children" + architecture.maxChildren, null);
         for (int r = 0; r < runs; r++) {
             final int run = r;
-            dataset.init(r);
+            
             random.setSeed(r);
+            Dataset<Vector> dataset = new GaussianDataset(p, d, 0, 1, new Random(random.nextLong()));
 
             SimpleExperiment.initEnvironment();
             init();
-
-            List<? extends AgentDataset<Vector>> agentDatasets = dataset.getAgentDatasets(a);
-            int n = agentDatasets.size();
 
             PeerFactory peerFactory = new PeerFactory() {
 
                 @Override
                 public Peer createPeer(int peerIndex, Experiment e) {
-                    AgentDataset<Vector> agentDataset = agentDatasets.get(peerIndex);
-                    List<Plan<Vector>> possiblePlans = agentDataset.getPlans(agentDataset.getPhases().get(0));
+                    List<Plan<Vector>> possiblePlans = dataset.getPlans(peerIndex);
                     AgentLoggingProvider agentLP = loggingProvider.getAgentLoggingProvider(peerIndex, run);
 
                     IeposAgent newAgent = new IeposAgent(t, possiblePlans, globalCostFunc, localCostFunc, agentLP, random.nextLong());
@@ -111,13 +102,13 @@ public class SimpleExperiment extends SimulatedExperiment {
                     //Agent newAgent = new BestStepAgent(t, possiblePlans, globalCostFunc, localCostFunc, agentLP, random.nextLong());
                     Peer newPeer = new Peer(peerIndex);
 
-                    architecture.addPeerlets(newPeer, newAgent, peerIndex, n);
+                    architecture.addPeerlets(newPeer, newAgent, peerIndex, a);
 
                     return newPeer;
                 }
             };
-            initPeers(0, n, peerFactory);
-            startPeers(0, n);
+            initPeers(0, a, peerFactory);
+            startPeers(0, a);
 
             runSimulation(Time.inSeconds(3 + t));
         }

@@ -28,9 +28,7 @@ import util.Util;
 public class LoggingProvider<A extends Agent> {
 
     private MeasurementLog log;
-    private List<MeasurementLog> logs;
     private final List<AgentLogger<? super A>> loggers = new ArrayList<>();
-    private String experimentLabel = "";
 
     // directory where the logs are stored in case of out-of-memory logging
     private final String outputDir;
@@ -70,35 +68,6 @@ public class LoggingProvider<A extends Agent> {
     }
 
     /**
-     * Initializes the logger for the following experiment. The given log is
-     * merged to the one managed by this LoggingProvider.
-     *
-     * @param experimentLabel label of the experiment
-     * @param initLog the log that should be added
-     */
-    public void initExperiment(String experimentLabel, MeasurementLog initLog) {
-        this.experimentLabel = "/" + experimentLabel;
-        if (!isInMemory()) {
-            new File(outputDir + this.experimentLabel).mkdir();
-        }
-
-        if (isInMemory()) {
-            if (logs == null) {
-                logs = new ArrayList<>();
-            } else {
-                logs.add(getExperiment());
-                log = new MeasurementLog();
-            }
-            if (initLog != null) {
-                log.mergeWith(initLog);
-            }
-        } else if (initLog != null) {
-            MeasurementFileDumper logger = new MeasurementFileDumper(outputDir + experimentLabel + "/info" + System.currentTimeMillis());
-            logger.measurementEpochEnded(initLog, initLog.getMaxEpochNumber() + 1);
-        }
-    }
-
-    /**
      * Returns the AgentLoggingProvider for the agent with the given agent id.
      *
      * @param agentId the id of the agent
@@ -113,7 +82,7 @@ public class LoggingProvider<A extends Agent> {
             agentProvider = new AgentLoggingProvider<>(loggers, run, null);
             agentProviders.put(agentId, agentProvider);
         } else {
-            agentProvider = new AgentLoggingProvider<>(loggers, run, outputDir + experimentLabel + "/" + run + "_" + agentId);
+            agentProvider = new AgentLoggingProvider<>(loggers, run, outputDir + "/" + run + "_" + agentId);
         }
         return agentProvider;
     }
@@ -123,10 +92,8 @@ public class LoggingProvider<A extends Agent> {
      */
     public void print() {
         mergeLogs();
-        for (MeasurementLog log : logs) {
-            for (AgentLogger<? super A> logger : loggers) {
-                logger.print(log);
-            }
+        for (AgentLogger<? super A> logger : loggers) {
+            logger.print(log);
         }
     }
 
@@ -134,23 +101,12 @@ public class LoggingProvider<A extends Agent> {
         return outputDir == null;
     }
 
-    private MeasurementLog mergeLogs() {
-        if (logs == null) {
-            logs = new ArrayList<>();
-        }
+    private void mergeLogs() {
         if (isInMemory()) {
-            logs.add(getExperiment());
+            log = getExperiment();
         } else {
-            File directory = new File(outputDir + experimentLabel);
-            if (!directory.listFiles()[0].isDirectory()) {
-                logs.add(readExperiment(directory));
-            } else {
-                for (File experimentDir : directory.listFiles()) {
-                    logs.add(readExperiment(experimentDir));
-                }
-            }
+            log = readExperiment(new File(outputDir));
         }
-        return log;
     }
 
     private MeasurementLog getExperiment() {

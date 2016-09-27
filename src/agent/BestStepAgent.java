@@ -9,7 +9,6 @@ import agent.IterativeTreeAgent.UpMessage;
 import agent.IterativeTreeAgent.DownMessage;
 import agent.logging.AgentLoggingProvider;
 import data.Plan;
-import data.Value;
 import func.CostFunction;
 import func.PlanCostFunction;
 import java.util.ArrayList;
@@ -17,12 +16,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import protopeer.Finger;
 import protopeer.network.NetworkAddress;
+import data.DataType;
 
 /**
  *
  * @author Peter
  */
-public class BestStepAgent<V extends Value<V>> extends IterativeTreeAgent<V, BestStepAgent.Up<V>, BestStepAgent.Down<V>> {
+public class BestStepAgent<V extends DataType<V>> extends IterativeTreeAgent<V, BestStepAgent.Up<V>, BestStepAgent.Down<V>> {
 
     Plan<V> prevSelectedPlan;
     private int selection;
@@ -116,7 +116,7 @@ public class BestStepAgent<V extends Value<V>> extends IterativeTreeAgent<V, Bes
         return msgs;
     }
 
-    static class Up<V extends Value<V>> extends UpMessage {
+    static class Up<V extends DataType<V>> extends UpMessage {
 
         V bestChange;
         NetworkAddress bestAgent;
@@ -132,7 +132,7 @@ public class BestStepAgent<V extends Value<V>> extends IterativeTreeAgent<V, Bes
         }
     }
 
-    static class Down<V extends Value<V>> extends DownMessage {
+    static class Down<V extends DataType<V>> extends DownMessage {
 
         V globalResponse;
         NetworkAddress bestAgent;

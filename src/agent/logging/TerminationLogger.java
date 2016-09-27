@@ -17,11 +17,11 @@
  */
 package agent.logging;
 
-import data.Value;
 import func.CostFunction;
 import agent.Agent;
 import protopeer.measurement.Aggregate;
 import protopeer.measurement.MeasurementLog;
+import data.DataType;
 
 /**
  * Determines when the algorithm terminates. The termination is defined at the
@@ -29,7 +29,7 @@ import protopeer.measurement.MeasurementLog;
  *
  * @author Peter
  */
-public class TerminationLogger<V extends Value<V>> extends AgentLogger<Agent<V>> {
+public class TerminationLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> {
 
     private CostFunction<V> globalCostFunc;
     private int index;

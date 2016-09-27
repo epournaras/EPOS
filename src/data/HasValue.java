@@ -9,6 +9,6 @@ package data;
  *
  * @author Peter
  */
-public interface HasValue<V extends Value<V>> {
+public interface HasValue<V extends DataType<V>> {
     public abstract V getValue();
 }

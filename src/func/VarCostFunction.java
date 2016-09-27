@@ -21,7 +21,7 @@ import data.Vector;
 
 /**
  *
- * @author Peter
+ * @author Peter Pilgerstorfer
  */
 public class VarCostFunction extends DifferentiableCostFunction<Vector> {
 

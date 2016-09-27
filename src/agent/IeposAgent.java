@@ -6,19 +6,19 @@
 package agent;
 
 import data.Plan;
-import data.Value;
 import func.CostFunction;
 import func.PlanCostFunction;
 import agent.logging.AgentLoggingProvider;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import data.DataType;
 
 /**
  *
  * @author Peter
  */
-public class IeposAgent<V extends Value<V>> extends IterativeTreeAgent<V, IeposAgent<V>.UpMessage, IeposAgent<V>.DownMessage> {
+public class IeposAgent<V extends DataType<V>> extends IterativeTreeAgent<V, IeposAgent<V>.UpMessage, IeposAgent<V>.DownMessage> {
 
     // agent info
     Plan<V> prevSelectedPlan;

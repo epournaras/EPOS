@@ -26,11 +26,11 @@ import java.util.logging.Logger;
  *
  * @author Peter
  */
-public class Plan<V extends Value<V>> implements HasValue<V>, Serializable, Cloneable {
+public class Plan<V extends DataType<V>> implements HasValue<V>, Serializable, Cloneable {
 
     private V value;
     private int index;
-    private double discomfort;
+    private double score;
 
     public Plan(V value) {
         this.value = value;
@@ -48,12 +48,12 @@ public class Plan<V extends Value<V>> implements HasValue<V>, Serializable, Clon
         this.index = index;
     }
 
-    public double getDiscomfort() {
-        return discomfort;
+    public double getScore() {
+        return score;
     }
 
-    public void setDiscomfort(double discomfort) {
-        this.discomfort = discomfort;
+    public void setScore(double discomfort) {
+        this.score = discomfort;
     }
 
     public Plan<V> cloneThis() {

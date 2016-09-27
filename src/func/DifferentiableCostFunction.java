@@ -5,13 +5,12 @@
  */
 package func;
 
-import data.Value;
-import data.Vector;
+import data.DataType;
 
 /**
  *
  * @author Peter
  */
-public abstract class DifferentiableCostFunction<V extends Value<V>> extends CostFunction<V> {
+public abstract class DifferentiableCostFunction<V extends DataType<V>> extends CostFunction<V> {
     public abstract V calcGradient(V value);
 }

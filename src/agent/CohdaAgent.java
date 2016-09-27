@@ -19,7 +19,6 @@ package agent;
 
 import agent.logging.AgentLoggingProvider;
 import data.Plan;
-import data.Value;
 import func.CostFunction;
 import func.PlanCostFunction;
 import java.util.ArrayList;
@@ -31,12 +30,13 @@ import protopeer.network.Message;
 import protopeer.network.NetworkAddress;
 import protopeer.time.Timer;
 import protopeer.util.quantities.Time;
+import data.DataType;
 
 /**
  *
  * @author Peter
  */
-public class CohdaAgent<V extends Value<V>> extends TreeAgent<V> {
+public class CohdaAgent<V extends DataType<V>> extends TreeAgent<V> {
 
     private int age;
     private int step;
@@ -197,7 +197,7 @@ public class CohdaAgent<V extends Value<V>> extends TreeAgent<V> {
         }
     }
 
-    private static class KnowledgeBase<V extends Value<V>> {
+    private static class KnowledgeBase<V extends DataType<V>> {
 
         private Map<NetworkAddress, Weight<V>> weights = new HashMap<>();
         private V global;
@@ -285,7 +285,7 @@ public class CohdaAgent<V extends Value<V>> extends TreeAgent<V> {
         }
     }
 
-    private static class Weight<V extends Value<V>> {
+    private static class Weight<V extends DataType<V>> {
 
         public Plan<V> weight;
         public int age;

@@ -6,7 +6,6 @@
 package agent;
 
 import data.Plan;
-import data.Value;
 import func.CostFunction;
 import func.PlanCostFunction;
 import agent.logging.AgentLoggingProvider;
@@ -18,12 +17,13 @@ import protopeer.Finger;
 import protopeer.network.Message;
 import protopeer.time.Timer;
 import protopeer.util.quantities.Time;
+import data.DataType;
 
 /**
  *
  * @author Peter
  */
-public abstract class IterativeTreeAgent<V extends Value<V>, UP extends IterativeTreeAgent.UpMessage, DOWN extends IterativeTreeAgent.DownMessage> extends TreeAgent<V> {
+public abstract class IterativeTreeAgent<V extends DataType<V>, UP extends IterativeTreeAgent.UpMessage, DOWN extends IterativeTreeAgent.DownMessage> extends TreeAgent<V> {
 
     int numAgents;
 
