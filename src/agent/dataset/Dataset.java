@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Evangelos Pournaras
+ * Copyright (C) 2016 Peter Pilgerstorfer
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,18 +17,24 @@
  */
 package agent.dataset;
 
-import data.Value;
+import data.Plan;
 import java.util.List;
+import data.DataType;
 
 /**
+ * This class represents a dataset.
  *
- * @author Peter
+ * @author Peter Pilgerstorfer
+ * @param <V> the type of data that is used by the dataset
  */
-public interface Dataset<V extends Value<V>> {
+public interface Dataset<V extends DataType<V>> {
 
-    public List<? extends AgentDataset<V>> getAgentDatasets(int maxAgents);
-
-    public int getNumDimensions();
-
-    public void init(int num);
+    /**
+     * Returns the plans for the specified agent.
+     *
+     * @param agentId the id of the specified agent; the first agent has id 0,
+     * the second agent id 1 and so on
+     * @return the plans for the specified agent
+     */
+    public List<Plan<V>> getPlans(int agentId);
 }

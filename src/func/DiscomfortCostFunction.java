@@ -15,7 +15,7 @@ public class DiscomfortCostFunction implements PlanCostFunction {
 
     @Override
     public double calcCost(Plan plan) {
-        return plan.getDiscomfort();
+        return plan.getScore();
     }
 
     @Override

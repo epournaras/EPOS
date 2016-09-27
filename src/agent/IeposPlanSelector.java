@@ -5,13 +5,13 @@
  */
 package agent;
 
-import data.Value;
+import data.DataType;
 
 /**
  *
  * @author Peter
  */
-public class IeposPlanSelector<V extends Value<V>> implements PlanSelector<IeposAgent<V>, V> {
+public class IeposPlanSelector<V extends DataType<V>> implements PlanSelector<IeposAgent<V>, V> {
 
     @Override
     public int selectPlan(IeposAgent<V> agent) {

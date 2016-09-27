@@ -5,13 +5,13 @@
  */
 package agent;
 
-import data.Value;
+import data.DataType;
 
 /**
  *
  * @author Peter
  */
-public interface PlanSelector<A extends Agent<V>, V extends Value<V>> {
+public interface PlanSelector<A extends Agent<V>, V extends DataType<V>> {
     public int selectPlan(A agent);
     public int getNumComputations(A agent);
 }

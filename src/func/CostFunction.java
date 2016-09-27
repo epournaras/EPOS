@@ -18,13 +18,13 @@
 package func;
 
 import data.Plan;
-import data.Value;
+import data.DataType;
 
 /**
  *
  * @author Peter
  */
-public abstract class CostFunction<V extends Value<V>> implements PlanCostFunction<V> {
+public abstract class CostFunction<V extends DataType<V>> implements PlanCostFunction<V> {
 
     public abstract double calcCost(V value);
 

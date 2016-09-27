@@ -9,18 +9,18 @@ import agent.IterativeTreeAgent.DownMessage;
 import agent.IterativeTreeAgent.UpMessage;
 import agent.logging.AgentLoggingProvider;
 import data.Plan;
-import data.Value;
 import func.CostFunction;
 import func.PlanCostFunction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import data.DataType;
 
 /**
  *
  * @author Peter
  */
-public class EposAgent<V extends Value<V>> extends IterativeTreeAgent<V, EposAgent.EposUp<V>, EposAgent.EposDown<V>> {
+public class EposAgent<V extends DataType<V>> extends IterativeTreeAgent<V, EposAgent.EposUp<V>, EposAgent.EposDown<V>> {
 
     // agent info
     List<V> possibleValues;

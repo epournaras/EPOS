@@ -5,7 +5,6 @@
  */
 package agent.logging;
 
-import data.Value;
 import agent.Agent;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -36,12 +35,13 @@ import org.jfree.ui.RectangleInsets;
 import protopeer.measurement.Aggregate;
 import protopeer.measurement.MeasurementLog;
 import util.JFreeChartCustomLegend;
+import data.DataType;
 
 /**
  *
  * @author Peter
  */
-public class JFreeChartLogger<V extends Value<V>> extends AgentLogger<Agent<V>> {
+public class JFreeChartLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> {
 
     private static File defaultSrcDir = new File(".");
     private static File defaultDstDir = new File(".");

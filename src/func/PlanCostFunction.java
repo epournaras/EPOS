@@ -6,13 +6,13 @@
 package func;
 
 import data.Plan;
-import data.Value;
+import data.DataType;
 
 /**
  *
  * @author Peter
  */
-public interface PlanCostFunction<V extends Value<V>> {
+public interface PlanCostFunction<V extends DataType<V>> {
 
     public double calcCost(Plan<V> plan);
 

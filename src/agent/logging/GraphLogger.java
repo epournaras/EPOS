@@ -18,7 +18,6 @@
 package agent.logging;
 
 import cern.colt.Arrays;
-import data.Value;
 import agent.logging.image.SvgFile;
 import agent.logging.image.PngFile;
 import agent.logging.image.ImageFile;
@@ -64,13 +63,14 @@ import org.apache.commons.collections15.Transformer;
 import protopeer.Finger;
 import protopeer.measurement.MeasurementLog;
 import protopeer.network.NetworkAddress;
+import data.DataType;
 
 /**
  * Prints a graph of the tree network.
  *
  * @author Peter
  */
-public class GraphLogger<V extends Value<V>> extends AgentLogger<TreeAgent<V>> {
+public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>> {
 
     private final CostFunction localCostFunction;
     private final Type type;

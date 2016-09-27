@@ -5,7 +5,6 @@
  */
 package agent.logging;
 
-import data.Value;
 import func.CostFunction;
 import agent.Agent;
 import java.io.FileNotFoundException;
@@ -16,12 +15,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import protopeer.measurement.Aggregate;
 import protopeer.measurement.MeasurementLog;
+import data.DataType;
 
 /**
  *
  * @author Peter
  */
-public class GlobalCostLogger<V extends Value<V>> extends AgentLogger<Agent<V>> {
+public class GlobalCostLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> {
 
     private String filename;
     private CostFunction<V> costFunction;

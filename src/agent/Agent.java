@@ -6,7 +6,6 @@
 package agent;
 
 import data.Plan;
-import data.Value;
 import func.CostFunction;
 import func.PlanCostFunction;
 import agent.logging.AgentLoggingProvider;
@@ -18,12 +17,13 @@ import protopeer.measurement.MeasurementLog;
 import protopeer.time.Timer;
 import protopeer.time.TimerListener;
 import protopeer.util.quantities.Time;
+import data.DataType;
 
 /**
  *
  * @author Peter
  */
-public abstract class Agent<V extends Value<V>> extends BasePeerlet {
+public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
 
     // misc
     final Random random = new Random();
