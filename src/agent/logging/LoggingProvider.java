@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import protopeer.measurement.LogReplayer;
-import protopeer.measurement.MeasurementFileDumper;
 import protopeer.measurement.MeasurementLog;
 import util.Util;
 
@@ -77,7 +76,10 @@ public class LoggingProvider<A extends Agent> {
         AgentLoggingProvider<? super A> agentProvider;
         if (isInMemory()) {
             if (agentProviders.containsKey(agentId)) {
-                log.mergeWith(agentProviders.get(agentId).getInMemoryLog());
+                MeasurementLog prevLog = agentProviders.get(agentId).getInMemoryLog();
+                if (prevLog != null) {
+                    log.mergeWith(prevLog);
+                }
             }
             agentProvider = new AgentLoggingProvider<>(loggers, run, null);
             agentProviders.put(agentId, agentProvider);
@@ -111,7 +113,10 @@ public class LoggingProvider<A extends Agent> {
 
     private MeasurementLog getExperiment() {
         for (AgentLoggingProvider<? super A> agentProvider : agentProviders.values()) {
-            log.mergeWith(agentProvider.getInMemoryLog());
+            MeasurementLog agentLog = agentProvider.getInMemoryLog();
+            if (agentLog != null) {
+                log.mergeWith(agentProvider.getInMemoryLog());
+            }
         }
         agentProviders.clear();
         return log;
