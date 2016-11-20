@@ -53,13 +53,6 @@ public class ExperimentGUI extends SimulatedExperiment {
         String datasetDir = "input-data/gaussian";
         // TODO: create dropdown menu to select the dataset (only one available atm)
 
-        int t = 20;
-        // TODO: parameter "number of iterations" (min 1; max 100; default 20)
-
-        long seed = 0;
-        random.setSeed(seed);
-        // TODO: parameter "seed", the seed for the RNG (can be any long value)
-
         DifferentiableCostFunction globalCostFunc = new VarCostFunction();
         /*DifferentiableCostFunction globalCostFunc;
         try {
@@ -77,27 +70,21 @@ public class ExperimentGUI extends SimulatedExperiment {
         PlanCostFunction localCostFunc = new DiscomfortCostFunction();
         // leave this parameter as is
 
+        int numChildren = 2;
+        // TODO: make this (number of children) configurable (min 1; max 5; default 2)
+        
         PlanSelector planSelector = new IeposPlanSelector(); // standard I-EPOS
         //PlanSelector planSelector = new IeposGlobalGradientPlanSelector(); // gradient descent variation
         //PlanSelector planSelector = new IeposIndividualGradientPlanSelector(); // gradient descent variation
         //PlanSelector planSelector = new IeposAdaptiveGradientPlanSelector(); // gradient descent variation
         // TODO: dropdown box to choose from the four above
         
-        
-        ///////////
-        // network
-        ///////////
-        
-        int c = 2;
-        // TODO: make this (number of children) configurable (min 1; max 5; default 2)
-        
-        TreeArchitecture architecture = new TreeArchitecture();
-        architecture.balance = BalanceType.WEIGHT_BALANCED;
-        architecture.maxChildren = c;
-        architecture.priority = RankPriority.HIGH_RANK;
-        architecture.rank = DescriptorType.RANK;
-        architecture.rankGenerator = (idx, agent) -> (double) idx;
-        architecture.type = TreeType.SORTED_HtL;
+        int numIterations = 20;
+        // TODO: parameter "number of iterations" (min 1; max 100; default 20)
+
+        long seed = 0;
+        random.setSeed(seed);
+        // TODO: parameter "seed", the seed for the RNG (can be any long value)
 
         
         ////////////////////
@@ -117,7 +104,7 @@ public class ExperimentGUI extends SimulatedExperiment {
         // Hint: only consider the stuff labeled as "D(...)="
         // each iteration generates one output!
 
-        loggingProvider.add(new GraphLogger<>(GraphLogger.Type.Change, null)); // presents the graph
+        loggingProvider.add(new GraphLogger<>(GraphLogger.Type.Change, null)); // presents the changes in the network
         // TODO: integrate into output window
         // each iteration generates one output graph!
         
@@ -128,6 +115,19 @@ public class ExperimentGUI extends SimulatedExperiment {
         
         FileVectorDataset dataset = new FileVectorDataset(datasetDir);
         int a = dataset.getNumAgents();
+
+        
+        ///////////
+        // network
+        ///////////
+        
+        TreeArchitecture architecture = new TreeArchitecture();
+        architecture.balance = BalanceType.WEIGHT_BALANCED;
+        architecture.maxChildren = numChildren;
+        architecture.priority = RankPriority.HIGH_RANK;
+        architecture.rank = DescriptorType.RANK;
+        architecture.rankGenerator = (idx, agent) -> (double) idx;
+        architecture.type = TreeType.SORTED_HtL;
 
         
         ////////////////////
@@ -144,7 +144,7 @@ public class ExperimentGUI extends SimulatedExperiment {
                 List<Plan<Vector>> possiblePlans = dataset.getPlans(peerIndex);
                 AgentLoggingProvider agentLP = loggingProvider.getAgentLoggingProvider(peerIndex, 0);
 
-                IeposAgent newAgent = new IeposAgent(t, possiblePlans, globalCostFunc, localCostFunc, agentLP, random.nextLong());
+                IeposAgent newAgent = new IeposAgent(numIterations, possiblePlans, globalCostFunc, localCostFunc, agentLP, random.nextLong());
                 newAgent.setLambda(lambda);
                 newAgent.setPlanSelector(planSelector);
                 Peer newPeer = new Peer(peerIndex);
@@ -157,7 +157,7 @@ public class ExperimentGUI extends SimulatedExperiment {
         initPeers(0, a, peerFactory);
         startPeers(0, a);
 
-        runSimulation(Time.inSeconds(3 + t));
+        runSimulation(Time.inSeconds(3 + numIterations));
 
         
         ////////////////
