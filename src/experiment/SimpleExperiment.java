@@ -80,7 +80,7 @@ public class SimpleExperiment extends SimulatedExperiment {
         loggingProvider.add(new TerminationLogger());
         loggingProvider.add(new JFreeChartLogger());
         loggingProvider.add(new MovieLogger());
-        //loggingProvider.add(new GraphLogger<>(GraphLogger.Type.Change, null));
+        loggingProvider.add(new GraphLogger<>(GraphLogger.Type.Change, null));
         //loggingProvider.add(new FileWriter("simple.log"));
 
         // dataset

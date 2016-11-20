@@ -64,6 +64,7 @@ import protopeer.Finger;
 import protopeer.measurement.MeasurementLog;
 import protopeer.network.NetworkAddress;
 import data.DataType;
+import func.PlanCostFunction;
 
 /**
  * Prints a graph of the tree network.
@@ -72,7 +73,7 @@ import data.DataType;
  */
 public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>> {
 
-    private final CostFunction localCostFunction;
+    private PlanCostFunction localCostFunction;
     private final Type type;
     private final Map<Finger, Integer> selectedPlanIdxPerAgent = new HashMap<>();
 
@@ -99,7 +100,7 @@ public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>
      * @param localCostFunction the local cost function that is used if type ==
      * LocalCost
      */
-    public GraphLogger(Type type, CostFunction<V> localCostFunction) {
+    public GraphLogger(Type type, PlanCostFunction<V> localCostFunction) {
         this.type = type;
         this.localCostFunction = localCostFunction;
     }
@@ -111,6 +112,9 @@ public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>
     @Override
     public void init(TreeAgent<V> agent) {
         selectedPlanIdxPerAgent.clear();
+        if(localCostFunction == null) {
+            localCostFunction = agent.getLocalCostFunction();
+        }
     }
 
     @Override
@@ -194,7 +198,7 @@ public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>
         for (Map.Entry<TreeNode, float[]> entry : values.entrySet()) {
             float[] agentValues = entry.getValue();
             for (int i = 0; i < numIterations; i++) {
-                agentValues[i] = (agentValues[i] - minValues[i] * 0.99999f + 0.00001f) / (maxValues[i] - minValues[i] * 0.99999f + 0.00001f);
+                agentValues[i] = (agentValues[i] - minValues[i] * 0.99999f + 0.00001f * minValues[i]) / (maxValues[i] - minValues[i] * 0.99999f + 0.00001f);
             }
         }
         System.out.println(Arrays.toString(values.values().iterator().next()));
