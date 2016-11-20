@@ -112,4 +112,15 @@ public class FileVectorDataset implements Dataset<Vector> {
         plan.setScore(score);
         return plan;
     }
+
+    /**
+     * Returns the number of agents in this dataset.
+     *
+     * @return the number of agents in this dataset.
+     */
+    public int getNumAgents() {
+        return new File(datasetDir).listFiles((file, name) -> {
+            return name.startsWith("agent_") && name.endsWith(".plans");
+        }).length;
+    }
 }
