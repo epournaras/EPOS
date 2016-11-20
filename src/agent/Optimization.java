@@ -115,7 +115,7 @@ public class Optimization {
             double cost = costs[i];
             if (lambda != 0) {
                 double score = i/(double)choices.size();
-                cost = cost + lambda * score * std;
+                cost = (1 - lambda) * cost + lambda * score * std;
             }
             
             if (cost < minCost) {
