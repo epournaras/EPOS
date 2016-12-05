@@ -22,12 +22,16 @@ import func.DiscomfortCostFunction;
 import func.PlanCostFunction;
 import func.SqrDistCostFunction;
 import func.VarCostFunction;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import protopeer.Experiment;
@@ -69,6 +73,11 @@ public class ExperimentGUI extends SimulatedExperiment {
     private int numIterations = 20;
     private long seed = 0;
     private int numAgents = 100;
+    
+    private Consumer<Double> onProgressDo = (x) -> x = x;
+    private JFreeChartLogger<Vector> globalCostPlot;
+    private MovieLogger globalResponsePlot;
+    private GraphLogger<Vector> agentChangesPlot;
 
     public static void main(String[] args) {
         new ExperimentGUI().run();
@@ -105,6 +114,10 @@ public class ExperimentGUI extends SimulatedExperiment {
     public void setAlgorithm(String algorithmName) {
         algorithm = ALGORITHM_MAP.get(algorithmName);
     }
+    
+    public int getNumIterations() {
+        return numIterations;
+    }
 
     public void setNumIterations(int numIterations) {
         this.numIterations = numIterations;
@@ -112,6 +125,40 @@ public class ExperimentGUI extends SimulatedExperiment {
 
     public void setSeed(long seed) {
         this.seed = seed;
+    }
+    
+    public void onProgressDo(Consumer<Double> action) {
+        onProgressDo = action;
+    }
+    
+    public BufferedImage getGlobalCostPlot(int width, int height) {
+       BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+       Graphics g = img.getGraphics();
+       g.setColor(Color.WHITE);
+       g.fillRect(0, 0, width, height);
+       g.setColor(Color.BLACK);
+       g.drawString("global cost plot", 20, 20);
+       return img;
+    }
+    
+    public BufferedImage getGlobalResponsePlot(int width, int height, int iteration) {
+       BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+       Graphics g = img.getGraphics();
+       g.setColor(Color.WHITE);
+       g.fillRect(0, 0, width, height);
+       g.setColor(Color.BLACK);
+       g.drawString("global response plot (iteration " + iteration + ")", 20, 20);
+       return img;
+    }
+    
+    public BufferedImage getAgentChangesPlot(int width, int height, int iteration) {
+       BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+       Graphics g = img.getGraphics();
+       g.setColor(Color.WHITE);
+       g.fillRect(0, 0, width, height);
+       g.setColor(Color.BLACK);
+       g.drawString("agent changes plot (iteration " + iteration + ")", 20, 20);
+       return img;
     }
 
     public void run() {
@@ -155,17 +202,15 @@ public class ExperimentGUI extends SimulatedExperiment {
         if (lambda > 0) {
             loggingProvider.add(new LocalCostLogger());
         }
-        loggingProvider.add(new JFreeChartLogger()); // presents global and local cost (if applicable)
-        // TODO: integrate into output window (exists once for each simulation)
+        
+        globalCostPlot = new JFreeChartLogger<>();
+        loggingProvider.add(globalCostPlot); // presents global and local cost (if applicable)
 
-        loggingProvider.add(new MovieLogger()); // writes the output signal of the network to stdout in MATALB readable format
-        // TODO: change this logger to render the vector into the output window
-        // Hint: only consider the stuff labeled as "D(...)="
-        // each iteration generates one output!
+        globalResponsePlot = new MovieLogger();
+        loggingProvider.add(globalResponsePlot); // writes the output signal of the network to stdout in MATALB readable format
 
-        loggingProvider.add(new GraphLogger<>(GraphLogger.Type.Change, null)); // presents the changes in the network
-        // TODO: integrate into output window
-        // each iteration generates one output graph!
+        agentChangesPlot = new GraphLogger<>(GraphLogger.Type.Change, null);
+        loggingProvider.add(agentChangesPlot); // presents the changes in the network
 
         ///////////
         // network
