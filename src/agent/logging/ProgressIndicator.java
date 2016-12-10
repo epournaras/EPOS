@@ -18,6 +18,7 @@
 package agent.logging;
 
 import agent.Agent;
+import java.util.function.Consumer;
 import protopeer.measurement.MeasurementLog;
 
 /**
@@ -25,14 +26,31 @@ import protopeer.measurement.MeasurementLog;
  * @author Peter
  */
 public class ProgressIndicator extends AgentLogger<Agent> {
+    
+    private Consumer<Double> onProgress;
+    
+    
+    public ProgressIndicator() {
+        this(null);
+    }
+    
+    public ProgressIndicator(Consumer<Double> onProgress) {
+        this.onProgress = onProgress;
+    }
 
     @Override
     public void init(Agent agent) {
+        if(agent.isRepresentative() && onProgress != null) {
+            onProgress.accept(0.0);
+        }
     }
 
     @Override
     public void log(MeasurementLog log, int epoch, Agent agent) {
         if(agent.isRepresentative()) {
+            if(onProgress != null) {
+                onProgress.accept((agent.getIteration()+1) / (double) agent.getNumIterations());
+            }
             if (agent.getIteration() % 10 == 9) {
                 System.out.print("%");
             }

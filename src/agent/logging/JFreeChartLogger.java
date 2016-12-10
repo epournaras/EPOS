@@ -36,6 +36,14 @@ import protopeer.measurement.Aggregate;
 import protopeer.measurement.MeasurementLog;
 import util.JFreeChartCustomLegend;
 import data.DataType;
+import java.awt.Button;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Panel;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -47,6 +55,18 @@ public class JFreeChartLogger<V extends DataType<V>> extends AgentLogger<Agent<V
     private static File defaultDstDir = new File(".");
 
     private Font font = new Font("Computer Modern", Font.PLAIN, 12);
+    
+    private ChartPanel panel;
+    
+    private boolean showFrame;
+    
+    public JFreeChartLogger() {
+        this(true);
+    }
+    
+    public JFreeChartLogger(boolean showFrame) {
+        this.showFrame = showFrame;
+    }
 
     @Override
     public void init(Agent agent) {
@@ -78,8 +98,22 @@ public class JFreeChartLogger<V extends DataType<V>> extends AgentLogger<Agent<V
         plot.add(localDataset, xAxis, localYAxis);
 
         LegendTitle legend = createLegend(plot);
-        ChartPanel panel = createChartPanel(plot, legend);
-        createAndShowFrame(logs.get(0), panel);
+        panel = createChartPanel(plot, legend);
+        
+        if(showFrame) {
+            createAndShowFrame(logs.get(0), panel);
+        }
+    }
+    
+    public BufferedImage getPlotImage(int width, int height) {
+        BufferedImage outputImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        JFrame invisibleFrame = new JFrame();
+        invisibleFrame.setContentPane(panel);
+        invisibleFrame.setSize(outputImg.getWidth(), outputImg.getHeight());
+        invisibleFrame.setVisible(true);
+        invisibleFrame.paint(outputImg.getGraphics());
+        invisibleFrame.setVisible(false);
+        return outputImg;
     }
 
     private String getProperty(MeasurementLog log, String propertyName, String defaultValue) {
