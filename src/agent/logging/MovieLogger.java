@@ -22,14 +22,20 @@ import data.Vector;
 import func.DifferentiableCostFunction;
 import func.VarCostFunction;
 import agent.Agent;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import protopeer.measurement.MeasurementLog;
 
 /**
@@ -112,6 +118,33 @@ public class MovieLogger extends AgentLogger<Agent<Vector>> {
         }
     }
 
+    public BufferedImage getPlotImage(int width, int height, int iteration) {
+        BufferedImage outputImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Vector v = measurements.get(iteration);
+        
+        double min = v.min();
+        double max = v.max();
+        for(Vector vv : measurements.values()) {
+            min = Math.min(min, vv.min());
+            max = Math.max(max, vv.max());
+        }
+        
+        int[] x = new int[v.getNumDimensions()];
+        int[] y = new int[v.getNumDimensions()];
+        for (int i = 0; i < v.getNumDimensions(); i++) {
+            x[i] = (int) Math.round(width * i / (double) v.getNumDimensions());
+            y[i] = height - (int) Math.round(height * (v.getValue(i) - min) / (max - min));
+        }
+
+        Graphics g = outputImg.getGraphics();
+        g.setColor(Color.black);
+        g.drawPolyline(x, y, x.length);
+        
+        return outputImg;
+    }
+
+    private Map<Integer, Vector> measurements = new HashMap<>();
+
     private void internalPrint(MeasurementLog log, PrintStream out) {
         boolean first = true;
 
@@ -126,13 +159,15 @@ public class MovieLogger extends AgentLogger<Agent<Vector>> {
                 out.println("T=zeros(" + entry.cumulatedResponse.getNumDimensions() + ",0);");
                 first = false;
             }
-            
+
             out.println("D(:," + (entry.iteration + 1) + ")=" + entry.globalResponse + "';");
             out.println("T(:," + (entry.iteration + 1) + ")=" + entry.cumulatedResponse + "';");
+
+            measurements.put(entry.iteration+1, entry.globalResponse);
         }
     }
 
-    private class Entry implements Serializable{
+    private class Entry implements Serializable {
 
         public int iteration;
         public Vector globalResponse;

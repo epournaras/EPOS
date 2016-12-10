@@ -11,6 +11,7 @@ import agent.dataset.GaussianDataset;
 import agent.logging.GraphLogger;
 import agent.logging.LocalCostLogger;
 import agent.logging.MovieLogger;
+import agent.logging.ProgressIndicator;
 import data.Plan;
 import data.Vector;
 import data.io.VectorIO;
@@ -132,33 +133,15 @@ public class ExperimentGUI extends SimulatedExperiment {
     }
     
     public BufferedImage getGlobalCostPlot(int width, int height) {
-       BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-       Graphics g = img.getGraphics();
-       g.setColor(Color.WHITE);
-       g.fillRect(0, 0, width, height);
-       g.setColor(Color.BLACK);
-       g.drawString("global cost plot", 20, 20);
-       return img;
+       return globalCostPlot.getPlotImage(width, height);
     }
     
     public BufferedImage getGlobalResponsePlot(int width, int height, int iteration) {
-       BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-       Graphics g = img.getGraphics();
-       g.setColor(Color.WHITE);
-       g.fillRect(0, 0, width, height);
-       g.setColor(Color.BLACK);
-       g.drawString("global response plot (iteration " + iteration + ")", 20, 20);
-       return img;
+       return globalResponsePlot.getPlotImage(width, height, iteration);
     }
     
     public BufferedImage getAgentChangesPlot(int width, int height, int iteration) {
-       BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-       Graphics g = img.getGraphics();
-       g.setColor(Color.WHITE);
-       g.fillRect(0, 0, width, height);
-       g.setColor(Color.BLACK);
-       g.drawString("agent changes plot (iteration " + iteration + ")", 20, 20);
-       return img;
+       return agentChangesPlot.getPlotImage(width, height, iteration);
     }
 
     public void run() {
@@ -203,13 +186,16 @@ public class ExperimentGUI extends SimulatedExperiment {
             loggingProvider.add(new LocalCostLogger());
         }
         
-        globalCostPlot = new JFreeChartLogger<>();
+        // notify progress bar about progress
+        loggingProvider.add(new ProgressIndicator(onProgressDo));
+        
+        globalCostPlot = new JFreeChartLogger<>(false);
         loggingProvider.add(globalCostPlot); // presents global and local cost (if applicable)
 
         globalResponsePlot = new MovieLogger();
         loggingProvider.add(globalResponsePlot); // writes the output signal of the network to stdout in MATALB readable format
 
-        agentChangesPlot = new GraphLogger<>(GraphLogger.Type.Change, null);
+        agentChangesPlot = new GraphLogger<>(GraphLogger.Type.Change, null, false);
         loggingProvider.add(agentChangesPlot); // presents the changes in the network
 
         ///////////
@@ -255,5 +241,7 @@ public class ExperimentGUI extends SimulatedExperiment {
         // Show results
         ////////////////
         loggingProvider.print();
+        
+        getAgentChangesPlot(500, 500, 1);
     }
 }

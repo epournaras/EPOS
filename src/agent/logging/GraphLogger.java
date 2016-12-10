@@ -64,7 +64,11 @@ import protopeer.Finger;
 import protopeer.measurement.MeasurementLog;
 import protopeer.network.NetworkAddress;
 import data.DataType;
+import data.Vector;
 import func.PlanCostFunction;
+import java.awt.Graphics;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
 
 /**
  * Prints a graph of the tree network.
@@ -90,6 +94,8 @@ public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>
     private double vertexSize = vertexSize127;
     private VertexShapeFactory<Node> shapeFactory = new VertexShapeFactory<Node>();
     private AffineTransform shapeTransform = null;
+    
+    private boolean showFrame;
 
     /**
      * Creates a GraphLogger that generates a graph representation of the
@@ -101,8 +107,22 @@ public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>
      * LocalCost
      */
     public GraphLogger(Type type, PlanCostFunction<V> localCostFunction) {
+        this(type, localCostFunction, true);
+    }
+    /**
+     * Creates a GraphLogger that generates a graph representation of the
+     * network. The type specifies what information should be displayed in the
+     * nodes. If type == LocalCost, the localCostFunction must be specified.
+     *
+     * @param type the type of information that should be displayed
+     * @param localCostFunction the local cost function that is used if type ==
+     * LocalCost
+     * @param showFrame if true, the print method shows the graph in a new window
+     */
+    public GraphLogger(Type type, PlanCostFunction<V> localCostFunction, boolean showFrame) {
         this.type = type;
         this.localCostFunction = localCostFunction;
+        this.showFrame = showFrame;
     }
 
     public enum Type {
@@ -213,7 +233,27 @@ public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>
             }
         }
 
-        showGraph();
+        if(showFrame) {
+            showGraph();
+        }
+    }
+    
+    public BufferedImage getPlotImage(int width, int height, int iteration) {
+        BufferedImage tmp = new BufferedImage(2*width, 2*height, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage outputImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        
+        initIteration(iteration-1);
+        VisualizationModel<Node, Integer> model = new DefaultVisualizationModel(getLayout(graph));
+        VisualizationViewer<Node, Integer> viewer = visualize(model);
+        viewer.setSize(2*width, 2*height);
+        viewer.setVisible(true);
+        viewer.paint(tmp.getGraphics());
+        AffineTransform at = new AffineTransform();
+        at.scale(0.5, 0.5);
+        AffineTransformOp atOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+        outputImg = atOp.filter(tmp, outputImg);
+        
+        return outputImg;
     }
 
     private VisualizationViewer<Node, Integer> visualize(VisualizationModel<Node, Integer> model) {
