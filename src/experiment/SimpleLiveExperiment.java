@@ -5,7 +5,7 @@ import agent.logging.TerminationLogger;
 import agent.logging.LoggingProvider;
 import agent.logging.ProgressIndicator;
 import agent.logging.AgentLoggingProvider;
-import agent.logging.JFreeChartLogger;
+import agent.logging.CostViewer;
 import agent.dataset.Dataset;
 import agent.*;
 import agent.dataset.GaussianDataset;

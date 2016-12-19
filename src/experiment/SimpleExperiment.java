@@ -5,12 +5,12 @@ import agent.logging.TerminationLogger;
 import agent.logging.LoggingProvider;
 import agent.logging.ProgressIndicator;
 import agent.logging.AgentLoggingProvider;
-import agent.logging.JFreeChartLogger;
+import agent.logging.CostViewer;
 import agent.dataset.Dataset;
 import agent.*;
 import agent.dataset.GaussianDataset;
 import agent.logging.GraphLogger;
-import agent.logging.MovieLogger;
+import agent.logging.GlobalResponseLogger;
 import data.Plan;
 import data.Vector;
 import data.io.VectorIO;
@@ -78,8 +78,8 @@ public class SimpleExperiment extends SimulatedExperiment {
         loggingProvider.add(new GlobalCostLogger());
         //loggingProvider.add(new LocalCostLogger());
         loggingProvider.add(new TerminationLogger());
-        loggingProvider.add(new JFreeChartLogger());
-        loggingProvider.add(new MovieLogger());
+        loggingProvider.add(new CostViewer());
+        loggingProvider.add(new GlobalResponseLogger());
         loggingProvider.add(new GraphLogger<>(GraphLogger.Type.Change, null));
         //loggingProvider.add(new FileWriter("simple.log"));
 

@@ -7,7 +7,7 @@ package experiment;
 
 import agent.logging.FileReader;
 import agent.logging.GlobalCostLogger;
-import agent.logging.JFreeChartLogger;
+import agent.logging.CostViewer;
 import agent.logging.LoggingProvider;
 import agent.logging.TerminationLogger;
 import java.io.File;
@@ -30,7 +30,7 @@ public class ReplayExperiment {
         loggingProvider.add(new FileReader(filename));
         loggingProvider.add(new GlobalCostLogger());
         loggingProvider.add(new TerminationLogger());
-        loggingProvider.add(new JFreeChartLogger());
+        loggingProvider.add(new CostViewer());
         
         loggingProvider.print();
     }

@@ -23,6 +23,7 @@ import func.DifferentiableCostFunction;
 import func.VarCostFunction;
 import agent.Agent;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -36,25 +37,38 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import protopeer.measurement.MeasurementLog;
+import util.JFreeChartCustomLegend;
 
 /**
  * Outputs the global response for each iteration in MATALB format
  *
  * @author Peter
  */
-public class MovieLogger extends AgentLogger<Agent<Vector>> {
+public class GlobalResponseLogger extends AgentLogger<Agent<Vector>> {
 
     private String outputDir;
-
     private Vector cumulatedResponse;
-
     private DifferentiableCostFunction<Vector> globalCostFunc = new VarCostFunction();
 
-    public MovieLogger() {
+    private Map<Integer, Vector> measurements = new HashMap<>();
+
+    private static File defaultDstDir = new File(".");
+    private Font font = new Font("Computer Modern", Font.PLAIN, 12);
+
+    public GlobalResponseLogger() {
     }
 
-    public MovieLogger(String dir) {
+    public GlobalResponseLogger(String dir) {
         this.outputDir = "output-data/" + dir;
     }
 
@@ -88,7 +102,7 @@ public class MovieLogger extends AgentLogger<Agent<Vector>> {
     @Override
     public void print(MeasurementLog log) {
         if (outputDir == null) {
-            internalPrint(log, System.out);
+            internalPrint(log, null);
         } else {
             // get title and label (of the plots) for the current experiment
             // label of the current execution is stored in the log as String tag: "label=..."
@@ -113,7 +127,7 @@ public class MovieLogger extends AgentLogger<Agent<Vector>> {
             try (PrintStream out = new PrintStream(filename)) {
                 internalPrint(log, out);
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(MovieLogger.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GlobalResponseLogger.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -129,6 +143,15 @@ public class MovieLogger extends AgentLogger<Agent<Vector>> {
             max = Math.max(max, vv.max());
         }
         
+        JFrame invisibleFrame = new JFrame();
+        invisibleFrame.setContentPane(createPanel(measurements.get(iteration), min, max));
+        invisibleFrame.setSize(outputImg.getWidth(), outputImg.getHeight());
+        invisibleFrame.setVisible(true);
+        invisibleFrame.paint(outputImg.getGraphics());
+        invisibleFrame.setVisible(false);
+        return outputImg;
+        /*
+        
         int[] x = new int[v.getNumDimensions()];
         int[] y = new int[v.getNumDimensions()];
         for (int i = 0; i < v.getNumDimensions(); i++) {
@@ -140,10 +163,8 @@ public class MovieLogger extends AgentLogger<Agent<Vector>> {
         g.setColor(Color.black);
         g.drawPolyline(x, y, x.length);
         
-        return outputImg;
+        return outputImg;*/
     }
-
-    private Map<Integer, Vector> measurements = new HashMap<>();
 
     private void internalPrint(MeasurementLog log, PrintStream out) {
         boolean first = true;
@@ -154,17 +175,50 @@ public class MovieLogger extends AgentLogger<Agent<Vector>> {
         for (Object entryObj : sortedEntries) {
             Entry entry = (Entry) entryObj;
 
-            if (first) {
-                out.println("D=zeros(" + entry.globalResponse.getNumDimensions() + ",0);");
-                out.println("T=zeros(" + entry.cumulatedResponse.getNumDimensions() + ",0);");
-                first = false;
+            if(out != null) {
+                if (first) {
+                    out.println("D=zeros(" + entry.globalResponse.getNumDimensions() + ",0);");
+                    out.println("T=zeros(" + entry.cumulatedResponse.getNumDimensions() + ",0);");
+                    first = false;
+                }
+
+                out.println("D(:," + (entry.iteration + 1) + ")=" + entry.globalResponse + "';");
+                out.println("T(:," + (entry.iteration + 1) + ")=" + entry.cumulatedResponse + "';");
             }
-
-            out.println("D(:," + (entry.iteration + 1) + ")=" + entry.globalResponse + "';");
-            out.println("T(:," + (entry.iteration + 1) + ")=" + entry.cumulatedResponse + "';");
-
+            
             measurements.put(entry.iteration+1, entry.globalResponse);
         }
+    }
+    
+    private ChartPanel createPanel(Vector vector, double min, double max) {
+        XYSeries series = new XYSeries("global response");
+        for(int i = 0; i < vector.getNumDimensions(); i++) {
+            series.add(i+1, vector.getValue(i));
+        }
+        XYDataset dataset = new XYSeriesCollection(series);
+        
+        ValueAxis domainAxis = new NumberAxis("dimension");
+        domainAxis.setRange(1, vector.getNumDimensions());
+        ValueAxis rangeAxis = new NumberAxis("value");
+        rangeAxis.setRange(min, max);
+        
+        XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
+        
+        XYPlot plot = new XYPlot(dataset, domainAxis, rangeAxis, renderer);
+        
+        JFreeChartCustomLegend chart = new JFreeChartCustomLegend(null, font, plot, null);
+        chart.setBackgroundPaint(Color.WHITE);
+        chart.getXYPlot().getDomainAxis().setLabelFont(font);
+        chart.getXYPlot().getDomainAxis().setTickLabelFont(font);
+        chart.getXYPlot().getRangeAxis().setLabelFont(font);
+        chart.getXYPlot().getRangeAxis().setTickLabelFont(font);
+
+        ChartPanel panel = chart.getPanel();
+        panel.setDefaultDirectoryForSaveAs(defaultDstDir);
+        panel.setMinimumDrawHeight(1);
+        panel.setMinimumDrawWidth(1);
+        
+        return panel;
     }
 
     private class Entry implements Serializable {
