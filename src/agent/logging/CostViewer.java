@@ -49,7 +49,7 @@ import java.util.logging.Logger;
  *
  * @author Peter
  */
-public class JFreeChartLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> {
+public class CostViewer<V extends DataType<V>> extends AgentLogger<Agent<V>> {
 
     private static File defaultSrcDir = new File(".");
     private static File defaultDstDir = new File(".");
@@ -60,11 +60,11 @@ public class JFreeChartLogger<V extends DataType<V>> extends AgentLogger<Agent<V
     
     private boolean showFrame;
     
-    public JFreeChartLogger() {
+    public CostViewer() {
         this(true);
     }
     
-    public JFreeChartLogger(boolean showFrame) {
+    public CostViewer(boolean showFrame) {
         this.showFrame = showFrame;
     }
 

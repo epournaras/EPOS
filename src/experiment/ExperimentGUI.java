@@ -3,14 +3,14 @@ package experiment;
 import agent.logging.GlobalCostLogger;
 import agent.logging.LoggingProvider;
 import agent.logging.AgentLoggingProvider;
-import agent.logging.JFreeChartLogger;
+import agent.logging.CostViewer;
 import agent.*;
 import agent.dataset.Dataset;
 import agent.dataset.FileVectorDataset;
 import agent.dataset.GaussianDataset;
 import agent.logging.GraphLogger;
 import agent.logging.LocalCostLogger;
-import agent.logging.MovieLogger;
+import agent.logging.GlobalResponseLogger;
 import agent.logging.ProgressIndicator;
 import data.Plan;
 import data.Vector;
@@ -76,8 +76,8 @@ public class ExperimentGUI extends SimulatedExperiment {
     private int numAgents = 100;
     
     private Consumer<Double> onProgressDo = (x) -> x = x;
-    private JFreeChartLogger<Vector> globalCostPlot;
-    private MovieLogger globalResponsePlot;
+    private CostViewer<Vector> globalCostPlot;
+    private GlobalResponseLogger globalResponsePlot;
     private GraphLogger<Vector> agentChangesPlot;
 
     public static void main(String[] args) {
@@ -189,10 +189,10 @@ public class ExperimentGUI extends SimulatedExperiment {
         // notify progress bar about progress
         loggingProvider.add(new ProgressIndicator(onProgressDo));
         
-        globalCostPlot = new JFreeChartLogger<>(false);
+        globalCostPlot = new CostViewer<>(false);
         loggingProvider.add(globalCostPlot); // presents global and local cost (if applicable)
 
-        globalResponsePlot = new MovieLogger();
+        globalResponsePlot = new GlobalResponseLogger();
         loggingProvider.add(globalResponsePlot); // writes the output signal of the network to stdout in MATALB readable format
 
         agentChangesPlot = new GraphLogger<>(GraphLogger.Type.Change, null, false);
