@@ -23,6 +23,7 @@ import func.DifferentiableCostFunction;
 import func.VarCostFunction;
 import agent.Agent;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -143,27 +144,12 @@ public class GlobalResponseLogger extends AgentLogger<Agent<Vector>> {
             max = Math.max(max, vv.max());
         }
         
-        JFrame invisibleFrame = new JFrame();
-        invisibleFrame.setContentPane(createPanel(measurements.get(iteration), min, max));
-        invisibleFrame.setSize(outputImg.getWidth(), outputImg.getHeight());
-        invisibleFrame.setVisible(true);
-        invisibleFrame.paint(outputImg.getGraphics());
-        invisibleFrame.setVisible(false);
+        Container panel = createPanel(measurements.get(iteration), min, max);
+        panel.setSize(outputImg.getWidth(), outputImg.getHeight());
+        panel.setVisible(true);
+        panel.paint(outputImg.getGraphics());
+        panel.setVisible(false);
         return outputImg;
-        /*
-        
-        int[] x = new int[v.getNumDimensions()];
-        int[] y = new int[v.getNumDimensions()];
-        for (int i = 0; i < v.getNumDimensions(); i++) {
-            x[i] = (int) Math.round(width * i / (double) v.getNumDimensions());
-            y[i] = height - (int) Math.round(height * (v.getValue(i) - min) / (max - min));
-        }
-
-        Graphics g = outputImg.getGraphics();
-        g.setColor(Color.black);
-        g.drawPolyline(x, y, x.length);
-        
-        return outputImg;*/
     }
 
     private void internalPrint(MeasurementLog log, PrintStream out) {

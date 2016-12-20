@@ -37,6 +37,7 @@ import protopeer.measurement.MeasurementLog;
 import util.JFreeChartCustomLegend;
 import data.DataType;
 import java.awt.Button;
+import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Panel;
@@ -107,12 +108,10 @@ public class CostViewer<V extends DataType<V>> extends AgentLogger<Agent<V>> {
     
     public BufferedImage getPlotImage(int width, int height) {
         BufferedImage outputImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        JFrame invisibleFrame = new JFrame();
-        invisibleFrame.setContentPane(panel);
-        invisibleFrame.setSize(outputImg.getWidth(), outputImg.getHeight());
-        invisibleFrame.setVisible(true);
-        invisibleFrame.paint(outputImg.getGraphics());
-        invisibleFrame.setVisible(false);
+        panel.setSize(outputImg.getWidth(), outputImg.getHeight());
+        panel.setVisible(true);
+        panel.paint(outputImg.getGraphics());
+        panel.setVisible(false);
         return outputImg;
     }
 
