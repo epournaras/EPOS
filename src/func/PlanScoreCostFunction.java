@@ -11,7 +11,7 @@ import data.Plan;
  *
  * @author Peter
  */
-public class DiscomfortCostFunction implements PlanCostFunction {
+public class PlanScoreCostFunction implements PlanCostFunction {
 
     @Override
     public double calcCost(Plan plan) {
@@ -20,11 +20,11 @@ public class DiscomfortCostFunction implements PlanCostFunction {
 
     @Override
     public String toString() {
-        return "DiscomfortCost";
+        return "PlanScoreCost";
     }
 
     @Override
     public String getMetric() {
-        return "discomfort";
+        return "score";
     }
 }

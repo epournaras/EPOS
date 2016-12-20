@@ -120,13 +120,7 @@ public class SimpleLiveExperiment extends LiveExperiment {
         Dataset<Vector> dataset = new GaussianDataset(p, d, 0, 1, new Random(random.nextLong()));
 
         // network
-        TreeArchitecture architecture = new TreeArchitecture();
-        architecture.balance = BalanceType.WEIGHT_BALANCED;
-        architecture.maxChildren = c;
-        architecture.priority = RankPriority.HIGH_RANK;
-        architecture.rank = DescriptorType.RANK;
-        architecture.rankGenerator = (idx, agent) -> (double) idx;
-        architecture.type = TreeType.SORTED_HtL;
+        TreeArchitecture architecture = new TreeArchitecture(c);
 
         PeerFactory peerFactory = new PeerFactory() {
 

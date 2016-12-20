@@ -77,7 +77,6 @@ import java.awt.image.BufferedImage;
  */
 public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>> {
 
-    private PlanCostFunction localCostFunction;
     private final Type type;
     private final Map<Finger, Integer> selectedPlanIdxPerAgent = new HashMap<>();
 
@@ -103,11 +102,9 @@ public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>
      * nodes. If type == LocalCost, the localCostFunction must be specified.
      *
      * @param type the type of information that should be displayed
-     * @param localCostFunction the local cost function that is used if type ==
-     * LocalCost
      */
-    public GraphLogger(Type type, PlanCostFunction<V> localCostFunction) {
-        this(type, localCostFunction, true);
+    public GraphLogger(Type type) {
+        this(type, true);
     }
     /**
      * Creates a GraphLogger that generates a graph representation of the
@@ -115,26 +112,20 @@ public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>
      * nodes. If type == LocalCost, the localCostFunction must be specified.
      *
      * @param type the type of information that should be displayed
-     * @param localCostFunction the local cost function that is used if type ==
-     * LocalCost
      * @param showFrame if true, the print method shows the graph in a new window
      */
-    public GraphLogger(Type type, PlanCostFunction<V> localCostFunction, boolean showFrame) {
+    public GraphLogger(Type type, boolean showFrame) {
         this.type = type;
-        this.localCostFunction = localCostFunction;
         this.showFrame = showFrame;
     }
 
     public enum Type {
-        LocalCost, Index, Change;
+        Index, Change;
     }
 
     @Override
     public void init(TreeAgent<V> agent) {
         selectedPlanIdxPerAgent.clear();
-        if(localCostFunction == null) {
-            localCostFunction = agent.getLocalCostFunction();
-        }
     }
 
     @Override
@@ -147,9 +138,6 @@ public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>
 
         double cost = 0;
         switch (type) {
-            case LocalCost:
-                cost = localCostFunction.calcCost(agent.getSelectedPlan());
-                break;
             case Index:
                 cost = idx / (agent.getPossiblePlans().size() - 0.999999);
                 break;
@@ -221,9 +209,6 @@ public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>
                 agentValues[i] = (agentValues[i] - minValues[i] * 0.99999f + 0.00001f * minValues[i]) / (maxValues[i] - minValues[i] * 0.99999f + 0.00001f);
             }
         }
-        System.out.println(Arrays.toString(values.values().iterator().next()));
-        System.out.println(Arrays.toString(minValues));
-        System.out.println(Arrays.toString(maxValues));
 
         int edge = 0;
         for (Node node : graph.getVertices()) {

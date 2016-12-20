@@ -8,14 +8,10 @@ package experiment;
 import agent.logging.FileReader;
 import agent.logging.GlobalCostLogger;
 import agent.logging.CostViewer;
+import agent.logging.GraphLogger;
+import agent.logging.LocalCostLogger;
 import agent.logging.LoggingProvider;
 import agent.logging.TerminationLogger;
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import protopeer.measurement.LogReplayer;
-import protopeer.measurement.MeasurementLog;
 
 /**
  *
@@ -29,8 +25,10 @@ public class ReplayExperiment {
         LoggingProvider loggingProvider = new LoggingProvider();
         loggingProvider.add(new FileReader(filename));
         loggingProvider.add(new GlobalCostLogger());
+        loggingProvider.add(new LocalCostLogger());
         loggingProvider.add(new TerminationLogger());
         loggingProvider.add(new CostViewer());
+        loggingProvider.add(new GraphLogger(GraphLogger.Type.Change));
         
         loggingProvider.print();
     }
