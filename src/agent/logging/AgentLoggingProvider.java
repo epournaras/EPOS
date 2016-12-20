@@ -9,6 +9,7 @@ import agent.Agent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import protopeer.measurement.LogReplayer;
 import protopeer.measurement.MeasurementFileDumper;
 import protopeer.measurement.MeasurementLog;
 
@@ -80,26 +81,22 @@ public class AgentLoggingProvider<A extends Agent> {
      * @param agent the agent that is logged
      */
     public void log(MeasurementLog log, int epochNumber, Agent agent) {
-        if (epochNumber >= 2) {
-            for (AgentLogger logger : loggers) {
-                logger.log(log, epochNumber, agent);
-            }
-
-            boolean dataAvailable = true;
-            try {
-                log.getSubLog(epochNumber, epochNumber + 1).getMinEpochNumber();
-            } catch (NoSuchElementException e) {
-                dataAvailable = false;
-            }
-
-            if (dataAvailable && measurementDumper != null) {
-                measurementDumper.measurementEpochEnded(log, epochNumber);
-            }
-            if (measurementDumper != null) {
-                log.shrink(epochNumber, epochNumber + 1);
-            }
-        } else {
-            log.shrink(epochNumber, epochNumber + 1);
+        for (AgentLogger logger : loggers) {
+            logger.log(log, epochNumber, agent);
         }
+
+       /* boolean dataAvailable = true;
+        try {
+            log.getSubLog(epochNumber, epochNumber+1).getMinEpochNumber();
+        } catch (NoSuchElementException e) {
+            dataAvailable = false;
+        }*/
+
+        //if (dataAvailable && measurementDumper != null) {
+            measurementDumper.measurementEpochEnded(log, epochNumber+1);
+       /*}
+        if (measurementDumper != null) {
+            log.shrink(epochNumber, epochNumber + 1);
+        }*/
     }
 }

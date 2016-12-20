@@ -148,15 +148,14 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
                 runActiveState();
             }
         });
-        loadAgentTimer.schedule(Time.inMilliseconds(2000));
+        loadAgentTimer.schedule(Time.inMilliseconds(4000));
     }
 
     void runActiveState() {
+        initPhase();
         Timer loadAgentTimer = getPeer().getClock().createNewTimer();
         loadAgentTimer.addTimerListener((Timer timer) -> {
-            initPhase();
             runPhase();
-            runActiveState();
         });
         loadAgentTimer.schedule(Time.inMilliseconds(1000));
     }
@@ -171,10 +170,16 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
     }
 
     abstract void runPhase();
+    
+    int epoch = 1;
+    void log() {
+        MeasurementLog log = new MeasurementLog();
+        loggingProvider.log(log, epoch++, this);
+    }
 
     private void scheduleMeasurements() {
-        getPeer().getMeasurementLogger().addMeasurementLoggerListener((MeasurementLog log, int epochNumber) -> {
+        /*getPeer().getMeasurementLogger().addMeasurementLoggerListener((MeasurementLog log, int epochNumber) -> {
             loggingProvider.log(log, epochNumber, this);
-        });
+        });*/
     }
 }

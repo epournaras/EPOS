@@ -18,7 +18,7 @@ import data.DataType;
  *
  * @author Peter
  */
-public class IeposAgent<V extends DataType<V>> extends IterativeTreeAgent<V, IeposAgent<V>.UpMessage, IeposAgent<V>.DownMessage> {
+public class IeposAgent<V extends DataType<V>> extends IterativeTreeAgent<V, IeposUpMessage<V>, IeposDownMessage<V>> {
 
     // agent info
     Plan<V> prevSelectedPlan;
@@ -41,11 +41,11 @@ public class IeposAgent<V extends DataType<V>> extends IterativeTreeAgent<V, Iep
         this.lambda = 0;
         this.planSelector = new IeposPlanSelector<>();
     }
-    
+
     public void setLambda(double lambda) {
         this.lambda = lambda;
     }
-    
+
     public void setPlanSelector(PlanSelector<IeposAgent<V>, V> planSelector) {
         this.planSelector = planSelector;
     }
@@ -78,8 +78,8 @@ public class IeposAgent<V extends DataType<V>> extends IterativeTreeAgent<V, Iep
     }
 
     @Override
-    UpMessage up(List<UpMessage> childMsgs) {
-        for (UpMessage msg : childMsgs) {
+    IeposUpMessage<V> up(List<IeposUpMessage<V>> childMsgs) {
+        for (IeposUpMessage<V> msg : childMsgs) {
             subtreeResponses.add(msg.subtreeResponse);
         }
         aggregate();
@@ -88,12 +88,12 @@ public class IeposAgent<V extends DataType<V>> extends IterativeTreeAgent<V, Iep
     }
 
     @Override
-    DownMessage atRoot(UpMessage rootMsg) {
-        return new DownMessage(rootMsg.subtreeResponse, true);
+    IeposDownMessage<V> atRoot(IeposUpMessage<V> rootMsg) {
+        return new IeposDownMessage<>(rootMsg.subtreeResponse, true);
     }
 
     @Override
-    List<DownMessage> down(DownMessage parentMsg) {
+    List<IeposDownMessage<V>> down(IeposDownMessage<V> parentMsg) {
         updateGlobalResponse(parentMsg);
         approveOrRejectChanges(parentMsg);
         return informChildren();
@@ -139,17 +139,17 @@ public class IeposAgent<V extends DataType<V>> extends IterativeTreeAgent<V, Iep
         selectedPlan = possiblePlans.get(selected);
     }
 
-    private UpMessage informParent() {
+    private IeposUpMessage<V> informParent() {
         V subtreeResponse = aggregatedResponse.cloneThis();
         subtreeResponse.add(selectedPlan.getValue());
-        return new UpMessage(subtreeResponse);
+        return new IeposUpMessage<V>(subtreeResponse);
     }
-    
-    private void updateGlobalResponse(DownMessage parentMsg) {
+
+    private void updateGlobalResponse(IeposDownMessage<V> parentMsg) {
         globalResponse.set(parentMsg.globalResponse);
     }
-    
-    private void approveOrRejectChanges(DownMessage parentMsg) {
+
+    private void approveOrRejectChanges(IeposDownMessage<V> parentMsg) {
         if (!parentMsg.approved) {
             selectedPlan = prevSelectedPlan;
             aggregatedResponse.set(prevAggregatedResponse);
@@ -158,43 +158,44 @@ public class IeposAgent<V extends DataType<V>> extends IterativeTreeAgent<V, Iep
             Collections.fill(approvals, false);
         }
     }
-    
-    private List<DownMessage> informChildren() {
-        List<DownMessage> msgs = new ArrayList<>();
+
+    private List<IeposDownMessage<V>> informChildren() {
+        List<IeposDownMessage<V>> msgs = new ArrayList<>();
         for (int i = 0; i < children.size(); i++) {
-            msgs.add(new DownMessage(globalResponse, approvals.get(i)));
+            msgs.add(new IeposDownMessage<>(globalResponse, approvals.get(i)));
         }
         return msgs;
     }
 
-    // message classes
-    class UpMessage extends IterativeTreeAgent.UpMessage {
+}
 
-        public V subtreeResponse;
+// message classes
+class IeposUpMessage<V> extends IterativeTreeAgent.UpMessage {
 
-        public UpMessage(V subtreeResponse) {
-            this.subtreeResponse = subtreeResponse;
-        }
+    public V subtreeResponse;
 
-        @Override
-        public int getNumTransmitted() {
-            return 1;
-        }
+    public IeposUpMessage(V subtreeResponse) {
+        this.subtreeResponse = subtreeResponse;
     }
 
-    class DownMessage extends IterativeTreeAgent.DownMessage {
+    @Override
+    public int getNumTransmitted() {
+        return 1;
+    }
+}
 
-        public V globalResponse;
-        public boolean approved;
+class IeposDownMessage<V> extends IterativeTreeAgent.DownMessage {
 
-        public DownMessage(V globalResponse, boolean approved) {
-            this.globalResponse = globalResponse;
-            this.approved = approved;
-        }
+    public V globalResponse;
+    public boolean approved;
 
-        @Override
-        public int getNumTransmitted() {
-            return 1;
-        }
+    public IeposDownMessage(V globalResponse, boolean approved) {
+        this.globalResponse = globalResponse;
+        this.approved = approved;
+    }
+
+    @Override
+    public int getNumTransmitted() {
+        return 1;
     }
 }

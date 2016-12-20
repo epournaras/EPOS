@@ -129,6 +129,7 @@ public class LoggingProvider<A extends Agent> {
         for (File file : experimentDir.listFiles()) {
             try {
                 MeasurementLog l = replayer.loadLogFromFile(file.getPath());
+                System.out.println("result: " + l.toString());
                 log.mergeWith(l);
             } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(LoggingProvider.class.getName()).log(Level.SEVERE, null, ex);

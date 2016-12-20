@@ -7,6 +7,7 @@ package agent.logging;
 
 import func.CostFunction;
 import agent.Agent;
+import agent.TreeAgent;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;

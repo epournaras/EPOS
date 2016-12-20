@@ -18,6 +18,7 @@ import protopeer.network.Message;
 import protopeer.time.Timer;
 import protopeer.util.quantities.Time;
 import data.DataType;
+import protopeer.network.NetworkAddress;
 
 /**
  *
@@ -46,7 +47,7 @@ public abstract class IterativeTreeAgent<V extends DataType<V>, UP extends Itera
     public IterativeTreeAgent(int numIterations, List<Plan<V>> possiblePlans, CostFunction<V> globalCostFunc, PlanCostFunction<V> localCostFunc, AgentLoggingProvider<? extends IterativeTreeAgent<V, UP, DOWN>> loggingProvider, long seed) {
         super(possiblePlans, globalCostFunc, localCostFunc, loggingProvider, seed);
         this.numIterations = numIterations;
-        this.iteration = numIterations;
+        this.iteration = -2;//numIterations;
     }
 
     @Override
@@ -58,19 +59,15 @@ public abstract class IterativeTreeAgent<V extends DataType<V>, UP extends Itera
     public int getNumIterations() {
         return numIterations;
     }
-
-    @Override
-    void runActiveState() {
-        if (iteration < numIterations - 1) {
-            Timer loadAgentTimer = getPeer().getClock().createNewTimer();
-            loadAgentTimer.addTimerListener((Timer timer) -> {
+    
+    void runInitState() {
+        Timer loadAgentTimer = getPeer().getClock().createNewTimer();
+        loadAgentTimer.addTimerListener((Timer timer) -> {
+            if(isLeaf()) {
                 runIteration();
-                runActiveState();
-            });
-            loadAgentTimer.schedule(Time.inMilliseconds(1000));
-        } else {
-            super.runActiveState();
-        }
+            }
+        });
+        loadAgentTimer.schedule(Time.inMilliseconds(2000));
     }
 
     @Override
@@ -78,7 +75,7 @@ public abstract class IterativeTreeAgent<V extends DataType<V>, UP extends Itera
         iteration = -1;
 
         initPhase();
-        runIteration();
+        runInitState();
     }
 
     private void runIteration() {
@@ -89,19 +86,18 @@ public abstract class IterativeTreeAgent<V extends DataType<V>, UP extends Itera
 
         if (iteration < numIterations) {
             initIteration();
-            if (isLeaf()) {
-                goUp();
-            }
+            goUp();
         }
     }
 
     @Override
     public void handleIncomingMessage(Message message) {
+        System.out.println(getPeer().getIndexNumber() + " received msg: " + message.getClass());
         if (message instanceof UpMessage) {
             UP msg = (UP) message;
             messageBuffer.put(msg.child, msg);
             if (children.size() <= messageBuffer.size()) {
-                goUp();
+                runIteration();
             }
         } else if (message instanceof DownMessage) {
             goDown((DOWN) message);
@@ -126,6 +122,7 @@ public abstract class IterativeTreeAgent<V extends DataType<V>, UP extends Itera
         cumComputed -= numComputed;
         UP msg = up(orderedMsgs);
         cumComputed += numComputed;
+
 
         msg.child = getPeer().getFinger();
         if (isRoot()) {
@@ -160,6 +157,11 @@ public abstract class IterativeTreeAgent<V extends DataType<V>, UP extends Itera
             numTransmitted += msg.getNumTransmitted();
             cumTransmitted += msg.getNumTransmitted();
             getPeer().sendMessage(children.get(i).getNetworkAddress(), msg);
+        }
+        
+        log();
+        if(isLeaf()) {
+            runIteration();
         }
     }
 

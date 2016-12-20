@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import protopeer.Finger;
 import data.DataType;
+import protopeer.network.NetworkAddress;
 
 /**
  *
@@ -85,6 +86,10 @@ public abstract class TreeAgent<V extends DataType<V>> extends Agent<V> implemen
     public void setTreeView(Finger parent, List<Finger> children) {
         this.setParent(parent);
         this.setChildren(children);
+    }
+    
+    public Finger getParent() {
+        return parent;
     }
 
     public List<Finger> getChildren() {
