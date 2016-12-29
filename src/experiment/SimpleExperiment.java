@@ -8,9 +8,11 @@ import agent.logging.AgentLoggingProvider;
 import agent.logging.CostViewer;
 import agent.dataset.Dataset;
 import agent.*;
+import agent.dataset.FileVectorDataset;
 import agent.dataset.GaussianDataset;
 import agent.logging.GraphLogger;
 import agent.logging.GlobalResponseLogger;
+import agent.logging.LocalCostLogger;
 import data.Plan;
 import data.Vector;
 import data.io.VectorIO;
@@ -18,6 +20,7 @@ import dsutil.generic.RankPriority;
 import dsutil.protopeer.services.topology.trees.DescriptorType;
 import dsutil.protopeer.services.topology.trees.TreeType;
 import func.DifferentiableCostFunction;
+import func.DiscomfortCostFunction;
 import func.IndexCostFunction;
 import func.PlanCostFunction;
 import func.SqrDistCostFunction;
@@ -61,19 +64,19 @@ public class SimpleExperiment extends SimulatedExperiment {
         int c = 2;
         int t = 20;
         int runs = 1;
-        double lambda = 5;
+        double lambda = 0;
         //DifferentiableCostFunction globalCostFunc = new VarCostFunction();
         DifferentiableCostFunction globalCostFunc;
         try {
-            globalCostFunc = new SqrDistCostFunction(VectorIO.readVector(new File("input-data/sample_vector.txt")));
+            globalCostFunc = new SqrDistCostFunction(VectorIO.readVector(new File("input-data/energy/zero.target")));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(SimpleExperiment.class.getName()).log(Level.SEVERE, null, ex);
             return;
         }
-        PlanCostFunction localCostFunc = new IndexCostFunction();
+        PlanCostFunction localCostFunc = new DiscomfortCostFunction();
 
         // loggers
-        LoggingProvider<IeposAgent<Vector>> loggingProvider = new LoggingProvider<>();
+        LoggingProvider loggingProvider = new LoggingProvider<>();
         loggingProvider.add(new ProgressIndicator());
         loggingProvider.add(new GlobalCostLogger());
         //loggingProvider.add(new LocalCostLogger());
@@ -98,7 +101,7 @@ public class SimpleExperiment extends SimulatedExperiment {
             final int run = r;
             
             random.setSeed(r);
-            Dataset<Vector> dataset = new GaussianDataset(p, d, 0, 1, new Random(random.nextLong()));
+            Dataset dataset = new FileVectorDataset("input-data\\energy");
             
             SimpleExperiment.initEnvironment();
             init();
@@ -111,7 +114,7 @@ public class SimpleExperiment extends SimulatedExperiment {
                     AgentLoggingProvider agentLP = loggingProvider.getAgentLoggingProvider(peerIndex, run);
                     
                     IeposAgent newAgent = new IeposAgent(t, possiblePlans, globalCostFunc, localCostFunc, agentLP, random.nextLong());
-                    //newAgent.setLambda(lambda);
+                    newAgent.setLambda(lambda);
                     //newAgent.setPlanSelector(new IeposIndividualGradientPlanSelector());
                     //Agent newAgent = new CohdaAgent(t, possiblePlans, globalCostFunc, localCostFunc, agentLP, random.nextLong());
                     //Agent newAgent = new EposAgent(possiblePlans, globalCostFunc, localCostFunc, agentLP, random.nextLong());

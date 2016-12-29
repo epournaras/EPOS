@@ -20,11 +20,6 @@ public class IndexCostFunction implements PlanCostFunction {
 
     @Override
     public String toString() {
-        return "IndexCost";
-    }
-
-    @Override
-    public String getMetric() {
         return "index";
     }
     

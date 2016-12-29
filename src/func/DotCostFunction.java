@@ -29,7 +29,7 @@ public class DotCostFunction extends DifferentiableCostFunction<Vector> {
     }
 
     @Override
-    public String getMetric() {
+    public String toString() {
         return "dot product";
     }
     

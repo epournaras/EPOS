@@ -55,6 +55,9 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
      */
     public Agent(List<Plan<V>> possiblePlans, CostFunction<V> globalCostFunc, PlanCostFunction<V> localCostFunc, AgentLoggingProvider<? extends Agent> loggingProvider) {
         this.possiblePlans.addAll(possiblePlans);
+        if(localCostFunc != null) {
+            this.possiblePlans.sort((plan1, plan2) -> (int)Math.signum(localCostFunc.calcCost(plan1) - localCostFunc.calcCost(plan2)));
+        }
         this.globalCostFunc = globalCostFunc;
         this.localCostFunc = localCostFunc;
         this.loggingProvider = loggingProvider;

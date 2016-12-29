@@ -45,11 +45,6 @@ public class StdDevCostFunction extends DifferentiableCostFunction<Vector> {
 
     @Override
     public String toString() {
-        return "StdDevCost";
-    }
-
-    @Override
-    public String getMetric() {
         return "std deviation";
     }
 }

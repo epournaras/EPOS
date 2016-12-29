@@ -32,11 +32,6 @@ public class MaxCostFunction extends CostFunction<Vector> {
     
     @Override
     public String toString() {
-        return "MaxCost";
-    }
-
-    @Override
-    public String getMetric() {
         return "max";
     }
 }

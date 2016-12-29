@@ -57,11 +57,6 @@ public class SqrDistCostFunction extends DifferentiableCostFunction<Vector> {
 
     @Override
     public String toString() {
-        return "SqrDistCost";
-    }
-
-    @Override
-    public String getMetric() {
         return "squared distance";
     }
 }

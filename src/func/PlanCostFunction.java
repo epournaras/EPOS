@@ -15,6 +15,4 @@ import data.DataType;
 public interface PlanCostFunction<V extends DataType<V>> {
 
     public double calcCost(Plan<V> plan);
-
-    public String getMetric();
 }

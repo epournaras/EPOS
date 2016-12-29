@@ -40,11 +40,6 @@ public class VarCostFunction extends DifferentiableCostFunction<Vector> {
 
     @Override
     public String toString() {
-        return "VarCost";
-    }
-
-    @Override
-    public String getMetric() {
         return "variance";
     }
 }
