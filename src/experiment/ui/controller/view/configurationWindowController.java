@@ -122,10 +122,10 @@ public class configurationWindowController {
 		Locale.setDefault(Locale.US);
 		
 		// Data Set Location
-		dataSetLocationTextField.setPromptText("datasets" + File.separatorChar + "gaussian");
+		dataSetLocationTextField.setPromptText("datasets/gaussian");
 		
 		// Global Cost Location
-		globalCostLocationTextField.setPromptText(getDataSetLocation() + File.separatorChar + "zero.target");
+		globalCostLocationTextField.setPromptText(getDataSetLocation() + "/zero.target");
 		
 		// Local Cost Influence Slider
 		localCostInfluenceSlider.setValue(0.1);
@@ -213,69 +213,53 @@ public class configurationWindowController {
 	
 	@FXML
     private void handleRunBtn(ActionEvent e){
-		try {
-			ConfirmBox confirmBox = new ConfirmBox();
-			boolean answer = confirmBox.display("Warning", "You have chosen the following settings."+
-			"Please check them before running" + "\n" +
-					"data set location: " + getDataSetLocation() + "\n" +
-					"global cost location: " + getGlobalCostLocation() + "\n" +
-					"local cost influence: " + getLocalCostInfluence().toString() + "\n" +
-					"algorithm: " + getAlgorithm() + "\n" +
-					"number of children: " + getNumberOfChildren() + "\n" +
-					"number of iterations: " + getNumberOfIterations() + "\n" +
-					"seed: " + getSeed());
-			if (answer == true){
-				try {
-					
-					ProgressForm pForm = new ProgressForm("Running...");
+                try {
 
-					Task<Void> task = new Task<Void>() {
-						@Override
-						public Void call() throws InterruptedException {
-							updateProgress(0, 1);
-							experiment.setAlgorithm(getAlgorithm());
-							experiment.setDataset(getDataSetLocation());
-							experiment.setGlobalCostFunc(getGlobalCostLocation());
-							experiment.setLambda(getLocalCostInfluence());
-							experiment.setNumChildren(getNumberOfChildren());
-							experiment.setNumIterations(getNumberOfIterations());
-							experiment.setSeed(getSeed());
-							experiment.onProgressDo(percentComplete -> {
-								updateProgress(percentComplete, 1);
-							});
-							experiment.run();
-							updateProgress(1, 1);
-							return null;
-						}
-					};
+                        ProgressForm pForm = new ProgressForm("Running...");
 
-					// binds progress of progress bars to progress of task:
-					pForm.activateProgressBar(task);
+                        Task<Void> task = new Task<Void>() {
+                                @Override
+                                public Void call() throws InterruptedException {
+                                        updateProgress(0, 1);
+                                        experiment.setAlgorithm(getAlgorithm());
+                                        experiment.setDataset(getDataSetLocation());
+                                        experiment.setGlobalCostFunc(getGlobalCostLocation());
+                                        experiment.setLambda(getLocalCostInfluence());
+                                        experiment.setNumChildren(getNumberOfChildren());
+                                        experiment.setNumIterations(getNumberOfIterations());
+                                        experiment.setSeed(getSeed());
+                                        experiment.onProgressDo(percentComplete -> {
+                                                updateProgress(percentComplete, 1);
+                                        });
+                                        experiment.run();
+                                        updateProgress(1, 1);
+                                        return null;
+                                }
+                        };
 
-					// In real life this method would get the result of the task
-					// and update the UI based on its value:
-					task.setOnSucceeded(event -> {
-						pForm.getDialogStage().close();
-						
-						// run is finished. It's time to open the report window.
-						mainApp.showReportWindow(experiment);
-					});
-					task.setOnFailed(event -> {
-						pForm.getDialogStage().close();
-					});
-					pForm.getDialogStage().show();
+                        // binds progress of progress bars to progress of task:
+                        pForm.activateProgressBar(task);
 
-					Thread thread = new Thread(task);
-					thread.start();
-				} catch (Exception e2) {
-					e2.printStackTrace();
-					ExceptionDialog exDialog = new ExceptionDialog();
-					exDialog.display(e2);
-				}
-			}
-		} catch (Exception e2) {
-			e2.printStackTrace();
-		}
+                        // In real life this method would get the result of the task
+                        // and update the UI based on its value:
+                        task.setOnSucceeded(event -> {
+                                pForm.getDialogStage().close();
+
+                                // run is finished. It's time to open the report window.
+                                mainApp.showReportWindow(experiment);
+                        });
+                        task.setOnFailed(event -> {
+                                pForm.getDialogStage().close();
+                        });
+                        pForm.getDialogStage().show();
+
+                        Thread thread = new Thread(task);
+                        thread.start();
+                } catch (Exception e2) {
+                        e2.printStackTrace();
+                        ExceptionDialog exDialog = new ExceptionDialog();
+                        exDialog.display(e2);
+                }
 	}
 	
 	/**
