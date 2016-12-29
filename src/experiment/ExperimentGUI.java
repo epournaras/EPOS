@@ -15,16 +15,11 @@ import agent.logging.ProgressIndicator;
 import data.Plan;
 import data.Vector;
 import data.io.VectorIO;
-import dsutil.generic.RankPriority;
-import dsutil.protopeer.services.topology.trees.DescriptorType;
-import dsutil.protopeer.services.topology.trees.TreeType;
 import func.DifferentiableCostFunction;
-import func.DiscomfortCostFunction;
+import func.PlanScoreCostFunction;
 import func.PlanCostFunction;
 import func.SqrDistCostFunction;
 import func.VarCostFunction;
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,7 +35,6 @@ import protopeer.Peer;
 import protopeer.PeerFactory;
 import protopeer.SimulatedExperiment;
 import protopeer.util.quantities.Time;
-import tree.BalanceType;
 import util.TreeArchitecture;
 
 /*
@@ -156,7 +150,7 @@ public class ExperimentGUI extends SimulatedExperiment {
             globalCostFunc = new VarCostFunction();
         }
         if (localCostFunc == null) {
-            localCostFunc = new DiscomfortCostFunction();
+            localCostFunc = new PlanScoreCostFunction();
         }
         if (numChildren < 1) {
             numChildren = 2;
@@ -195,19 +189,13 @@ public class ExperimentGUI extends SimulatedExperiment {
         globalResponsePlot = new GlobalResponseLogger();
         loggingProvider.add(globalResponsePlot); // writes the output signal of the network to stdout in MATALB readable format
 
-        agentChangesPlot = new GraphLogger<>(GraphLogger.Type.Change, null, false);
+        agentChangesPlot = new GraphLogger<>(GraphLogger.Type.Change, false);
         loggingProvider.add(agentChangesPlot); // presents the changes in the network
 
         ///////////
         // network
         ///////////
-        TreeArchitecture architecture = new TreeArchitecture();
-        architecture.balance = BalanceType.WEIGHT_BALANCED;
-        architecture.maxChildren = numChildren;
-        architecture.priority = RankPriority.HIGH_RANK;
-        architecture.rank = DescriptorType.RANK;
-        architecture.rankGenerator = (idx, agent) -> (double) idx;
-        architecture.type = TreeType.SORTED_HtL;
+        TreeArchitecture architecture = new TreeArchitecture(numChildren);
 
         ////////////////////
         // Simulation setup
