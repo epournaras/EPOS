@@ -36,17 +36,12 @@ import protopeer.measurement.Aggregate;
 import protopeer.measurement.MeasurementLog;
 import util.JFreeChartCustomLegend;
 import data.DataType;
-import java.awt.Button;
-import java.awt.Container;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Panel;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
+ * An AgentLogger that only implements output logic. It reads the global cost
+ * and, if present, the average local cost in each iteration and plots this
+ * information.
  *
  * @author Peter
  */
@@ -56,15 +51,22 @@ public class CostViewer<V extends DataType<V>> extends AgentLogger<Agent<V>> {
     private static File defaultDstDir = new File(".");
 
     private Font font = new Font("Computer Modern", Font.PLAIN, 12);
-    
+
     private ChartPanel panel;
-    
+
     private boolean showFrame;
-    
+
+    /**
+     * Plots global and local cost in a new frame.
+     */
     public CostViewer() {
         this(true);
     }
-    
+
+    /**
+     * Plots global and local cost.
+     * @param showFrame if true, a new frame is opened to show the plot.
+     */
     public CostViewer(boolean showFrame) {
         this.showFrame = showFrame;
     }
@@ -79,7 +81,7 @@ public class CostViewer<V extends DataType<V>> extends AgentLogger<Agent<V>> {
 
     @Override
     public void print(MeasurementLog log) {
-       print(Arrays.asList(log));
+        print(Arrays.asList(log));
     }
 
     public void print(List<MeasurementLog> logs) {
@@ -100,12 +102,12 @@ public class CostViewer<V extends DataType<V>> extends AgentLogger<Agent<V>> {
 
         LegendTitle legend = createLegend(plot);
         panel = createChartPanel(plot, legend);
-        
-        if(showFrame) {
+
+        if (showFrame) {
             createAndShowFrame(logs.get(0), panel);
         }
     }
-    
+
     public BufferedImage getPlotImage(int width, int height) {
         BufferedImage outputImg = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         panel.setSize(outputImg.getWidth(), outputImg.getHeight());
@@ -123,7 +125,7 @@ public class CostViewer<V extends DataType<V>> extends AgentLogger<Agent<V>> {
 
     private YIntervalSeriesCollection getDataset(Object datasetTag, List<MeasurementLog> logs) {
         YIntervalSeriesCollection dataset = new YIntervalSeriesCollection();
-        for(MeasurementLog log : logs) {
+        for (MeasurementLog log : logs) {
             String label = getProperty(log, "label", "LABEL");
             YIntervalSeries series = new YIntervalSeries(label);
             for (int i = 0; true; i++) {

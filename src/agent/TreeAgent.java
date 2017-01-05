@@ -16,9 +16,10 @@ import protopeer.Finger;
 import data.DataType;
 
 /**
- *
+ * An agent that performs combinatorial optimization in a tree network.
+ * 
  * @author Peter
- * @param <A>
+ * @param <V> the type of the data this agent should handle
  */
 public abstract class TreeAgent<V extends DataType<V>> extends Agent<V> implements TreeApplicationInterface {
 

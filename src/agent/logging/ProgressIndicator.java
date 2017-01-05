@@ -22,34 +22,44 @@ import java.util.function.Consumer;
 import protopeer.measurement.MeasurementLog;
 
 /**
- * Prints the progress of the computation to std-out
+ * An AgentLogger that outputs the progress of the computation.
+ *
  * @author Peter
  */
 public class ProgressIndicator extends AgentLogger<Agent> {
-    
+
     private Consumer<Double> onProgress;
-    
-    
+
+    /**
+     * Prints the progress to std-out
+     */
     public ProgressIndicator() {
         this(null);
     }
-    
+
+    /**
+     * Calls the callback method onProgress after every iteration the algorithm
+     * progresses.
+     *
+     * @param onProgress a callback method that receives the current progress in
+     * the range [0,1]
+     */
     public ProgressIndicator(Consumer<Double> onProgress) {
         this.onProgress = onProgress;
     }
 
     @Override
     public void init(Agent agent) {
-        if(agent.isRepresentative() && onProgress != null) {
+        if (agent.isRepresentative() && onProgress != null) {
             onProgress.accept(0.0);
         }
     }
 
     @Override
     public void log(MeasurementLog log, int epoch, Agent agent) {
-        if(agent.isRepresentative()) {
-            if(onProgress != null) {
-                onProgress.accept((agent.getIteration()+1) / (double) agent.getNumIterations());
+        if (agent.isRepresentative()) {
+            if (onProgress != null) {
+                onProgress.accept((agent.getIteration() + 1) / (double) agent.getNumIterations());
             }
             if (agent.getIteration() % 10 == 9) {
                 System.out.print("%");
@@ -59,7 +69,7 @@ public class ProgressIndicator extends AgentLogger<Agent> {
             }
             if (agent.getIteration() + 1 == agent.getNumIterations()) {
                 System.out.print(";");
-                if(run % 10 == 9) {
+                if (run % 10 == 9) {
                     System.out.println();
                 }
             }
@@ -70,5 +80,5 @@ public class ProgressIndicator extends AgentLogger<Agent> {
     public void print(MeasurementLog log) {
         System.out.println();
     }
-    
+
 }

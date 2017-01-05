@@ -20,8 +20,11 @@ package func;
 import data.Vector;
 
 /**
+ * The cost according to this cost function is the variance of the elements of
+ * the given vector. This cost function can be used for load balancing, for
+ * example.
  *
- * @author Peter Pilgerstorfer
+ * @author Peter
  */
 public class VarCostFunction extends DifferentiableCostFunction<Vector> {
 

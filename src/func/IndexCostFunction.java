@@ -8,6 +8,8 @@ package func;
 import data.Plan;
 
 /**
+ * Uses the index of a plan as it's cost. E.g. the plan with index 0 has 0 cost,
+ * while the plan with index 1 has cost 1.
  *
  * @author Peter
  */
@@ -22,5 +24,5 @@ public class IndexCostFunction implements PlanCostFunction {
     public String toString() {
         return "index";
     }
-    
+
 }

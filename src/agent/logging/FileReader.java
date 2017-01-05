@@ -11,16 +11,24 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import protopeer.measurement.LogReplayer;
 import protopeer.measurement.MeasurementLog;
 
 /**
+ * An AgentLogger that has no logging logic. It reads the log written by
+ * FileWriter and makes the data accessible to other AgentLoggers.
  *
  * @author Peter
  */
 public class FileReader extends AgentLogger {
+
     private String filename;
-    
+
+    /**
+     * Creates a new FileReader that reads from the specified file.
+     * The data is read from output-data/filename.
+     *
+     * @param filename the name of the file.
+     */
     public FileReader(String filename) {
         this.filename = filename;
     }
@@ -35,7 +43,7 @@ public class FileReader extends AgentLogger {
 
     @Override
     public void print(MeasurementLog log) {
-        try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream("output-data/" + filename))){
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("output-data/" + filename))) {
             MeasurementLog loaded = (MeasurementLog) ois.readObject();
             log.mergeWith(loaded);
         } catch (IOException | ClassNotFoundException ex) {

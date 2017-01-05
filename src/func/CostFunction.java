@@ -21,8 +21,10 @@ import data.Plan;
 import data.DataType;
 
 /**
- *
+ * A function that assigns a cost value to any given data instance.
+ * 
  * @author Peter
+ * @param <V> the type of the data this cost function should handle
  */
 public abstract class CostFunction<V extends DataType<V>> implements PlanCostFunction<V> {
 

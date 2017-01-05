@@ -9,6 +9,7 @@ package func;
 import data.Plan;
 
 /**
+ * Uses the score of a plan as it's cost value.
  *
  * @author Peter
  */

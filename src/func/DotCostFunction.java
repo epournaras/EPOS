@@ -8,12 +8,17 @@ package func;
 import data.Vector;
 
 /**
- *
+ * Computes the dot product of a cost vector and the given value.
+ * 
  * @author Peter
  */
 public class DotCostFunction extends DifferentiableCostFunction<Vector> {
     private Vector costVector;
     
+    /**
+     * Sets the cost vector.
+     * @param costVector the cost vector
+     */
     public void setCostVector(Vector costVector) {
         this.costVector = costVector;
     }

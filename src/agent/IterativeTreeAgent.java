@@ -20,8 +20,14 @@ import protopeer.util.quantities.Time;
 import data.DataType;
 
 /**
+ * An agent that performs combinatorial optimization in a tree network over
+ * multiple iterations. Each iteration consists of a bottom-up phase followed by
+ * a top-down phase.
  *
  * @author Peter
+ * @param <V> the type of the data this agent should handle
+ * @param <UP> the type of message for the bottom-up phase
+ * @param <DOWN> the type of message for the top-down phase
  */
 public abstract class IterativeTreeAgent<V extends DataType<V>, UP extends IterativeTreeAgent.UpMessage, DOWN extends IterativeTreeAgent.DownMessage> extends TreeAgent<V> {
 
@@ -115,7 +121,7 @@ public abstract class IterativeTreeAgent<V extends DataType<V>, UP extends Itera
         }
         messageBuffer.clear();
 
-        if(iteration == 0) {
+        if (iteration == 0) {
             numAgents = 1 + orderedMsgs.stream().map(msg -> msg.numAgents).reduce(0, (a, b) -> a + b);
         }
         numTransmitted = orderedMsgs.stream().map(msg -> msg.getNumTransmitted()).reduce(0, (a, b) -> a + b);

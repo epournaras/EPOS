@@ -20,6 +20,8 @@ package func;
 import data.Vector;
 
 /**
+ * The cost according to this cost function is the maximal value of the given
+ * vector. This cost function can be used for peak reduction, for example.
  *
  * @author Peter
  */
@@ -29,7 +31,7 @@ public class MaxCostFunction extends CostFunction<Vector> {
     public double calcCost(Vector vector) {
         return vector.max();
     }
-    
+
     @Override
     public String toString() {
         return "max";

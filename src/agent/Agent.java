@@ -20,8 +20,10 @@ import protopeer.util.quantities.Time;
 import data.DataType;
 
 /**
- *
+ * An agent that performs combinatorial optimization.
+ * 
  * @author Peter
+ * @param <V> the type of the data this agent should handle
  */
 public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
 

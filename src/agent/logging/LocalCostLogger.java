@@ -19,6 +19,7 @@ import protopeer.measurement.MeasurementLog;
 import data.DataType;
 
 /**
+ * Logs the local cost for each agent after each iteration.
  *
  * @author Peter
  */
@@ -27,18 +28,39 @@ public class LocalCostLogger<V extends DataType<V>> extends AgentLogger<Agent<V>
     private String filename;
     private PlanCostFunction<V> costFunction;
 
+    /**
+     * Outputs the average local cost to std-out.
+     */
     public LocalCostLogger() {
         this((PlanCostFunction<V>) null);
     }
 
+    /**
+     * Outputs the average local cost to the specified file.
+     *
+     * @param filename the output file
+     */
     public LocalCostLogger(String filename) {
         this(filename, null);
     }
 
+    /**
+     * Outputs the average cost to std-out.
+     *
+     * @param costFunction the cost function to be used instead of the local
+     * cost
+     */
     public LocalCostLogger(PlanCostFunction<V> costFunction) {
         this.costFunction = costFunction;
     }
 
+    /**
+     * Outputs the average cost to the specified file.
+     *
+     * @param filename the output file
+     * @param costFunction the cost function to be used instead of the local
+     * cost
+     */
     public LocalCostLogger(String filename, PlanCostFunction<V> costFunction) {
         this.filename = filename;
         this.costFunction = costFunction;

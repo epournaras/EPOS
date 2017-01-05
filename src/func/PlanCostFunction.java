@@ -9,8 +9,10 @@ import data.Plan;
 import data.DataType;
 
 /**
- *
+ * A function that assigns a cost value to a given plan.
+ * 
  * @author Peter
+ * @param <V> the type of the data this cost function should handle
  */
 public interface PlanCostFunction<V extends DataType<V>> {
 

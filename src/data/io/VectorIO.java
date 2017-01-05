@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.Scanner;
 
 /**
+ * Provides functions to read vectors from various sources.
  *
  * @author peter
  */

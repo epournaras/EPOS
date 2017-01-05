@@ -15,8 +15,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 /**
+ * A main class that starts a GUI based I-EPOS simulation with limited configurability.
+ * 
  * @author melikaayoughi
- *
  */
 public class MainApplication extends Application {
 	

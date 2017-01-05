@@ -33,8 +33,13 @@ import protopeer.util.quantities.Time;
 import data.DataType;
 
 /**
- *
+ * This agent performs the COHDA algorithm for combinatorial optimization.
+ * Note that this algorithm was developed as a baseline algorithm and does not
+ * support all the features that IeposAgent does. For example, COHDA does not
+ * support local cost minimization in this implementation.
+ * 
  * @author Peter
+ * @param <V> the type of the data this agent should handle
  */
 public class CohdaAgent<V extends DataType<V>> extends TreeAgent<V> {
 
@@ -68,6 +73,18 @@ public class CohdaAgent<V extends DataType<V>> extends TreeAgent<V> {
         return best.global();
     }
 
+    /**
+     * Creates a new CohdaAgent. Using the same RNG seed will result in the same
+     * execution order in a simulation environment.
+     *
+     * @param numSteps the number of steps
+     * @param possiblePlans the plans this agent can choose from
+     * @param globalCostFunc the global cost function
+     * @param localCost the local cost function
+     * @param loggingProvider the object that extracts data from the agent and
+     * writes it into its log.
+     * @param seed a seed for the RNG
+     */
     public CohdaAgent(int numSteps, List<Plan<V>> possiblePlans, CostFunction<V> globalCostFunc, PlanCostFunction<V> localCost, AgentLoggingProvider<? extends TreeAgent<V>> loggingProvider, long seed) {
         super(possiblePlans, globalCostFunc, localCost, loggingProvider, seed);
         this.numSteps = numSteps;

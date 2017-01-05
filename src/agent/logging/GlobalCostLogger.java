@@ -18,6 +18,7 @@ import protopeer.measurement.MeasurementLog;
 import data.DataType;
 
 /**
+ * An AgentLogger that logs the global cost after each iteration.
  *
  * @author Peter
  */
@@ -26,18 +27,39 @@ public class GlobalCostLogger<V extends DataType<V>> extends AgentLogger<Agent<V
     private String filename;
     private CostFunction<V> costFunction;
 
+    /**
+     * Outputs the global cost to std-out.
+     */
     public GlobalCostLogger() {
         this((CostFunction<V>) null);
     }
 
+    /**
+     * Outputs the global cost to the specified file.
+     *
+     * @param filename the output file
+     */
     public GlobalCostLogger(String filename) {
         this(filename, null);
     }
 
+    /**
+     * Outputs the cost to std-out.
+     *
+     * @param costFunction the cost function to be used instead of the global
+     * cost
+     */
     public GlobalCostLogger(CostFunction<V> costFunction) {
         this.costFunction = costFunction;
     }
 
+    /**
+     * Outputs the cost to the specified file.
+     *
+     * @param filename the output file
+     * @param costFunction the cost function to be used instead of the global
+     * cost
+     */
     public GlobalCostLogger(String filename, CostFunction<V> costFunction) {
         this.filename = filename;
         this.costFunction = costFunction;

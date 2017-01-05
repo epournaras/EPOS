@@ -17,7 +17,6 @@
  */
 package agent.logging;
 
-import cern.colt.Arrays;
 import agent.logging.image.SvgFile;
 import agent.logging.image.PngFile;
 import agent.logging.image.ImageFile;
@@ -35,7 +34,6 @@ import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.decorators.DirectionalEdgeArrowTransformer;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.util.VertexShapeFactory;
-import func.CostFunction;
 import agent.IterativeTreeAgent;
 import agent.TreeAgent;
 import java.awt.Color;
@@ -58,15 +56,11 @@ import java.util.Objects;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.tree.TreeNode;
 import org.apache.commons.collections15.Transformer;
 import protopeer.Finger;
 import protopeer.measurement.MeasurementLog;
 import protopeer.network.NetworkAddress;
 import data.DataType;
-import data.Vector;
-import func.PlanCostFunction;
-import java.awt.Graphics;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
@@ -119,6 +113,9 @@ public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>
         this.showFrame = showFrame;
     }
 
+    /**
+     * The type of information a GraphLogger can present.
+     */
     public enum Type {
         Index, Change;
     }
