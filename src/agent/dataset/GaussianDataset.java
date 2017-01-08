@@ -71,7 +71,9 @@ public class GaussianDataset implements Dataset<Vector> {
         // generate the plans
         List<Plan<Vector>> plans = new ArrayList<>();
         for (int p = 0; p < numPlans; p++) {
-            plans.add(generatePlan(numDimensions, random));
+            Plan plan = generatePlan(numDimensions, random);
+            plan.setIndex(p);
+            plans.add(plan);
         }
         return plans;
     }

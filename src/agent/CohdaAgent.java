@@ -184,6 +184,7 @@ public class CohdaAgent<V extends DataType<V>> extends TreeAgent<V> {
             current = new KnowledgeBase(best);
             selectedPlan = current.getLocal(this);
         }
+        this.selectedPlan = selectedPlan;
         current.updateLocal(this,selectedPlan);
 
         if (betterThanBest(current)) {

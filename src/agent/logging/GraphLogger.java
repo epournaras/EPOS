@@ -17,6 +17,7 @@
  */
 package agent.logging;
 
+import agent.CohdaAgent;
 import agent.logging.image.SvgFile;
 import agent.logging.image.PngFile;
 import agent.logging.image.ImageFile;
@@ -63,6 +64,8 @@ import protopeer.network.NetworkAddress;
 import data.DataType;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Prints a graph of the tree network.
@@ -143,10 +146,7 @@ public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>
                 break;
         }
 
-        int iteration = 0;
-        if (agent instanceof IterativeTreeAgent) {
-            iteration = ((IterativeTreeAgent) agent).getIteration();
-        }
+        int iteration = agent.getIteration();
         log.log(epoch, iteration, node, cost);
     }
 
@@ -167,7 +167,10 @@ public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>
         shapeTransform = AffineTransform.getScaleInstance(vertexSize, vertexSize);
 
         graph = new DelegateForest<>();
-        numIterations = log.getMaxEpochNumber();
+        numIterations = 0;
+        for(Object tag : log.getTagsOfType(Integer.class)) {
+            numIterations = Math.max(numIterations, (Integer) tag);
+        }
 
         Map<NetworkAddress, Node> idx2Node = new HashMap<>();
         values = new HashMap<>();
@@ -372,23 +375,42 @@ public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>
             int returnVal = fileChooser.showSaveDialog(frame);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
-
-                ImageFile img = null;
-                if (file.getName().endsWith(".png")) {
-                    img = new PngFile(file, viewer.getWidth(), viewer.getHeight());
-                } else if (file.getName().endsWith(".svg")) {
-                    img = new SvgFile(file, viewer.getWidth(), viewer.getHeight());
+                writeCurrentImage(viewer, file);
+            }
+        });
+        MenuItem saveAll = new MenuItem("Save all");
+        saveAll.addActionListener((ActionEvent e) -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int returnVal = fileChooser.showSaveDialog(frame);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File dir = fileChooser.getSelectedFile();
+                
+                for(int i = 0; i < numIterations; i++) {
+                    File file = new File(dir, "iteration_" + (i+1) + ".png");
+                    writeCurrentImage(viewer, file);
+                    keyListener.keyReleased(new KeyEvent(fileChooser, KeyEvent.VK_RIGHT, 0, 0, KeyEvent.VK_RIGHT, '-'));
                 }
-
-                viewer.setDoubleBuffered(false);
-                viewer.getRootPane().paintComponents(img.createGraphics());
-                viewer.setDoubleBuffered(true);
-
-                img.write();
             }
         });
         menu.add(saveas);
+        menu.add(saveAll);
         frame.getMenuBar().add(menu);
+    }
+    
+    private void writeCurrentImage(VisualizationViewer<Node, Integer> viewer, File outputFile) {
+        ImageFile img = null;
+        if (outputFile.getName().endsWith(".png")) {
+            img = new PngFile(outputFile, viewer.getWidth(), viewer.getHeight());
+        } else if (outputFile.getName().endsWith(".svg")) {
+            img = new SvgFile(outputFile, viewer.getWidth(), viewer.getHeight());
+        }
+
+        viewer.setDoubleBuffered(false);
+        viewer.getRootPane().paintComponents(img.createGraphics());
+        viewer.setDoubleBuffered(true);
+
+        img.write();
     }
 
     private class Node {
