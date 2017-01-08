@@ -174,7 +174,7 @@ public class configurationWindowController {
 		});
 
 		// Seed Text Field
-		seedTextField.setPromptText("" + new Random().nextLong());
+		seedTextField.setPromptText("0");
 	}
 	
 	@FXML
