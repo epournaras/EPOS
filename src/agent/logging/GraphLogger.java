@@ -387,7 +387,7 @@ public class GraphLogger<V extends DataType<V>> extends AgentLogger<TreeAgent<V>
                 File dir = fileChooser.getSelectedFile();
                 
                 for(int i = 0; i < numIterations; i++) {
-                    File file = new File(dir, "iteration_" + (i+1) + ".png");
+                    File file = new File(dir, "iteration_" + (i+1) + ".svg");
                     writeCurrentImage(viewer, file);
                     keyListener.keyReleased(new KeyEvent(fileChooser, KeyEvent.VK_RIGHT, 0, 0, KeyEvent.VK_RIGHT, '-'));
                 }

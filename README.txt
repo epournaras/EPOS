@@ -3,7 +3,8 @@ The directory can be opened as a NetBeans project in order to modify and build t
 
 Execute the program with
 > java -jar IEPOS.jar
-Note that Java 8 is required to run the program.
+This will open a GUI to configure and run I-EPOS.
+Note that Oracle Java 8 is required to run the program.
 
 Important files and folders:
 IEPOS.jar   a simple simulation that can be configured to some extent
