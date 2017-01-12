@@ -6,6 +6,7 @@ import agent.logging.AgentLoggingProvider;
 import agent.dataset.Dataset;
 import agent.*;
 import agent.dataset.FileVectorDataset;
+import agent.dataset.GaussianDataset;
 import agent.logging.CostViewer;
 import agent.logging.GlobalResponseLogger;
 import agent.logging.GraphLogger;
@@ -58,7 +59,7 @@ public class SimpleLiveExperiment extends LiveExperiment {
 
         if (args.length == 0) {
             for (int i = 1; i < a; i++) {
-                ProcessBuilder b = new ProcessBuilder("java", "-jar", "dist" + File.separator + "IEPOS.jar", Integer.toString(i), logDir.getAbsolutePath());
+                ProcessBuilder b = new ProcessBuilder("java", "-jar", "IEPOS.jar", Integer.toString(i), logDir.getAbsolutePath());
                 b.inheritIO();
                 processes.add(b.start());
             }
@@ -118,8 +119,7 @@ public class SimpleLiveExperiment extends LiveExperiment {
         //loggingProvider.add(new FileWriter("simple.log"));
 
         // dataset
-        //Dataset<Vector> dataset = new GaussianDataset(p, d, 0, 1, new Random(random.nextLong()));
-        Dataset<Vector> dataset = new FileVectorDataset("C:\\Users\\Peter\\Documents\\EPOS\\input-data\\gaussian");
+        Dataset<Vector> dataset = new GaussianDataset(p, d, 0, 1, new Random(random.nextLong()));
 
         // network
         TreeArchitecture architecture = new TreeArchitecture();
@@ -155,7 +155,7 @@ public class SimpleLiveExperiment extends LiveExperiment {
 
         if (idx == 0) {
             try {
-                Thread.sleep(30000);
+                Thread.sleep(10000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(SimpleLiveExperiment.class.getName()).log(Level.SEVERE, null, ex);
             }
