@@ -174,11 +174,10 @@ def main(argv):
 
 
     ds = get_raw_data(inputfolder)
-    output_folder = "./output/"
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+    if not os.path.exists(outputfolder):
+        os.makedirs(outputfolder)
 
-    exec_exhaustive(ds, output_folder)
+    exec_exhaustive(ds, outputfolder)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
