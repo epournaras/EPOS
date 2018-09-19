@@ -9,7 +9,7 @@ import agent.dataset.Dataset;
 import agent.dataset.FileVectorDataset;
 import agent.dataset.GaussianDataset;
 import agent.logging.GraphLogger;
-import agent.logging.LocalCostLogger;
+import agent.logging.LocalCostMultiObjectiveLogger;
 import agent.logging.GlobalResponseLogger;
 import agent.logging.ProgressIndicator;
 import data.Plan;
@@ -177,7 +177,7 @@ public class ExperimentGUI extends SimulatedExperiment {
         LoggingProvider<IeposAgent<Vector>> loggingProvider = new LoggingProvider<>();
         loggingProvider.add(new GlobalCostLogger());
         if (lambda > 0) {
-            loggingProvider.add(new LocalCostLogger());
+            loggingProvider.add(new LocalCostMultiObjectiveLogger());
         }
         
         // notify progress bar about progress

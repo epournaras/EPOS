@@ -23,12 +23,18 @@ import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import agent.Agent;
+import agent.logging.LocalCostLogger.Token;
 import protopeer.measurement.Aggregate;
 import protopeer.measurement.MeasurementLog;
 import data.DataType;
@@ -43,7 +49,6 @@ public class TerminationLogger<V extends DataType<V>> extends AgentLogger<Agent<
 
     private CostFunction<V> 		globalCostFunc;
     private int 					index;
-    private V 						prevGlobalResponse;
     private double 					prevGlobalCost;				// previous global cost
     
     private String 					filepath;					// path to file in which result should be written
@@ -112,45 +117,62 @@ public class TerminationLogger<V extends DataType<V>> extends AgentLogger<Agent<
 
             // only log when agent finishes iterating
             if (agent.getIteration() == agent.getNumIterations() - 1) {
-                log.log(epoch, TerminationLogger.class.getName(), this.index);
+            	Token token = new Token(this.index, this.run);            
+                log.log(epoch, TerminationLogger.class.getName(), token, 1.0);
             }
         }
     }
 
     @Override
-    public void print(MeasurementLog log) {    	
-    	List<Double> avg = new ArrayList<Double>();
+	public void print(MeasurementLog log) {
+		String outcome = this.internalFetching(log);
     	
-        for (Object t : log.getTagsOfType(String.class)) {
-            if (t.equals(TerminationLogger.class.getName())) {
-                Aggregate a = log.getAggregate(t);                
-                avg.add(a.getAverage());            
-            }
-        }
-        
-        String outcome = this.format(avg);
-        
-        if(this.filepath == null) {
-        	System.out.print("Termination iteration is (run, iteration): "  + outcome);
+        if (this.filepath == null) {
+            System.out.print(outcome);
         } else {
-        	try (PrintWriter out = new PrintWriter(new BufferedWriter(new java.io.FileWriter(this.filepath, true)))) {
+            try (PrintWriter out = new PrintWriter(new BufferedWriter(new java.io.FileWriter(this.filepath, true)))) {   
                 out.append(outcome);
             } catch (FileNotFoundException ex) {
-                Logger.getLogger(LocalCostLogger.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(GlobalCostLogger.class.getName()).log(Level.SEVERE, null, ex);
             } catch(IOException e) {
-                Logger.getLogger(LocalCostLogger.class.getName()).log(Level.SEVERE, null, e);
+            	Logger.getLogger(GlobalCostLogger.class.getName()).log(Level.SEVERE, null, e);
             }
-        }        
-    }
+        }
+	}
     
-    private String format(List<Double> avgs) {
-    	StringBuilder sb = new StringBuilder();
-    	sb.append("TERMINAL ITERATION");
-    	for(Double e : avgs) {
-    		sb.append(System.lineSeparator() + e);
-    	}
-    	sb.append(System.lineSeparator());
-    	return sb.toString();    	
+    private String internalFetching(MeasurementLog log) {
+    	
+    	///////////////////////////////////////////////////////////////////////////////////////
+    	// PER RUN, PER ITERATION
+    	
+    	TreeSet<Object> allTokens = new TreeSet<Object>();
+		allTokens.addAll(log.getTagsOfType(Token.class));
+		
+		ArrayList<Token> sortedTokens = new ArrayList<>();
+		allTokens.forEach(o -> {
+			Token t = (Token) o;
+			sortedTokens.add(t);
+		});
+
+		Collections.sort(sortedTokens);
+		
+		
+		///////////////////////////////////////////////////////////////////////////////////////
+		// FORMTATTING        
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("Run")
+		  .append("," + "Terminal Iteration");
+		
+		sb.append(System.lineSeparator());
+		
+		for(int i = 0; i < sortedTokens.size(); i++) {
+			sb.append(i)
+			  .append("," + sortedTokens.get(i).terminalIteration)
+			  .append(System.lineSeparator());
+		}
+		
+		return sb.toString();
     }
     
     private void printOut(int epoch, Agent agent, String message) {
@@ -160,4 +182,32 @@ public class TerminationLogger<V extends DataType<V>> extends AgentLogger<Agent<
     					   ", iteration: "	+ agent.getIteration()	+
     					   message);
     }
+    
+    private class Token implements Comparable<Token> {
+		
+		public int terminalIteration;
+		public int run;
+		
+		public Token(int terminalIteration, int run) {
+			this.terminalIteration = terminalIteration;
+			this.run = run;
+		}
+		
+		@Override
+        public int hashCode() {
+            int hash = 3;
+            hash = 53 * hash + this.run;
+            hash = 53 * hash + this.terminalIteration;
+            return hash;
+        }
+
+		@Override
+		public int compareTo(TerminationLogger<V>.Token other) {
+			
+			if		(this.run > other.run)					return 1;
+			else if (this.run < other.run)					return -1;
+			
+			return  0;
+		}		
+	}
 }

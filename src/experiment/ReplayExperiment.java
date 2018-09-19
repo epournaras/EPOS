@@ -9,7 +9,7 @@ import agent.logging.FileReader;
 import agent.logging.GlobalCostLogger;
 import agent.logging.CostViewer;
 import agent.logging.GraphLogger;
-import agent.logging.LocalCostLogger;
+import agent.logging.LocalCostMultiObjectiveLogger;
 import agent.logging.LoggingProvider;
 import agent.logging.TerminationLogger;
 
@@ -25,7 +25,7 @@ public class ReplayExperiment {
         LoggingProvider loggingProvider = new LoggingProvider();
         loggingProvider.add(new FileReader(filename));
         loggingProvider.add(new GlobalCostLogger());
-        loggingProvider.add(new LocalCostLogger());
+        loggingProvider.add(new LocalCostMultiObjectiveLogger());
         loggingProvider.add(new TerminationLogger());
         loggingProvider.add(new CostViewer());
         loggingProvider.add(new GraphLogger(GraphLogger.Type.Change));

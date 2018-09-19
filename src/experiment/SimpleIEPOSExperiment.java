@@ -9,7 +9,7 @@ import agent.dataset.Dataset;
 import agent.*;
 import agent.dataset.GaussianDataset;
 import agent.logging.GraphLogger;
-import agent.logging.LocalCostLogger;
+import agent.logging.LocalCostMultiObjectiveLogger;
 import data.Plan;
 import data.Vector;
 import func.DifferentiableCostFunction;
@@ -45,7 +45,7 @@ public class SimpleIEPOSExperiment {
         // logging
         LoggingProvider<IeposAgent<Vector>> loggingProvider = new LoggingProvider<>();
         loggingProvider.add(new GlobalCostLogger());
-        loggingProvider.add(new LocalCostLogger());
+        loggingProvider.add(new LocalCostMultiObjectiveLogger());
         loggingProvider.add(new TerminationLogger());
         loggingProvider.add(new CostViewer());
         loggingProvider.add(new GraphLogger<>(GraphLogger.Type.Change));

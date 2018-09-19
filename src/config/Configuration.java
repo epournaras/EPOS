@@ -129,7 +129,7 @@ public class Configuration {
 	public static boolean 				useNumPlans			=	false; //!!!!!!!!!!!
 	
 	
-	public static int					numSimulations		=	1;
+	public static int					numSimulations		=	3;
 	public static int					numIterations		=	40;	
 	public double						lambda				=	0;		
 	public static int					numChildren			=	2;	
@@ -144,7 +144,7 @@ public class Configuration {
 	public static int					permutationID		=	0;
 	
 	public final DifferentiableCostFunction<Vector>	globalCostFunc				=	new VarCostFunction(); //new ConstraintCostFunction(); //new ConstrainedVarianceCostFunction(); //new SimilarityCostFunction(); // new VarCostFunction();
-	public final PlanCostFunction					localCostFunc				= 	new PreferencePlanCostFunction();
+	public final PlanCostFunction					localCostFunc				= 	new IndexCostFunction(); //new PreferencePlanCostFunction();
 	public static Supplier<Vector> 					goalSignalSupplier			=	null; //GoalSignalsCollection.constant_signal; //GoalSignalsCollection.fromOnelinerFile; // GoalSignalsCollection.lowerBound; //GoalSignalsCollection.gaussian_mixture_impulse;
 	public static UnaryOperator<Vector> 			normalizer					=	null; //Vector.no_normalization; //Vector.standard_normalization;
 	
@@ -188,7 +188,7 @@ public class Configuration {
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 	// LOGGING INSTRUMENTATION:
-	public static		Level		loggingLevel					=	Level.FINER;
+	public static		Level		loggingLevel					=	Level.SEVERE;
 	public static final String		logDirectory					=	null; //"outputLogs";
 	public static final String		outputDirectory					=	"output";
 	public static final String		pathDelimiter					=	"/";

@@ -12,9 +12,9 @@ import agent.IeposAgent;
 import agent.IeposPlanSelector;
 import agent.MultiObjectiveIEPOSAgent;
 import agent.PlanSelector;
+import agent.logging.AgentLogger;
 import agent.logging.AgentLoggingProvider;
 import agent.logging.DiscomfortLogger;
-import agent.logging.DistributionLogger;
 import agent.logging.GlobalComplexCostLogger;
 import agent.logging.GlobalCostLogger;
 import agent.logging.GlobalResponseVectorLogger;
@@ -22,8 +22,9 @@ import agent.logging.GraphLogger;
 import agent.logging.GraphLogger.Type;
 import agent.logging.instrumentation.CustomFormatter;
 import agent.multiobjectiveutils.ControllerCollection;
-import agent.logging.LocalCostLogger;
+import agent.logging.LocalCostMultiObjectiveLogger;
 import agent.logging.LoggingProvider;
+import agent.logging.PlanFrequencyLogger;
 import agent.logging.SelectedPlanLogger;
 import agent.logging.TerminationLogger;
 import agent.logging.UnfairnessLogger;
@@ -52,16 +53,16 @@ public class MultiObjectiveIEPOSExperiment {
 	private static LoggingProvider<MultiObjectiveIEPOSAgent<Vector>> generateLoggers(Configuration config) {
 		
 		LoggingProvider<MultiObjectiveIEPOSAgent<Vector>>	loggingProvider = 	new LoggingProvider<MultiObjectiveIEPOSAgent<Vector>>();        
-        GlobalCostLogger<Vector> 			GCLogger 		= 	new GlobalCostLogger<Vector>(Configuration.getGlobalCostPath());
-        LocalCostLogger<Vector> 			LCLogger  		= 	new LocalCostLogger<Vector>(Configuration.getLocalCostPath());
-        TerminationLogger<Vector> 			TLogger 		= 	new TerminationLogger<Vector>(Configuration.getTerminationPath());
-        SelectedPlanLogger<Vector> 			SPLogger		=	new SelectedPlanLogger<Vector>(Configuration.getSelectedPlansPath(), config.numAgents);
-        GlobalResponseVectorLogger<Vector>  GRVLogger		=	new GlobalResponseVectorLogger<Vector>(Configuration.getGlobalResponsePath());
-        DiscomfortLogger<Vector> 			DLogger			=	new DiscomfortLogger<Vector>(Configuration.getFairnessPath());
-        DistributionLogger<Vector> 			DstLogger		=	new DistributionLogger<Vector>(Configuration.getDistributionPath());
-        UnfairnessLogger<Vector> 			ULogger			=	new UnfairnessLogger<Vector>(Configuration.getUnfairnessPath());
-        GlobalComplexCostLogger<Vector> 	GCXLogger		=	new GlobalComplexCostLogger<Vector>(Configuration.getGlobalComplexCostPath());
-        WeightsLogger<Vector>				WLogger			=	new WeightsLogger<Vector>(Configuration.getWeightsPath());
+        GlobalCostLogger<Vector> 				GCLogger 		= 	new GlobalCostLogger<Vector>(Configuration.getGlobalCostPath());
+        LocalCostMultiObjectiveLogger<Vector> 	LCLogger  		= 	new LocalCostMultiObjectiveLogger<Vector>(Configuration.getLocalCostPath());
+        TerminationLogger<Vector> 				TLogger 		= 	new TerminationLogger<Vector>(Configuration.getTerminationPath());
+        SelectedPlanLogger<Vector> 				SPLogger		=	new SelectedPlanLogger<Vector>(Configuration.getSelectedPlansPath(), config.numAgents);
+        GlobalResponseVectorLogger<Vector>  	GRVLogger		=	new GlobalResponseVectorLogger<Vector>(Configuration.getGlobalResponsePath());
+        DiscomfortLogger<Vector> 				DLogger			=	new DiscomfortLogger<Vector>(Configuration.getFairnessPath());
+        PlanFrequencyLogger<Vector> 			DstLogger		=	new PlanFrequencyLogger<Vector>(Configuration.getDistributionPath());
+        UnfairnessLogger<Vector> 				ULogger			=	new UnfairnessLogger<Vector>(Configuration.getUnfairnessPath());
+        GlobalComplexCostLogger<Vector> 		GCXLogger		=	new GlobalComplexCostLogger<Vector>(Configuration.getGlobalComplexCostPath());
+        WeightsLogger<Vector>					WLogger			=	new WeightsLogger<Vector>(Configuration.getWeightsPath());
         
         
         GCLogger.setRun(Configuration.permutationOffset + Configuration.permutationID);
@@ -150,19 +151,33 @@ public class MultiObjectiveIEPOSExperiment {
     	
     	LoggingProvider<MultiObjectiveIEPOSAgent<Vector>> loggingProvider = 	MultiObjectiveIEPOSExperiment.generateLoggers(config);    
     	
-    	Map<Integer, Integer> mapping;
-    	if(!Configuration.shouldReadInitialPermutationFromFile()) {
-    		mapping = config.generateMapping.apply(config);
-    	} else {
-    		mapping = config.readMapping.apply(config);
-    	}
+//    	Map<Integer, Integer> mapping;
+//    	if(!Configuration.shouldReadInitialPermutationFromFile()) {
+//    		mapping = config.generateMapping.apply(config);
+//    	} else {
+//    		mapping = config.readMapping.apply(config);
+//    	}
 		
 		for(int sim = 0; sim < Configuration.numSimulations; sim++) {
 			
-			final int simulationId = Configuration.permutationID;
+			System.out.println("Simultaion " + (sim+1));
+			
+			final int simulationId = sim;			
+			Configuration.permutationID = sim;
+			config.permutationSeed = sim;
+			
+			for(AgentLogger al : loggingProvider.getLoggers()) {
+				al.setRun(sim);
+			}
+			
+			Map<Integer, Integer> mapping;
+	    	if(!Configuration.shouldReadInitialPermutationFromFile()) {
+	    		mapping = config.generateMappingForRepetitiveExperiments.apply(config);
+	    	} else {
+	    		mapping = config.readMapping.apply(config);
+	    	}
 	        
 	        PlanSelector<MultiObjectiveIEPOSAgent<Vector>, Vector> planSelector = new MultiObjectiveIeposPlanSelector<Vector>();
-	        
 	        
 	        /**
 	         * Function that creates an Agent given the id of it's vertex in tree graph.

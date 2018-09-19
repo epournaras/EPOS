@@ -88,6 +88,10 @@ public class LoggingProvider<A extends Agent> {
         }
         return agentProvider;
     }
+    
+    public List<AgentLogger<? super A>> getLoggers() {
+    	return this.loggers;
+    }
 
     /**
      * Prints the results for each logger.

@@ -13,7 +13,7 @@ import agent.MultiObjectiveIEPOSAgent;
 import agent.PlanSelector;
 import agent.logging.AgentLoggingProvider;
 import agent.logging.GlobalCostLogger;
-import agent.logging.LocalCostLogger;
+import agent.logging.LocalCostMultiObjectiveLogger;
 import agent.logging.LoggingProvider;
 import agent.logging.ReorganizationLogger;
 import agent.logging.TerminationLogger;
@@ -36,7 +36,7 @@ public class ReorganizationExperiment {
 		
 		LoggingProvider<ModifiableIeposAgent<Vector>>	loggingProvider = 	new LoggingProvider<ModifiableIeposAgent<Vector>>();        
         GlobalCostLogger<Vector> 			GCLogger 		= 	new GlobalCostLogger<Vector>(config.getGlobalCostPath());
-        LocalCostLogger<Vector> 			LCLogger  		= 	new LocalCostLogger<Vector>(config.getLocalCostPath());
+        LocalCostMultiObjectiveLogger<Vector> 			LCLogger  		= 	new LocalCostMultiObjectiveLogger<Vector>(config.getLocalCostPath());
         TerminationLogger<Vector> 			TLogger 		= 	new TerminationLogger<Vector>(config.getTerminationPath());
         ReorganizationLogger<Vector> 		RLogger			=	new ReorganizationLogger<Vector>(config.getReorganizationPath());
         

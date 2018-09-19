@@ -96,7 +96,7 @@ public class CostViewer<V extends DataType<V>> extends AgentLogger<Agent<V>> {
         plot.add(globalDataset, xAxis, globalYAxis);
 
         // add local data
-        YIntervalSeriesCollection localDataset = getDataset(LocalCostLogger.class.getName(), logs);
+        YIntervalSeriesCollection localDataset = getDataset(LocalCostMultiObjectiveLogger.class.getName(), logs);
         ValueAxis localYAxis = getAxis(getProperty(logs.get(0), "localXLabel", "local cost"));
         plot.add(localDataset, xAxis, localYAxis);
 

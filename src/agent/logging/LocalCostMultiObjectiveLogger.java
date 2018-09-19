@@ -5,14 +5,16 @@
  */
 package agent.logging;
 
-import func.CostFunction;
+import func.PlanCostFunction;
 import agent.Agent;
+import agent.MultiObjectiveIEPOSAgent;
+import agent.planselection.PlanSelectionOptimizationFunctionCollection;
 
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,92 +28,87 @@ import protopeer.measurement.MeasurementLog;
 import data.DataType;
 
 /**
- * An AgentLogger that logs the global cost after each iteration. Note that global cost
- * is always effectively computed at root node by the end of bottom-up phase.
+ * Logs the local cost for each agent after each iteration.
+ * Used only for single runs!
  *
  * @author Peter P. & Jovan N.
  */
-public class GlobalCostLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> {
+public class LocalCostMultiObjectiveLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> {
 
-    private String 				filepath;
-    private CostFunction<V> 	costFunction;
+    private String filename;
+    private PlanCostFunction<V> costFunction;
 
     /**
-     * Outputs the global cost to std-out.
+     * Outputs the average local cost to std-out.
      */
-    public GlobalCostLogger() {
-        this((CostFunction<V>) null);
+    public LocalCostMultiObjectiveLogger() {
+        this((PlanCostFunction<V>) null);
     }
 
     /**
-     * Outputs the global cost to the specified file.
+     * Outputs the average local cost to the specified file.
      *
      * @param filename the output file
      */
-    public GlobalCostLogger(String filename) {
+    public LocalCostMultiObjectiveLogger(String filename) {
         this(filename, null);
     }
 
     /**
-     * Outputs the cost to std-out.
+     * Outputs the average cost to std-out.
      *
-     * @param costFunction the cost function to be used instead of the global
+     * @param costFunction the cost function to be used instead of the local
      * cost
      */
-    public GlobalCostLogger(CostFunction<V> costFunction) {
+    public LocalCostMultiObjectiveLogger(PlanCostFunction<V> costFunction) {
         this.costFunction = costFunction;
     }
 
     /**
-     * Outputs the cost to the specified file.
+     * Outputs the average cost to the specified file.
      *
-     * @param filename 		the path to output file
-     * @param costFunction 	the cost function to be used instead of the global
+     * @param filename the output file
+     * @param costFunction the cost function to be used instead of the local
      * cost
      */
-    public GlobalCostLogger(String filepath, CostFunction<V> costFunction) {
-        this.filepath = filepath;
+    public LocalCostMultiObjectiveLogger(String filename, PlanCostFunction<V> costFunction) {
+        this.filename = filename;
         this.costFunction = costFunction;
     }
 
     @Override
-    /**
-     * If cost function hasn't already been set, initializes cost function
-     * with global cost function of the agent. Otherwise, does nothing.
-     */
-    public void init(Agent agent) {
+    public void init(Agent<V> agent) {
         if (costFunction == null) {
-            costFunction = agent.getGlobalCostFunction();
+            costFunction = agent.getLocalCostFunction();
         }
     }
 
     @Override
-    /**
-     * Logs global response from node with index 0, per epoch per agent.
-     */
     public void log(MeasurementLog log, int epoch, Agent<V> agent) {
-        if (agent.isRepresentative()) {        	
-            double cost = costFunction.calcCost(agent.getGlobalResponse());  
+    	MultiObjectiveIEPOSAgent moieposagent = (MultiObjectiveIEPOSAgent) agent;
+    	if (moieposagent.isRoot()) {        	
+    		double discomfortSum = moieposagent.getGlobalDiscomfortSum();
+    		int numAgents = moieposagent.getNumAgents();
+            double cost = PlanSelectionOptimizationFunctionCollection.localCost(discomfortSum, numAgents);
             Token token = new Token(cost, agent.getIteration(), this.run);            
-            log.log(epoch, GlobalCostLogger.class.getName(), token, 1.0);            
-            log.log(epoch, GlobalCostLogger.class.getName() + "raw", agent.getIteration(), cost);
+            log.log(epoch, LocalCostMultiObjectiveLogger.class.getName(), token, 1.0);            
+            log.log(epoch, LocalCostMultiObjectiveLogger.class.getName() + "raw", agent.getIteration(), cost);
         }
     }
 
     @Override
     public void print(MeasurementLog log) {
-    	String outcome = this.internalFetching(log);
-    	
-        if (this.filepath == null) {
+    	String outcome = this.internalFetching(log);    	
+        if (filename == null) {            
             System.out.print(outcome);
-        } else {
-            try (PrintWriter out = new PrintWriter(new BufferedWriter(new java.io.FileWriter(this.filepath, true)))) {   
-                out.append(outcome);
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(GlobalCostLogger.class.getName()).log(Level.SEVERE, null, ex);
-            } catch(IOException e) {
-            	Logger.getLogger(GlobalCostLogger.class.getName()).log(Level.SEVERE, null, e);
-            }
+        } else {																					
+            try (PrintWriter out = new PrintWriter(new BufferedWriter(new java.io.FileWriter(this.filename, true)))) {             	
+            	out.append(outcome);										//								^
+            } catch (FileNotFoundException ex) {							//								appends!
+                Logger.getLogger(LocalCostMultiObjectiveLogger.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception e) {
+            	Logger.getLogger(LocalCostMultiObjectiveLogger.class.getName()).log(Level.SEVERE, null, e);
+			}
         }
     }
     
@@ -146,7 +143,7 @@ public class GlobalCostLogger<V extends DataType<V>> extends AgentLogger<Agent<V
 
         // not really sure what this thing is doing
         for (int i = 0; true; i++) {
-            Aggregate aggregate = log.getAggregate(GlobalCostLogger.class.getName() + "raw", i);
+            Aggregate aggregate = log.getAggregate(LocalCostMultiObjectiveLogger.class.getName() + "raw", i);
             if (aggregate == null || aggregate.getNumValues() < 1) {
                 break;
             }
@@ -174,28 +171,36 @@ public class GlobalCostLogger<V extends DataType<V>> extends AgentLogger<Agent<V
 			  .append("," + std.get(i));
 			
 			for(int j = 0; j < sortedKeys.size(); j++) {
-				sb.append("," + perRun.get(sortedKeys.get(j)).get(i).globalCost);
+				sb.append("," + perRun.get(sortedKeys.get(j)).get(i).localCost);
 			}
 			sb.append(System.lineSeparator());
 		}
 		
 		return sb.toString();
     }
-   
+    
     private class Token implements Comparable<Token> {
 		
-		public double globalCost;
+		public double localCost;
 		public int iteration;
 		public int run;
 		
-		public Token(double globalCost, int iteration, int run) {
-			this.globalCost = globalCost;
+		public Token(double localCost, int iteration, int run) {
+			this.localCost = localCost;
 			this.iteration = iteration;
 			this.run = run;
 		}
+		
+		@Override
+        public int hashCode() {
+            int hash = 3;
+            hash = 53 * hash + this.run;
+            hash = 53 * hash + this.iteration;
+            return hash;
+        }
 
 		@Override
-		public int compareTo(GlobalCostLogger<V>.Token other) {
+		public int compareTo(LocalCostMultiObjectiveLogger<V>.Token other) {
 			
 			if		(this.run > other.run)					return 1;
 			else if (this.run < other.run)					return -1;
@@ -206,5 +211,5 @@ public class GlobalCostLogger<V extends DataType<V>> extends AgentLogger<Agent<V
 			return  0;
 		}		
 	}
-    
+
 }
