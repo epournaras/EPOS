@@ -141,19 +141,19 @@ public class CohdaAgent<V extends DataType<V>> extends TreeAgent<V> {
     }
 
     private void initStep() {
-        numTransmitted = 0;
-        numComputed = 0;
-        cumTransmitted = 0;
-        cumComputed = 0;
+    	this.setNumComputed(0);
+    	this.setNumTransmitted(0);
+    	this.setCumComputed(0);
+    	this.setCumTransmitted(0);
     }
 
     @Override
     public void handleIncomingMessage(Message message) {
         if (CohdaMessage.class.equals(message.getClass())) {
             CohdaMessage msg = (CohdaMessage) message;
-            numTransmitted += msg.getNumTransmitted();
-            cumTransmitted = msg.getNumTransmitted() + Math.max(cumTransmitted, msg.cumTransmitted);
-            cumComputed = Math.max(cumComputed, msg.cumComputed);
+            this.setNumTransmitted(msg.getNumTransmitted() + this.getNumTransmitted());
+            this.setCumTransmitted(this.getCumTransmitted() + msg.getNumTransmitted() + Math.max(this.getCumTransmitted(), msg.cumTransmitted));
+            this.setCumComputed(Math.max(this.getCumComputed(), msg.cumComputed));
             update(msg);
         }
     }
@@ -176,8 +176,8 @@ public class CohdaAgent<V extends DataType<V>> extends TreeAgent<V> {
 
     private void choose() {
         int selected = optimization.argmin(globalCostFunc, possiblePlans, current.aggregate(this));
-        numComputed += possiblePlans.size();
-        cumComputed += possiblePlans.size();
+        this.setNumComputed(this.getNumComputed() + possiblePlans.size());
+        this.setCumComputed(this.getCumComputed() + possiblePlans.size());
 
         Plan<V> selectedPlan = possiblePlans.get(selected);
         if (selectedPlan.equals(current.getLocal(this)) && current.size() <= best.size()) {
@@ -197,10 +197,10 @@ public class CohdaAgent<V extends DataType<V>> extends TreeAgent<V> {
             CohdaMessage msg = new CohdaMessage();
             msg.best = new KnowledgeBase(best);
             msg.current = new KnowledgeBase(current);
-            msg.cumTransmitted = cumTransmitted;
-            msg.cumComputed = cumComputed;
-            numTransmitted += msg.getNumTransmitted();
-            cumTransmitted += msg.getNumTransmitted();
+            msg.cumTransmitted = this.getCumTransmitted();
+            msg.cumComputed = this.getCumComputed();
+            this.setNumTransmitted(this.getNumTransmitted() + msg.getNumTransmitted());
+            this.setCumTransmitted(this.getCumTransmitted() + msg.getNumTransmitted());
             getPeer().sendMessage(neighbour.getNetworkAddress(), msg);
         }
     }

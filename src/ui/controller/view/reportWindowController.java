@@ -1,9 +1,6 @@
-/**
- * 
- */
-package experiment.ui.controller.view;
+package ui.controller.view;
 
-import experiment.ui.controller.MainApplication;
+import ui.controller.MainApplication;
 //TODO
 import experiment.ExperimentGUI;
 import javafx.embed.swing.SwingFXUtils;

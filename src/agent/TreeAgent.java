@@ -24,8 +24,8 @@ import data.DataType;
 public abstract class TreeAgent<V extends DataType<V>> extends Agent<V> implements TreeApplicationInterface {
 
     // tree properties
-    Finger parent = null;
-    final List<Finger> children = new ArrayList<>();
+    Finger 					parent 			= 	null;
+    final List<Finger> 		children 		= 	new ArrayList<>();
 
     /**
      * Initializes the agent with the given combinatorial optimization problem
@@ -54,18 +54,34 @@ public abstract class TreeAgent<V extends DataType<V>> extends Agent<V> implemen
         super(possiblePlans, globalCostFunc, localCost, loggingProvider, seed);
     }
 
+    /**
+     * Root is the agent without parent and always has at least 1 child
+     * @return
+     */
     public boolean isRoot() {
         return parent == null && !children.isEmpty();
     }
 
+    /**
+     * Leaf is the agent that has a parent and has no children
+     * @return
+     */
     public boolean isLeaf() {
         return parent != null && children.isEmpty();
     }
-
+    
+    /**
+     * Inner node is the agent that has a parent and has at least 1 child
+     * @return
+     */
     public boolean isInnerNode() {
         return parent != null && !children.isEmpty();
     }
 
+    /**
+     * Node is considered disconnected iff it has no parent and has no children
+     * @return
+     */
     public boolean isDisconnected() {
         return parent == null && children.isEmpty();
     }
@@ -84,16 +100,27 @@ public abstract class TreeAgent<V extends DataType<V>> extends Agent<V> implemen
 
     @Override
     public void setTreeView(Finger parent, List<Finger> children) {
-        this.setParent(parent);
+    	this.setParent(parent);
         this.setChildren(children);
+        this.treeViewIsSet();
     }
+    
+    void treeViewIsSet() {  }
 
     public List<Finger> getChildren() {
         return children;
     }
 
     @Override
+    /**
+     * Agent is 'representative' iff it is root.
+     */
     public boolean isRepresentative() {
         return isRoot();
+    }
+    
+    @Override
+    public void reset() {
+    	super.reset();
     }
 }

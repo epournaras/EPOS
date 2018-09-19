@@ -67,11 +67,20 @@ public class Plan<V extends DataType<V>> implements HasValue<V>, Serializable, C
         return clone;
     }
 
+    /**
+     * ADDED BY @author jovan :
+     * score is NaN, and it is up to local cost function to
+     * decide how to handle this value.
+     * 
+     * @return
+     */
     public Plan<V> cloneNew() {
         Plan<V> clone = null;
         try {
             clone = (Plan<V>) clone();
             clone.value = value.cloneNew();
+            clone.score = Double.NaN;
+            clone.index = 0;
             return clone;
         } catch (CloneNotSupportedException ex) {
             Logger.getLogger(Plan.class.getName()).log(Level.SEVERE, null, ex);

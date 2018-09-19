@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+
 import protopeer.Finger;
 import protopeer.network.Message;
 import protopeer.time.Timer;
@@ -24,12 +26,14 @@ import data.DataType;
  * multiple iterations. Each iteration consists of a bottom-up phase followed by
  * a top-down phase.
  *
- * @author Peter
+ * @author Peter P. & Jovan N.
  * @param <V> the type of the data this agent should handle
  * @param <UP> the type of message for the bottom-up phase
  * @param <DOWN> the type of message for the top-down phase
  */
-public abstract class IterativeTreeAgent<V extends DataType<V>, UP extends IterativeTreeAgent.UpMessage, DOWN extends IterativeTreeAgent.DownMessage> extends TreeAgent<V> {
+public abstract class IterativeTreeAgent<V 		extends DataType<V>, 
+										 UP 	extends IterativeTreeAgent.UpMessage, 
+										 DOWN 	extends IterativeTreeAgent.DownMessage> extends TreeAgent<V> {
 
     int numAgents;
 
@@ -71,7 +75,6 @@ public abstract class IterativeTreeAgent<V extends DataType<V>, UP extends Itera
             Timer loadAgentTimer = getPeer().getClock().createNewTimer();
             loadAgentTimer.addTimerListener((Timer timer) -> {
                 runIteration();
-                runActiveState();
             });
             loadAgentTimer.schedule(Time.inMilliseconds(1000));
         } else {
@@ -89,19 +92,54 @@ public abstract class IterativeTreeAgent<V extends DataType<V>, UP extends Itera
 
     private void runIteration() {
         iteration++;
+        
+        if(this.isIterationAfterReorganization()) {
+        	this.reset();
+        }        
+    	
+        this.setNumComputed(0);
+        this.setNumTransmitted(0);
 
-        numTransmitted = 0;
-        numComputed = 0;
-
-        if (iteration < numIterations) {
-            initIteration();
-            if (isLeaf()) {
-                goUp();
-            }
+        if (this.conditionToStartNewIteration()) {
+            this.doIfConditionToStartNewIterationIsMet();
+        } else {
+        	this.doIfConditionToStartNewIterationIsNOTMet();
         }
+        
     }
+    
+    /**
+     * This condition should control how many iterations IEPOS runs for.
+     * It should prevent program to run indefinitely long.
+     * @return true if current iteration is exclusively lower than max allowed number of iterations
+     */
+    boolean conditionToStartNewIteration() {
+    	return this.iteration < this.numIterations;
+    }
+    
+    void doIfConditionToStartNewIterationIsMet() {
+//    	this.log(Level.FINER, "IterativeTreeAgent::doIfConditionToStartNewIterationIsMet()");
+    	this.initIteration();
+        if (this.isLeaf()) {
+            this.goUp();
+        }
+        this.runActiveState();
+    }
+    
+    void doIfConditionToStartNewIterationIsNOTMet() { }
 
     @Override
+    /**
+     * In case of <code>UP Message</code>:
+     * 	1. put message in the buffer
+     * 	2. invokes <code>this.goUp()</code> when <code>this.children.size() <= this.messageBuffer.size()</code>
+     *     Number of children is constant (for now), and <code>messageBuffer</code> is only growing. The moment it
+     *     reaches size of <code>children</code>, UP phase begins
+     * 
+     * In case of <code>DOWN Message</code>:
+     * 	1. invokes <code>this.goDown()</code>
+     * @param message
+     */
     public void handleIncomingMessage(Message message) {
         if (message instanceof UpMessage) {
             UP msg = (UP) message;
@@ -114,6 +152,17 @@ public abstract class IterativeTreeAgent<V extends DataType<V>, UP extends Itera
         }
     }
 
+    /**
+     * 1. Collect all messages received from children (and clear this.messageBuffer)
+     * 2. this.numAgents = SUM{c.numAgents | c is child of 'this'}
+     * 3. this.cumTransmitted = this.numTransmitted + MAX{c.cumTransmitted | c is child of 'this'}
+     * 4. this.cumComputed = MAX{c.cumComputed | c is child of 'this'}
+     * 5. actual UP message is created:
+     *    - aggregation
+     *    - selecting a plan
+     *    - aggregated response
+     * 6. counters are updated and message is sent to parent
+     */
     private void goUp() {
         List<UP> orderedMsgs = new ArrayList<>();
         for (Finger child : children) {
@@ -124,55 +173,75 @@ public abstract class IterativeTreeAgent<V extends DataType<V>, UP extends Itera
         if (iteration == 0) {
             numAgents = 1 + orderedMsgs.stream().map(msg -> msg.numAgents).reduce(0, (a, b) -> a + b);
         }
-        numTransmitted = orderedMsgs.stream().map(msg -> msg.getNumTransmitted()).reduce(0, (a, b) -> a + b);
-        numComputed = 0;
-        cumTransmitted = numTransmitted + orderedMsgs.stream().map(msg -> msg.cumTransmitted).reduce(0, (a, b) -> Math.max(a, b));
-        cumComputed = orderedMsgs.stream().map(msg -> msg.cumComputed).reduce(0, (a, b) -> Math.max(a, b));
-
-        cumComputed -= numComputed;
+        
+        this.setNumTransmitted(orderedMsgs.stream().map(msg -> msg.getNumTransmitted()).reduce(0, (a, b) -> a + b));
+        this.setNumComputed(0);
+        this.setCumTransmitted(this.getNumTransmitted() + orderedMsgs.stream().map(msg -> msg.cumTransmitted).reduce(0, (a, b) -> Math.max(a, b)));
+        this.setCumComputed(orderedMsgs.stream().map(msg -> msg.cumComputed).reduce(0, (a, b) -> Math.max(a, b)));
+        
+        this.setCumComputed(this.getCumComputed() - this.getNumComputed());
         UP msg = up(orderedMsgs);
-        cumComputed += numComputed;
-
+        this.setCumComputed(this.getCumComputed() + this.getNumComputed());
+        
         msg.child = getPeer().getFinger();
         if (isRoot()) {
             goDown(atRoot(msg));
         } else {
             msg.numAgents = numAgents;
-            msg.cumTransmitted = cumTransmitted;
-            msg.cumComputed = cumComputed;
-            numTransmitted += msg.getNumTransmitted();
-            cumTransmitted += msg.getNumTransmitted();
+            msg.cumTransmitted = this.getCumTransmitted();
+            msg.cumComputed = this.getCumComputed();
+            this.setNumTransmitted(this.getNumTransmitted() + msg.getNumTransmitted());
+            this.setCumTransmitted(this.getCumTransmitted() + msg.getNumTransmitted());
             getPeer().sendMessage(parent.getNetworkAddress(), msg);
         }
     }
 
+    /**
+     * 1. updates counters
+     * 2. - updates global response received from parent
+     *    - approve or reject children's selected plan. rules:
+     *         i) if parent's selected plan was not approved, then none of descendants of the parent cannot have their selected plans approved
+     *         ii) if parent's selected plan was approved, then preliminary approval becomes effective. In other words, selected plan of a child
+     *             will be approved iff parent's selected plan was approved and child's selected plan was preliminary approved during BOTTOM-UP phase
+     * @param parentMsg
+     */
     private void goDown(DOWN parentMsg) {
         if (!isRoot()) {
             numAgents = parentMsg.numAgents;
-            numTransmitted += parentMsg.getNumTransmitted();
-            cumTransmitted = parentMsg.getNumTransmitted() + parentMsg.cumTransmitted;
-            cumComputed = parentMsg.cumComputed;
+            this.setNumTransmitted(this.getNumTransmitted() + parentMsg.getNumTransmitted());
+            this.setCumTransmitted(parentMsg.getNumTransmitted() + parentMsg.cumTransmitted);
+            this.setCumComputed(parentMsg.cumComputed);
         }
 
-        cumComputed -= numComputed;
+        this.setCumComputed(this.getCumComputed() - this.getNumComputed());
         List<DOWN> msgs = down(parentMsg);
-        cumComputed += numComputed;
+        this.setCumComputed(this.getCumComputed() + this.getNumComputed());
 
         for (int i = 0; i < msgs.size(); i++) {
             DOWN msg = msgs.get(i);
             msg.numAgents = numAgents;
-            msg.cumTransmitted = cumTransmitted;
-            msg.cumComputed = cumComputed;
-            numTransmitted += msg.getNumTransmitted();
-            cumTransmitted += msg.getNumTransmitted();
+            msg.cumTransmitted = this.getCumTransmitted();
+            msg.cumComputed = this.getCumComputed();
+            this.setNumTransmitted(this.getNumTransmitted() + msg.getNumTransmitted());
+            this.setCumTransmitted(this.getCumTransmitted() + msg.getNumTransmitted());
+            
             getPeer().sendMessage(children.get(i).getNetworkAddress(), msg);
         }
+        
+        this.finalizeDownPhase(parentMsg);
     }
 
     abstract void initPhase();
 
     abstract void initIteration();
+    
+    abstract void finalizeDownPhase(DOWN parentMsg);
 
+    /**
+     * As side-effect, this method should update this.numComputed to value equal to size of possible plans!
+     * @param childMsgs - list of messages received from children
+     * @return UP message to be sent to the parent
+     */
     abstract UP up(List<UP> childMsgs);
 
     abstract DOWN atRoot(UP rootMsg);
@@ -196,5 +265,10 @@ public abstract class IterativeTreeAgent<V extends DataType<V>, UP extends Itera
         public int cumComputed;
 
         public abstract int getNumTransmitted();
+    }
+    
+    @Override
+    public void log(Level level, String message) {
+    	this.logger.log(level, "NODE: " + this.getPeer().getIndexNumber() + ", iter: " + this.iteration + ", " + message);
     }
 }

@@ -75,7 +75,7 @@ public class BestStepAgent<V extends DataType<V>> extends IterativeTreeAgent<V, 
             choices.addAll(possibleChanges);
 
             int selectedChoice = optimization.argmin(globalCostFunc, choices, globalResponse);
-            numComputed += choices.size();
+            this.setNumTransmitted(this.getNumTransmitted() + choices.size());
 
             V bestChange = choices.get(selectedChoice);
             NetworkAddress bestAgent;
@@ -147,4 +147,7 @@ public class BestStepAgent<V extends DataType<V>> extends IterativeTreeAgent<V, 
             return 1;
         }
     }
+
+	@Override
+	void finalizeDownPhase(Down<V> parentMsg) {	}
 }

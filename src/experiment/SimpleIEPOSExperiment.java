@@ -25,7 +25,7 @@ import java.util.function.Function;
  *
  * @author Peter
  */
-public class SimpleExperiment {
+public class SimpleIEPOSExperiment {
 
     public static void main(String[] args) {
         Random random = new Random(0);

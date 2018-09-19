@@ -41,9 +41,7 @@ public class EposAgent<V extends DataType<V>> extends IterativeTreeAgent<V, Epos
     }
 
     @Override
-    void initIteration() {
-
-    }
+    void initIteration() { }
 
     @Override
     EposUp<V> up(List<EposUp<V>> childMsgs) {
@@ -58,7 +56,7 @@ public class EposAgent<V extends DataType<V>> extends IterativeTreeAgent<V, Epos
             List<List<V>> childPlans = childMsgs.stream().sequential().map(msg -> msg.possiblePlans).collect(Collectors.toList());
             List<V> combinations = optimization.calcAllCombinations(childPlans);
             int selectedCombination = optimization.argmin(globalCostFunc, combinations, aggregatedResponse);
-            numComputed += combinations.size();
+            this.setNumComputed(this.getNumComputed() + combinations.size());
             childSelections = optimization.combinationToSelections(selectedCombination, childPlans);
 
             aggregatedResponse.add(combinations.get(selectedCombination));
@@ -69,7 +67,7 @@ public class EposAgent<V extends DataType<V>> extends IterativeTreeAgent<V, Epos
     @Override
     EposDown<V> atRoot(EposUp<V> rootMsg) {
         int selection = optimization.argmin(globalCostFunc, possibleValues, aggregatedResponse);
-        numComputed += possiblePlans.size();
+        this.setNumComputed(this.getNumComputed() + possiblePlans.size());
         selectedPlan = possiblePlans.get(selection);
 
         globalResponse = aggregatedResponse.cloneThis();
@@ -122,4 +120,7 @@ public class EposAgent<V extends DataType<V>> extends IterativeTreeAgent<V, Epos
         }
 
     }
+
+	@Override
+	void finalizeDownPhase(EposDown<V> parentMsg) {	}
 }

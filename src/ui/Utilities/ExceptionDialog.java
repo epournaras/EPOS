@@ -1,4 +1,4 @@
-package Utilities;
+package ui.Utilities;
 
 
 import java.io.PrintWriter;

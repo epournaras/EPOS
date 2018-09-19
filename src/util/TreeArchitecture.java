@@ -33,15 +33,23 @@ import tree.centralized.client.TreeClient;
 import tree.centralized.server.TreeServer;
 
 /**
- *
+ * Defines tree architecture and assignment of agents to vertices of the tree-graph.
+ *  - RANK PRIORITY: defines ascending or descending order
+ *  - DESCRIPTOR TYPE: can be RANK or NODE DEGREE
+ *  - TREE TYPE: with respect to rank of nodes, agents can be RANDOMly assigned to vertices in the tree or SORTED:
+ *               SORTED_HtL -> from HIGH to LOW
+ *               SORTED_LtH -> from LOW to HIGH
+ *  - BALANCE TYPE: can be either WEIGHT_BALANCED or LIST
  * @author Peter
  */
 public class TreeArchitecture implements Cloneable {
-    public RankPriority priority = RankPriority.HIGH_RANK;
-    public DescriptorType rank = DescriptorType.RANK;
-    public TreeType type = TreeType.SORTED_HtL;
-    public BalanceType balance = BalanceType.WEIGHT_BALANCED;
-    public int maxChildren = 2;
+	
+    public RankPriority 	priority 	= 	RankPriority.HIGH_RANK;
+    public DescriptorType 	rank 		= 	DescriptorType.RANK;
+    public TreeType 		type 		= 	TreeType.SORTED_HtL;
+    public BalanceType 		balance 	= 	BalanceType.WEIGHT_BALANCED;
+    public int 				maxChildren = 	2;
+    
     public BiFunction<Integer, Agent, Double> rankGenerator = (idx, agent) -> (double) idx;
     
     public TreeArchitecture(int maxChildren) {
@@ -52,7 +60,11 @@ public class TreeArchitecture implements Cloneable {
         if (peerIndex == 0) {
             peer.addPeerlet(new TreeServer(numNodes, priority, rank, type, balance));
         }
-        peer.addPeerlet(new TreeClient(Experiment.getSingleton().getAddressToBindTo(0), new SimplePeerIdentifierGenerator(), rankGenerator.apply(peerIndex, agent), maxChildren+1));
+        peer.addPeerlet(new TreeClient(Experiment.getSingleton().getAddressToBindTo(0), 
+        		                       new SimplePeerIdentifierGenerator(), 
+        		                       rankGenerator.apply(peerIndex, agent), 
+        		                       maxChildren+1)
+        		        );        
         peer.addPeerlet(new TreeProvider());
         peer.addPeerlet(agent);
     }

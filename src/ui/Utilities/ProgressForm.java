@@ -1,5 +1,4 @@
-
-package Utilities;
+package ui.Utilities;
 
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;

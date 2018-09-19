@@ -1,13 +1,10 @@
-/**
- * 
- */
-package experiment.ui.controller;
+package ui.controller;
 
 import java.io.IOException;
 
 import experiment.ExperimentGUI;
-import experiment.ui.controller.view.configurationWindowController;
-import experiment.ui.controller.view.reportWindowController;
+import ui.controller.view.configurationWindowController;
+import ui.controller.view.reportWindowController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

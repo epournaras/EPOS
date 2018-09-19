@@ -1,7 +1,4 @@
-/**
- * 
- */
-package Utilities;
+package ui.Utilities;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;

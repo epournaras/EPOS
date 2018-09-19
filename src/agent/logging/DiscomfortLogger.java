@@ -25,7 +25,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.TreeMap;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,39 +34,53 @@ import protopeer.measurement.MeasurementLog;
 import data.DataType;
 
 /**
- * Writes the histogram of selected plan indices in the last iteration to
- * std-out
+ * 
+ * Instead of logging index of a plan, we will log it's discomfort score which
+ * is actually it's new local cost function.
+ * 
+ * Instead of histogram, discomfort score of selected plan at convergence is logged
+ * for each agent.
+ * 
+ * @author jovan
  *
- * @author Peter P. & Jovan N.
  */
-public class DistributionLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> {
+public class DiscomfortLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> {
 	
-	private String				filename = null;
+	private String 					filepath;
 	
-	public DistributionLogger(String filename) {
-		this.filename = filename;
-	}
-
-    @Override
-    public void init(Agent<V> agent) {
+	
+	/**
+     * Outputs the global response to the specified file.
+     *
+     * @param filename the output file
+     */
+    public DiscomfortLogger(String filename) {
+        this.filepath = filename;
     }
 
     @Override
+    public void init(Agent<V> agent) { }
+
+    @Override
+    /**
+     * Note that discomfort scores are logged only in last iteration!
+     */
     public void log(MeasurementLog log, int epoch, Agent<V> agent) {
         if (agent.getIteration() == agent.getNumIterations() - 1) {
-            int idx = agent.getPossiblePlans().indexOf(agent.getSelectedPlan());
-            log.log(epoch, new Token(idx), 1);
+//            int idx = agent.getPossiblePlans().indexOf(agent.getSelectedPlan());
+        	double localPlanCost = agent.getLocalCostFunction().calcCost(agent.getSelectedPlan());
+            log.log(epoch, new Token(localPlanCost, agent.getPeer().getIndexNumber()), 1);
         }
     }
-
+    
     @Override
-    public void print(MeasurementLog log) {
-    	String outcome = this.internalFetching(log);
+	public void print(MeasurementLog log) {
+		String outcome = this.extractScores(log);
     	
-        if (this.filename == null) {
+        if (this.filepath == null) {
             System.out.print(outcome);
         } else {
-            try (PrintWriter out = new PrintWriter(new BufferedWriter(new java.io.FileWriter(this.filename, false)))) {   
+            try (PrintWriter out = new PrintWriter(new BufferedWriter(new java.io.FileWriter(this.filepath, false)))) {   
                 out.append(outcome);
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(GlobalCostLogger.class.getName()).log(Level.SEVERE, null, ex);
@@ -73,41 +88,43 @@ public class DistributionLogger<V extends DataType<V>> extends AgentLogger<Agent
             	Logger.getLogger(GlobalCostLogger.class.getName()).log(Level.SEVERE, null, e);
             }
         }
-    }
+	}
     
-    private String internalFetching(MeasurementLog log) {
-    	TreeMap<Integer, Integer> hist = new TreeMap<>();
-        for (Object token : log.getTagsOfType(Token.class)) {
-            hist.put(((Token) token).idx, log.getAggregate(token).getNumValues());
-        }
-        
-        StringBuilder sb = new StringBuilder();
-        sb.append("0").append(",");
-        sb.append(hist.getOrDefault(0, 0));
-        sb.append(System.lineSeparator());
-        
-        for (int i = 1; i < Configuration.numPlans; i++) {
-        	sb.append(i).append(",");
-            sb.append(hist.getOrDefault(i, 0));
-            sb.append(System.lineSeparator());
-        }
-        
-        return sb.toString();
+    private String extractScores(MeasurementLog log) {
+    	Set<Object> entries = log.getTagsOfType(Token.class);
+		
+		Set<Object> sortedEntries = new TreeSet<>((x, y) -> Integer.compare(((DiscomfortLogger.Token) x).agent,
+																			((DiscomfortLogger.Token) y).agent));
+		sortedEntries.addAll(entries);
+    	
+		StringBuilder sb = new StringBuilder();
+		
+		sortedEntries.forEach(obj -> {
+			DiscomfortLogger.Token token = (DiscomfortLogger.Token) obj;
+			sb.append(token.score);
+			if(token.agent < Configuration.numAgents-1) {
+				sb.append(",");
+			}
+		});
+		
+		return sb.toString();
     }
 
     private class Token implements Serializable {
 
-        public int idx;						// represents id of selected plan
+    	public double score;
+    	public int agent;
 
-        public Token(int idx) {
-            this.idx = idx;
-        }
+        public Token(double score, int agentID) {
+            this.score = score;
+            this.agent = agentID;
+        }        
 
         @Override
         public int hashCode() {
-            int hash = 7;
-            hash = 61 * hash + this.idx;
-            return hash;
+            double hash = 7;
+            hash = 61 * hash + this.score + this.agent;
+            return (int) hash;
         }
 
         @Override
@@ -122,7 +139,7 @@ public class DistributionLogger<V extends DataType<V>> extends AgentLogger<Agent
                 return false;
             }
             final Token other = (Token) obj;
-            if (this.idx != other.idx) {
+            if (this.score != other.score) {
                 return false;
             }
             return true;

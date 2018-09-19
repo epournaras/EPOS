@@ -7,8 +7,12 @@ package agent.logging;
 
 import func.PlanCostFunction;
 import agent.Agent;
+import agent.logging.LocalCostLogger.Token;
+
+import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +24,9 @@ import data.DataType;
 
 /**
  * Logs the local cost for each agent after each iteration.
+ * Used only for single runs!
  *
- * @author Peter
+ * @author Peter P. & Jovan N.
  */
 public class LocalCostLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> {
 
@@ -75,24 +80,34 @@ public class LocalCostLogger<V extends DataType<V>> extends AgentLogger<Agent<V>
 
     @Override
     public void log(MeasurementLog log, int epoch, Agent<V> agent) {
+    	if(agent.getSelectedPlan() == null) {
+    		Logger.getLogger(LocalCostLogger.class.toString()).log(Level.SEVERE, 
+    				   "NODE: " + agent.getPeer().getIndexNumber() + 
+			           " iteration: " + agent.getIteration() +
+			           " SELECTED PLAN IS NULL");
+    	}
+    	
         double cost = costFunction.calcCost(agent.getSelectedPlan());
-        log.log(epoch, new Token(run, agent.getIteration()), cost);
+        log.log(epoch, new Token(this.run, agent.getIteration()), cost);
     }
 
     @Override
     public void print(MeasurementLog log) {
-        if (filename == null) {
-            internalPrint(log, System.out);
-        } else {
-            try (PrintStream out = new PrintStream("output-data/" + filename)) {
-                internalPrint(log, out);
-            } catch (FileNotFoundException ex) {
+    	String outcome = this.internalFetching(log);    	
+        if (filename == null) {            
+            System.out.print(outcome);
+        } else {																					
+            try (PrintWriter out = new PrintWriter(new BufferedWriter(new java.io.FileWriter(this.filename, true)))) {             	
+            	out.append(outcome);										//								^
+            } catch (FileNotFoundException ex) {							//								appends!
                 Logger.getLogger(LocalCostLogger.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            } catch (Exception e) {
+            	Logger.getLogger(LocalCostLogger.class.getName()).log(Level.SEVERE, null, e);
+			}
         }
     }
-
-    private void internalPrint(MeasurementLog log, PrintStream out) {
+    
+    private String internalFetching(MeasurementLog log) {
         int localCostEpoch = log.getMaxEpochNumber() + 1;
 
         List<Double> avg = new ArrayList<>();
@@ -102,12 +117,21 @@ public class LocalCostLogger<V extends DataType<V>> extends AgentLogger<Agent<V>
         if (test == null || test.getNumValues() < 1) {
             for (Object tokenObj : log.getTagsOfType(Token.class)) {
                 Token token = (Token) tokenObj;
+                
+                /*
+                 * Relogs costs in such way that same iteration from different runs is logged under the same set of tags:
+                 *  - max epoch + 1
+                 *  - name of the logger class
+                 *  - iteration number
+                 */
 
                 Aggregate aggregate = log.getAggregate(token);
                 log.log(localCostEpoch, LocalCostLogger.class.getName(), token.iter, aggregate.getAverage());
             }
         }
 
+        // iterates over iterations
+        // info from everybody is logged with same keys, so we can calculate average and standard deviation
         for (int i = 0; true; i++) {
             Aggregate aggregate = log.getAggregateByEpochNumber(localCostEpoch, LocalCostLogger.class.getName(), i);
             if (aggregate == null || aggregate.getNumValues() < 1) {
@@ -116,10 +140,18 @@ public class LocalCostLogger<V extends DataType<V>> extends AgentLogger<Agent<V>
             avg.add(aggregate.getAverage());
             std.add(aggregate.getStdDev());
         }
-
-        out.println("local cost:");
-        out.println("avg = " + avg);
-        out.println("std = " + std);
+        
+        return this.format(avg);
+    }
+    
+    private String format(List<Double> avgs) {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("LOCAL COST");
+    	for(Double e : avgs) {
+    		sb.append(System.lineSeparator() + e);
+    	}
+    	sb.append(System.lineSeparator());
+    	return sb.toString();    	
     }
 
     protected static class Token implements Serializable {

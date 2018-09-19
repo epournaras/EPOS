@@ -1,7 +1,4 @@
-/**
- * 
- */
-package experiment.ui.controller.view;
+package ui.controller.view;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -14,7 +11,6 @@ import java.util.Random;
 import Utilities.ExceptionDialog;
 import Utilities.ProgressForm;
 import Utilities.ConfirmBox;
-import experiment.ui.controller.MainApplication;
 //TODO:
 import experiment.ExperimentGUI;
 import javafx.beans.value.ChangeListener;
@@ -36,6 +32,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import jdk.nashorn.internal.runtime.regexp.joni.Warnings;
+import ui.controller.MainApplication;
 import javafx.stage.Stage;
 
 /**

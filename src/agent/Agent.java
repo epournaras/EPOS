@@ -12,6 +12,9 @@ import agent.logging.AgentLoggingProvider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import protopeer.BasePeerlet;
 import protopeer.measurement.MeasurementLog;
 import protopeer.time.Timer;
@@ -28,23 +31,31 @@ import data.DataType;
 public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
 
     // misc
-    final Random random = new Random();
+    final Random 							random 				= 		new Random();
 
     // logging
-    private final AgentLoggingProvider loggingProvider;
+    private final AgentLoggingProvider 		loggingProvider;
+    Logger 									logger 				= 		Logger.getLogger(Agent.class.getName());
+    
+    // timings
+    private final int						bootstrapPeriod		=	2000;	//ms
+    private final int						activeStatePeriod	=	1000;	//ms
 
     // combinatorial optimization variables
-    Plan<V> selectedPlan;
-    V globalResponse;
-    final List<Plan<V>> possiblePlans = new ArrayList<>();
-    final CostFunction<V> globalCostFunc;
-    final PlanCostFunction<V> localCostFunc;
+    Plan<V> 								selectedPlan;
+    int										selectedPlanID;
+    V 										globalResponse;
+    final List<Plan<V>> 					possiblePlans 		= 	new ArrayList<>();
+    final CostFunction<V> 					globalCostFunc;
+    final PlanCostFunction<V> 				localCostFunc;
 
     // logging stuff
-    int numTransmitted;
-    int numComputed;
-    int cumTransmitted;
-    int cumComputed;
+    private int 							numTransmitted;
+    private int 							numComputed;
+    private int 							cumTransmitted;
+    private int 							cumComputed;
+    
+    int										iterationAfterReorganization =	0;	// iteration at which reorganization was requested and executed
 
     /**
      * Initializes the agent with the given combinatorial optimization problem
@@ -57,9 +68,9 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
      */
     public Agent(List<Plan<V>> possiblePlans, CostFunction<V> globalCostFunc, PlanCostFunction<V> localCostFunc, AgentLoggingProvider<? extends Agent> loggingProvider) {
         this.possiblePlans.addAll(possiblePlans);
-        if(localCostFunc != null) {
-            this.possiblePlans.sort((plan1, plan2) -> (int)Math.signum(localCostFunc.calcCost(plan1) - localCostFunc.calcCost(plan2)));
-        }
+//        if(localCostFunc != null) {
+//            this.possiblePlans.sort((plan1, plan2) -> (int)Math.signum(localCostFunc.calcCost(plan1) - localCostFunc.calcCost(plan2)));
+//        }
         this.globalCostFunc = globalCostFunc;
         this.localCostFunc = localCostFunc;
         this.loggingProvider = loggingProvider;
@@ -101,6 +112,10 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
     public Plan getSelectedPlan() {
         return selectedPlan;
     }
+    
+    public int getSelectedPlanID() {
+    	return this.selectedPlanID;
+    }
 
     public V getGlobalResponse() {
         return globalResponse;
@@ -125,6 +140,14 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
     public int getNumIterations() {
         return 1;
     }
+    
+    /**
+     * Returns iterations at which reorganization was requested and executed.
+     * @return
+     */
+    public int getIterationAfterReorganization() {
+    	return this.iterationAfterReorganization;
+    }
 
     public boolean isRepresentative() {
         return getPeer().getIndexNumber() == 0;
@@ -133,17 +156,33 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
     public int getNumTransmitted() {
         return numTransmitted;
     }
+    
+    public void setNumTransmitted(int val) {
+    	this.numTransmitted = val;
+    }
 
     public int getNumComputed() {
         return numComputed;
+    }
+    
+    public void setNumComputed(int val) {
+    	this.numComputed = val;
     }
 
     public int getCumTransmitted() {
         return cumTransmitted;
     }
+    
+    public void setCumTransmitted(int val) {
+    	this.cumTransmitted = val;
+    }
 
     public int getCumComputed() {
         return cumComputed;
+    }
+    
+    public void setCumComputed(int val) {
+    	this.cumComputed = val;
     }
 
     private void runBootstrap() {
@@ -153,7 +192,7 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
                 runActiveState();
             }
         });
-        loadAgentTimer.schedule(Time.inMilliseconds(2000));
+        loadAgentTimer.schedule(Time.inMilliseconds(this.bootstrapPeriod));
     }
 
     void runActiveState() {
@@ -161,13 +200,14 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
         loadAgentTimer.addTimerListener((Timer timer) -> {
             initPhase();
             runPhase();
-            runActiveState();
         });
-        loadAgentTimer.schedule(Time.inMilliseconds(1000));
+        loadAgentTimer.schedule(Time.inMilliseconds(this.activeStatePeriod));
     }
 
     private void initPhase() {
         loggingProvider.init(this);
+        
+        this.log(Level.FINER, "initPhase()");
 
         numTransmitted = 0;
         numComputed = 0;
@@ -181,5 +221,27 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
         getPeer().getMeasurementLogger().addMeasurementLoggerListener((MeasurementLog log, int epochNumber) -> {
             loggingProvider.log(log, epochNumber, this);
         });
+    }
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //																									BY JOVAN: //
+    
+    public void reset() {
+    	this.numTransmitted 	= 	0;
+        this.numComputed 		= 	0;
+        this.cumTransmitted		= 	0;
+        this.cumComputed 		= 	0;
+    }
+    
+    void log(Level level, String message) {
+    	this.logger.log(level, "NODE: " + this.getPeer().getIndexNumber() + message);
+    }
+    
+    public boolean isIterationAfterReorganization() {
+    	return this.getIteration() == 0;
+    }
+    
+    public int getNumReorganizations() {
+    	return 0;
     }
 }

@@ -18,6 +18,16 @@
 package agent.logging;
 
 import func.CostFunction;
+
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import agent.Agent;
 import protopeer.measurement.Aggregate;
 import protopeer.measurement.MeasurementLog;
@@ -27,19 +37,31 @@ import data.DataType;
  * Determines when the algorithm terminates. The termination is defined at the
  * last iteration that changes the global cost of the result.
  *
- * @author Peter
+ * @author Peter P. & Jovan N.
  */
 public class TerminationLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> {
 
-    private CostFunction<V> globalCostFunc;
-    private int index;
-    private V prevGlobalResponse;
+    private CostFunction<V> 		globalCostFunc;
+    private int 					index;
+    private V 						prevGlobalResponse;
+    private double 					prevGlobalCost;				// previous global cost
+    
+    private String 					filepath;					// path to file in which result should be written
+    private long 					id = System.currentTimeMillis();
 
     /**
      * Creates a TerminationLogger that detects termination based on the global
      * cost function.
      */
-    public TerminationLogger() {
+    public TerminationLogger() { }
+    
+    /**
+     * Creates a <code>TerminationLogger</code> that dumps result in
+     * file <code>filepath</code>
+     * @param filepath	path to file
+     */
+    public TerminationLogger(String filepath) {
+    	this(filepath, null);
     }
 
     /**
@@ -49,7 +71,12 @@ public class TerminationLogger<V extends DataType<V>> extends AgentLogger<Agent<
      * @param globalCostFunc
      */
     public TerminationLogger(CostFunction<V> globalCostFunc) {
-        this.globalCostFunc = globalCostFunc;
+    	this(null, globalCostFunc);
+    }
+    
+    public TerminationLogger(String filepath, CostFunction<V> globalCostFunc) {
+    	this.globalCostFunc = globalCostFunc;
+    	this.filepath = filepath;
     }
 
     @Override
@@ -60,34 +87,77 @@ public class TerminationLogger<V extends DataType<V>> extends AgentLogger<Agent<
     }
 
     @Override
-    public void log(MeasurementLog log, int epoch, Agent<V> agent) {
+    public void log(MeasurementLog log, int epoch, Agent<V> agent) {    	
         if (agent.isRepresentative()) {
-            if (agent.getIteration() == 0) {
-                index = agent.getIteration() + 1;
-                prevGlobalResponse = agent.getGlobalResponse();
+        	
+        	V glresp = agent.getGlobalResponse();        	
+        	
+            if (agent.isIterationAfterReorganization()) {
+                this.index = agent.getIteration() + 1;
+                this.prevGlobalCost = this.globalCostFunc.calcCost(glresp);
             } else {
-                double globalCost = globalCostFunc.calcCost(agent.getGlobalResponse());
-                double prevGlobalCost = globalCostFunc.calcCost(prevGlobalResponse);
-                if (globalCost < prevGlobalCost) {
+            	double globalCost = this.globalCostFunc.calcCost(glresp);
+        		
+                /*
+                 * Note that this expects globalCost to monotonically decrease
+                 */                
+                if (globalCost < this.prevGlobalCost) {
                     index = agent.getIteration() + 1;
-                    prevGlobalResponse = agent.getGlobalResponse();
+                    if(glresp != null) {
+                    	this.prevGlobalCost = globalCost;
+                    } else {
+                    }
                 }
             }
 
+            // only log when agent finishes iterating
             if (agent.getIteration() == agent.getNumIterations() - 1) {
-                log.log(epoch, TerminationLogger.class.getName(), index);
+                log.log(epoch, TerminationLogger.class.getName(), this.index);
             }
         }
     }
 
     @Override
-    public void print(MeasurementLog log) {
+    public void print(MeasurementLog log) {    	
+    	List<Double> avg = new ArrayList<Double>();
+    	
         for (Object t : log.getTagsOfType(String.class)) {
             if (t.equals(TerminationLogger.class.getName())) {
-                Aggregate a = log.getAggregate(t);
-                System.out.print("Termination after " + a.getAverage() + "+-" + a.getStdDev() + " iterations, " + a.getMin() + "/" + a.getMax());
+                Aggregate a = log.getAggregate(t);                
+                avg.add(a.getAverage());            
             }
         }
-        System.out.println();
+        
+        String outcome = this.format(avg);
+        
+        if(this.filepath == null) {
+        	System.out.print("Termination iteration is (run, iteration): "  + outcome);
+        } else {
+        	try (PrintWriter out = new PrintWriter(new BufferedWriter(new java.io.FileWriter(this.filepath, true)))) {
+                out.append(outcome);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(LocalCostLogger.class.getName()).log(Level.SEVERE, null, ex);
+            } catch(IOException e) {
+                Logger.getLogger(LocalCostLogger.class.getName()).log(Level.SEVERE, null, e);
+            }
+        }        
+    }
+    
+    private String format(List<Double> avgs) {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("TERMINAL ITERATION");
+    	for(Double e : avgs) {
+    		sb.append(System.lineSeparator() + e);
+    	}
+    	sb.append(System.lineSeparator());
+    	return sb.toString();    	
+    }
+    
+    private void printOut(int epoch, Agent agent, String message) {
+    	System.out.println("epoch: "		+	epoch	+ 
+    					   ", id: " 		+ this.id 	+ 
+    					   ", Node " 		+ agent.getPeer().getIndexNumber()	+
+    					   ", iteration: "	+ agent.getIteration()	+
+    					   message);
     }
 }
