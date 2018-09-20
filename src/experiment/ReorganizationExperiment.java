@@ -40,10 +40,10 @@ public class ReorganizationExperiment {
         TerminationLogger<Vector> 			TLogger 		= 	new TerminationLogger<Vector>(config.getTerminationPath());
         ReorganizationLogger<Vector> 		RLogger			=	new ReorganizationLogger<Vector>(config.getReorganizationPath());
         
-        GCLogger.setRun(Configuration.permutationOffset + Configuration.permutationID);
-        LCLogger.setRun(Configuration.permutationOffset + Configuration.permutationID);
-        TLogger.setRun(Configuration.permutationOffset + Configuration.permutationID);        
-        RLogger.setRun(Configuration.permutationOffset + Configuration.permutationID);
+        GCLogger.setRun(Configuration.permutationID);
+        LCLogger.setRun(Configuration.permutationID);
+        TLogger.setRun(Configuration.permutationID);        
+        RLogger.setRun(Configuration.permutationID);
         
         loggingProvider.add(GCLogger);
         loggingProvider.add(LCLogger);
@@ -105,22 +105,25 @@ public class ReorganizationExperiment {
 	public static void main(String[] args) {
 		
 		Configuration config 								= 	new Configuration();
-		Configuration.populateDatasets();
 		CommandLineArgumentReader.setConfiguration(config, args);
 		config.printConfiguration();	
     	
     	LoggingProvider<ModifiableIeposAgent<Vector>> loggingProvider = 	ReorganizationExperiment.generateLoggers(config);    
     	
-    	Map<Integer, Integer> mapping;
-    	if(!Configuration.shouldReadInitialPermutationFromFile()) {
-    		mapping = config.generateMapping.apply(config);
-    	} else {
-    		mapping = config.readMapping.apply(config);
-    	}
+//    	Map<Integer, Integer> mapping;
+//    	if(!Configuration.shouldReadInitialPermutationFromFile()) {
+//    		mapping = config.generateMapping.apply(config);
+//    	} else {
+//    		mapping = config.readMapping.apply(config);
+//    	}
 		
 		for(int sim = 0; sim < Configuration.numSimulations; sim++) {
 			
 			final int simulationId = Configuration.permutationID;
+			
+			if(Configuration.numSimulations > 1 && sim > 0) {
+				Configuration.mapping = config.generateMappingForRepetitiveExperiments.apply(config);
+			}
 	        
 			PlanSelector<MultiObjectiveIEPOSAgent<Vector>, Vector> planSelector = 
 					new MultiObjectiveIeposPlanSelector<Vector>();	        
@@ -131,7 +134,7 @@ public class ReorganizationExperiment {
 	         */
 	        Function<Integer, Agent> createAgent = agentIdx -> {
 	        	
-	            List<Plan<Vector>> possiblePlans 							= config.getDataset(Configuration.dataset).getPlans(mapping.get(agentIdx));
+	            List<Plan<Vector>> possiblePlans 							= config.getDataset(Configuration.dataset).getPlans(Configuration.mapping.get(agentIdx));
 	            AgentLoggingProvider<ModifiableIeposAgent<Vector>> agentLP 	= loggingProvider.getAgentLoggingProvider(agentIdx, simulationId);
 
 	            ModifiableIeposAgent<Vector> newAgent 						= new ModifiableIeposAgent<Vector>(config, possiblePlans, agentLP);

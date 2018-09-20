@@ -28,6 +28,8 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import config.Configuration;
+
 /**
  * This class represents a dataset that is stored in a folder. The folder should
  * contain files named <code>agent_x.plans</code> where <code>x</code> is the id
@@ -67,11 +69,14 @@ public class FileVectorDataset implements Dataset<Vector> {
         File file = new File(datasetDir + File.separator + "agent_" + agentId + ".plans");
         try (Scanner scanner = new Scanner(file)) {
             scanner.useLocale(Locale.US);
-            for (int i = 0; scanner.hasNextLine(); i++) {
+            for (int i = 0; scanner.hasNextLine() && plans.size() < Configuration.numPlans; i++) {
                 String line = scanner.nextLine();
-                Plan<Vector> plan = parsePlan(line);
+                Plan<Vector> plan = parsePlan(line);                
                 plan.setIndex(i);
                 plans.add(plan);
+            }
+            if(plans.size() != Configuration.numPlans) {
+            	System.out.println("Number of plans in file " + "agent_" + agentId + ".plans" + " is " + plans.size() + ", but expected number of plans is " + Configuration.numPlans );
             }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(FileVectorDataset.class.getName()).log(Level.SEVERE, null, ex);

@@ -14,7 +14,7 @@ import func.CostFunction;
 import treestructure.ModifiableTreeClient;
 import treestructure.ModifiableTreeProvider;
 import treestructure.reorganizationstrategies.ReorganizationConvergence;
-import treestructure.reorganizationstrategies.ReorganizationConvergenceShort;
+import treestructure.reorganizationstrategies.ReorganizationGlobalCostReduction;
 import treestructure.reorganizationstrategies.ReorganizationNever;
 import treestructure.reorganizationstrategies.ReorganizationPeriodically;
 import treestructure.reorganizationstrategies.ReorganizationPredefined;
@@ -74,8 +74,8 @@ public class ModifiableIeposAgent<V extends DataType<V>> extends MultiObjectiveI
 		case PREDEFINED:
 			this.strategy = new ReorganizationPredefined<V>(this);
 			break;
-		case CONVERGENCE_SHORT:
-			this.strategy = new ReorganizationConvergenceShort<V>(this);
+		case GLOBAL_COST_REDUCTION:
+			this.strategy = new ReorganizationGlobalCostReduction<V>(this);
 			break;
 		default:
 			this.strategy = new ReorganizationNever<V>(this);

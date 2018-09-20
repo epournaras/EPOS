@@ -94,7 +94,7 @@ public class WeightsLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> 
 	private String format(List<Double> avgAlpha, List<Double> avgBeta) {
 //		return this.formatOneList(avgAlpha) + this.formatOneList(avgBeta);
 		StringBuilder sb = new StringBuilder();
-    	sb.append(this.run).append(",").append(this.run).append(",").append(this.run).append(System.lineSeparator());
+    	sb.append("Unfairness weight").append(",").append("Local cost weight").append(",").append("Global cost weight").append(System.lineSeparator());
     	for(int i = 0; i < avgAlpha.size(); i++) {
     		sb.append(avgAlpha.get(i) + "," + avgBeta.get(i) + "," + (1-avgAlpha.get(i)-avgBeta.get(i))).append(System.lineSeparator());
     	}
@@ -102,14 +102,14 @@ public class WeightsLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> 
     	return sb.toString(); 
     }
 	
-	private String formatOneList(List<Double> avgs) {
-		StringBuilder sb = new StringBuilder();
-    	sb.append(this.run);
-    	for(Double e : avgs) {
-    		sb.append("," + e);
-    	}
-    	sb.append(System.lineSeparator());
-    	return sb.toString(); 
-	}
+//	private String formatOneList(List<Double> avgs) {
+//		StringBuilder sb = new StringBuilder();
+//    	sb.append(this.run);
+//    	for(Double e : avgs) {
+//    		sb.append("," + e);
+//    	}
+//    	sb.append(System.lineSeparator());
+//    	return sb.toString(); 
+//	}
 
 }

@@ -10,7 +10,15 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import func.SimilarityCostFunction;
+import agent.dataset.DatasetDescriptor;
+import data.Vector;
+import func.CrossCorrelationCostFunction;
+import func.DiscomfortPlanCostFunction;
+import func.IndexCostFunction;
+import func.PreferencePlanCostFunction;
+import func.RMSECostFunction;
+import func.RSSCostFunction;
+import func.VarCostFunction;
 import func.goalsignals.GoalSignalsCollection;
 import treestructure.reorganizationstrategies.ReorganizationPredefined;
 import treestructure.reorganizationstrategies.ReorganizationStrategy.ReorganizationStrategyType;
@@ -18,47 +26,52 @@ import treestructure.reorganizationstrategies.ReorganizationStrategy.Reorganizat
 /**
  * Reads, parses and sets parameters from command line into configuration object
  * 
- * @author jovan
+ * @author Jovan N.
  *
  */
 public class CommandLineArgumentReader {
+	
+	/*
+	 * -dataset gaussian -numSim 4 -numIterations 50 -alpha 0.2 -beta 0.3 -numAgents 888 -numPlans 33 -planDim 12 -numChildren 5
+	 * -shuffle 11 -reorganizationSeed 2 -shuffleFile "permutation.csv" -enableNEVERstrategy -goalSignalType 19 -setGlobalCostFunc XCORR
+	 * -setScaling MIN-MAX -setLocalCostFunc INDEX
+	 * -logLevel FINEST
+	 */
 	
 	private static Options generateOptions() {
 		Options opts = new Options();
 		
 		opts.addOption("h","show helptext");
 		
-		opts.addOption("dataset", true, "dataset name to be used");
-		opts.addOption("numSim", true, "number of simulations");
-		opts.addOption("iterations", true, "number of iterations");
+		opts.addOption("dataset",		true, "Dataset name to be used. This is the name of the directory located inside datasets/ directory thta contains all data.");
+		opts.addOption("numSim", 		true, "Number of simulations. Default is 1.");
+		opts.addOption("numIterations",	true, "Number of iterations. Default is 40.");
 		
-		opts.addOption("lambda", true, "lambda preference level");
-		opts.addOption("alpha", true, "weight of unfairness in plan selection process");
-		opts.addOption("beta", true, "weight of local cost in plan selection process");
-		opts.addOption("gamma", true, "weight of unfairness in preliminary subtree choices");
-		opts.addOption("delta", true, "weight of local cost in preliminary subtree choices");		
+		opts.addOption("lambda", 		true, "Lambda preference level. Lambda > 0. Used only for old I-EPOS. Default is 0.");
+		opts.addOption("alpha", 		true, "Weight of unfairness in multi-objective function. 0<= Alpha <= 1. Default is 0.");
+		opts.addOption("beta", 			true, "Weight of local cost in multi-objective function. 0<= Beta <= 1. Default is 0.");	
 		
-		opts.addOption("numAgents", true, "number of participating agents");
-		opts.addOption("numPlans", true, "number of possible plans per agent");
-		opts.addOption("planDim", true, "dimension of every possible plan of every agent");
-		opts.addOption("nodeDegree", true, "number of children of each inner node");
+		opts.addOption("numAgents", 	true, "Number of participating agents. Default is 100.");
+		opts.addOption("numPlans", 		true, "The maximum number of possible plans per agent. Lower than this is possible. If more exist in the file, only first numPlan rows are read. Default is 16.");
+		opts.addOption("planDim", 		true, "Dimension of every possible plan of every agent. Must be equal across the agents and must correspond to the dataset.");
+		opts.addOption("numChildren", 	true, "Number of children of each inner node. Default is 2.");
+	
+		opts.addOption("shuffle", 				true, "The number of the shuffles to make before assigning agents to the tree hierarchy. Default is 0.");
+		opts.addOption("reorganizationSeed", 	true, "The seed to be used in Random generator the shuffling is based on. Default is 0.");
+		opts.addOption("shuffleFile", 			true, "The path to a file containing already shuffled agents in one column, no header. Default is null.");
 		
-		opts.addOption("permOffset", true, "structure permutation offset");
-		opts.addOption("permID", true, "structure permutation id");
+		opts.addOption("enableNEVERstrategy", 				false,	"Enabling reorganization strategy NEVER. Works only for ModifiableIEPOSAgent. This is default.");
+		opts.addOption("enablePERIODICALLYstrategy", 		true, 	"Enabling reorganization strategy PERIODICALLY with indicated period. Default period is 3, but default strategy is to NEVER reorganize.");
+		opts.addOption("enableCONVERGENCEstrategy", 		true, 	"Enabling reorganization strategy ON_CONVERGENCE with indicated memorization offset. Default is 5, but default strategy is to NEVER reorganize.");
+		opts.addOption("enablePREDEFINEDstrategy", 			false, 	"Enabling starting IEPOS with predefined selected plans, but default strategy is to NEVER reorganize.");
+		opts.addOption("enableGLOBALCOSTREDUCTIONstrategy", true, 	"Enabling reorganization strategy based on GLOBAL_COST_REDUCTION strategy with indicated tolerance level. 0 <= Tolerane Level <= 1. Default is 0.5, but default strategy is to NEVER reorganize.");
 		
-		opts.addOption("reorganizationSeed", true, "seed to be used in Random generator the shuffling is based on");
+		opts.addOption("goalSignalType", 		true, 	"The reference signal, paired with RSS, XCORR or RMSE global cost function, otherwise ignored. Options are: either an integer from [1, 19] to use predetermined signals, or path to a file with the signal in one column. The length of the signal from the file must correspond planDim option.");
+		opts.addOption("setGlobalCostFunc", 	true, 	"The global cost function to be used. Options are (case-sensitive): VAR for variance function, XCORR for negative cross-correlation, RSS for residual sum of squares and RMSE for residual mean square error. Default is VAR. XCORR uses standard normalization by definition, RMSE has its own way of scaling and RSS uses standard normalization by default.");
+		opts.addOption("setScaling", 			true, 	"The scaling technique to be used with RSS function, ignored otherwise. Options are (case-sensitive): STD for standard normalization, MIN-MAX for min-max scaling and UNIT-lENGTH for unit-length scaling. Default is STD.");
+		opts.addOption("setLocalCostFunc", 		true, 	"The local cost function. Options are (case-sensitive): COST for cost plan score, PREF for preference plan score, which is converted to COST by 1 - PREF, INDEX for plan indicies to be used as costs. Default is COST.");
 		
-		opts.addOption("enableNEVERstrategy", false, "enabling reorganization strategy NEVER");
-		opts.addOption("enablePERIODICALLYstrategy", true, "enabling reorganization strategy PERIODICALLY with period");
-		opts.addOption("enableCONVERGENCEstrategy", true, "enabling reorganization strategy ON_CONVERGENCE with offset from reorganization to memorize selected plan");
-		opts.addOption("enablePREDEFINEDstrategy", false, "enabling starting IEPOS with predefined selected plans.");
-		opts.addOption("enableCONVERGENCESHORTstrategy", true, "enabling reorganization strategy based on CONVERGENCE_SHORT strategy with tolerance level in [0, 1]");
-		
-		opts.addOption("readInitialStructure", true, "initial structure is given as permutation ID number. Value >= 1 passed here says which row to read from a fixed file datasets/initial-tree-<dataset>.csv");
-		opts.addOption("sortingOrder", true, "ascending/asc/a or descending/desc/d, case INsensitive");
-		opts.addOption("goalSignalType", true, "Type of the goal signal, paired with Similarity Global Cost Function. Ignored if global cost function is not Similarity Cost Function.");
-		
-		opts.addOption("logLevel", true, "log level: SEVERE, ALL, INFO, WARNING, FINE, FINER, FINEST");
+		opts.addOption("logLevel", 				true, 	"The log level. Options are (case-sensitive): SEVERE, ALL, INFO, WARNING, FINE, FINER, FINEST");
 		
 		return opts;
 	}
@@ -92,48 +105,12 @@ public class CommandLineArgumentReader {
 			}			
 		}
 		
-		/*
-		 * -dataset energy -numSim 4 -iterations 50 -lambda 7 -numAgents 888 -numPlans 33 -planDim 12 -nodeDegree 5
-		 * -permOffset 11 -permID 22 -enableNEVERstrategy
-		 * -enablePERIODICALLYstrategy 44
-		 * -enableCONVERGENCEstrategy 55
-		 * -logLevel FINEST
-		 */
 		
-		if (argMap.get("dataset") != null) {
-			String dataset = (String) argMap.get("dataset");
-			for(int i = 0; i < Configuration.datasets.length; i++) {
-				if(Configuration.datasets[i].getDatasetName().equalsIgnoreCase(dataset)) {
-					Configuration.selectedDataset = Configuration.datasets[i];
-					Configuration.dataset = Configuration.selectedDataset.getDatasetName();
-					Configuration.numDimensions	= Configuration.selectedDataset.getDimensionality();
-					Configuration.numAgents = Configuration.selectedDataset.getTotalNumAgentsAvailable();
-					Configuration.numPlans = Configuration.selectedDataset.getNumPlansAvailable();
-					
-					break;
-				}
-			}
-		}
 		if (argMap.get("numSim") != null) {
 			Configuration.numSimulations = Integer.parseInt((String) argMap.get("numSim"));
 		}
-		if (argMap.get("iterations") != null) {
-			Configuration.numIterations = Integer.parseInt((String) argMap.get("iterations"));
-		}
-		if (argMap.get("lambda") != null) {
-			config.lambda = Double.parseDouble((String) argMap.get("lambda"));
-		}
-		if (argMap.get("alpha") != null) {
-			config.alpha = Double.parseDouble((String) argMap.get("alpha"));
-		}
-		if (argMap.get("beta") != null) {
-			config.beta = Double.parseDouble((String) argMap.get("beta"));
-		}
-		if (argMap.get("gamma") != null) {
-			config.gamma = Double.parseDouble((String) argMap.get("gamma"));
-		}
-		if (argMap.get("delta") != null) {
-			config.delta = Double.parseDouble((String) argMap.get("delta"));
+		if (argMap.get("numIterations") != null) {
+			Configuration.numIterations = Integer.parseInt((String) argMap.get("numIterations"));
 		}
 		if (argMap.get("numAgents") != null) {
 			Configuration.numAgents = Integer.parseInt((String) argMap.get("numAgents"));
@@ -144,16 +121,33 @@ public class CommandLineArgumentReader {
 		if (argMap.get("planDim") != null) {
 			Configuration.numDimensions = Integer.parseInt((String) argMap.get("planDim"));
 		}
-		if (argMap.get("nodeDegree") != null) {
-			Configuration.numChildren = Integer.parseInt((String) argMap.get("nodeDegree"));
+		if (argMap.get("dataset") != null) {
+			String dataset = (String) argMap.get("dataset");
+			Configuration.dataset = dataset;
+			Configuration.selectedDataset = new DatasetDescriptor(dataset, Configuration.numDimensions, Configuration.numAgents, Configuration.numPlans);
+		}		
+		if (argMap.get("lambda") != null) {
+			config.lambda = Double.parseDouble((String) argMap.get("lambda"));
 		}
-		if (argMap.get("permOffset") != null) {
-			Configuration.permutationOffset = Integer.parseInt((String) argMap.get("permOffset"));
+		if (argMap.get("alpha") != null) {
+			config.alpha = Double.parseDouble((String) argMap.get("alpha"));
 		}
-		if (argMap.get("permID") != null) {
-			Configuration.permutationID = Integer.parseInt((String) argMap.get("permID"));
+		if (argMap.get("beta") != null) {
+			config.beta = Double.parseDouble((String) argMap.get("beta"));
+		}		
+		if (argMap.get("numChildren") != null) {
+			Configuration.numChildren = Integer.parseInt((String) argMap.get("numChildren"));
 		}
-		
+		if(argMap.get("shuffleFile") != null) {
+			Configuration.permutationFile = (String) argMap.get("shuffleFile");
+			Configuration.mapping = config.readMapping.apply(config);
+		} else {
+			Configuration.mapping = config.generateDefaultMapping.apply(config);
+		}
+		if (argMap.get("shuffle") != null) {
+			Configuration.permutationID = Integer.parseInt((String) argMap.get("shuffle"));
+			Configuration.mapping = config.generateShuffledMapping.apply(config);
+		}		
 		if (argMap.get("enableNEVERstrategy") != null) {
 			config.reorganizationType = ReorganizationStrategyType.NEVER;
 		}
@@ -169,33 +163,10 @@ public class CommandLineArgumentReader {
 			config.reorganizationType = ReorganizationStrategyType.PREDEFINED;
 			ReorganizationPredefined.readPredefinedSelectedPlans(Configuration.selectedPlanFilename);
 		}
-		if (argMap.get("enableCONVERGENCESHORTstrategy") != null) {
-			config.reorganizationType = ReorganizationStrategyType.CONVERGENCE_SHORT;
-			config.convergenceTolerance = Double.parseDouble((String) argMap.get("enableCONVERGENCESHORTstrategy"));
-		}
-		if (argMap.get("readInitialStructure") != null) {
-			int row = Integer.parseInt((String) argMap.get("readInitialStructure"));
-			Configuration.chosenMetric = Configuration.tags[row-1];
-		}
-		if (argMap.get("sortingOrder") != null) {
-			String sortingOrder = (String) argMap.get("sortingOrder");
-			if (argMap.get("dataset") != null) {
-				Configuration.dataset = (String) argMap.get("dataset");
-			}
-			if(sortingOrder.equalsIgnoreCase("asc") ||
-			   sortingOrder.equalsIgnoreCase("ascending") ||
-			   sortingOrder.equalsIgnoreCase("a")) {
-				Configuration.initialSortingOrder = "ascending";	
-				Configuration.permutationFile = Configuration.initialStructureBaseFilename + Configuration.dataset +
-                        Configuration.initialStructureSuffix + Configuration.initialSortingOrder + ".csv";
-			} else if(sortingOrder.equalsIgnoreCase("desc") ||
-					  sortingOrder.equalsIgnoreCase("descending") ||
-					  sortingOrder.equalsIgnoreCase("d")) {
-						Configuration.initialSortingOrder = "descending";
-						Configuration.permutationFile = Configuration.initialStructureBaseFilename + Configuration.dataset +
-		                        Configuration.initialStructureSuffix + Configuration.initialSortingOrder + ".csv";
-			}
-		}
+		if (argMap.get("enableGLOBALCOSTREDUCTIONstrategy") != null) {
+			config.reorganizationType = ReorganizationStrategyType.GLOBAL_COST_REDUCTION;
+			config.convergenceTolerance = Double.parseDouble((String) argMap.get("enableGLOBALCOSTREDUCTIONstrategy"));
+		}		
 		if (argMap.get("reorganizationSeed") != null) {
 			config.reorganizationSeed = Long.parseLong((String) argMap.get("reorganizationSeed"));
 		}
@@ -259,6 +230,7 @@ public class CommandLineArgumentReader {
 					break;
 				case 19:
 					Configuration.goalSignalSupplier = GoalSignalsCollection.gaussian_mixture_impulse;
+					System.out.println("Chosen goal signal: " + 19);
 					break;
 				case 20:
 					Configuration.goalSignalSupplier = GoalSignalsCollection.frequencyGoal;
@@ -269,21 +241,63 @@ public class CommandLineArgumentReader {
 				}
 			} catch(NumberFormatException e) {
 				Configuration.goalSignalFilename = (String) argMap.get("goalSignalType");
-				if(Configuration.goalSignalFilename.startsWith("MON") || 
-				   Configuration.goalSignalFilename.startsWith("TUE") || 
-				   Configuration.goalSignalFilename.startsWith("WED") ||
-				   Configuration.goalSignalFilename.startsWith("THU") ||
-				   Configuration.goalSignalFilename.startsWith("FRI") ||
-				   Configuration.goalSignalFilename.startsWith("SAT") || 
-				   Configuration.goalSignalFilename.startsWith("SUN") ||
-				   Configuration.goalSignalFilename.startsWith("weekly")) {
-					Configuration.goalSignalSupplier = GoalSignalsCollection.fromOnelinerFile;
-				} else {
-					Configuration.goalSignalSupplier = GoalSignalsCollection.fromFile;
-				}				
+				Configuration.goalSignalSupplier = GoalSignalsCollection.fromFile;				
 			}			
 		}
-		
+		if(argMap.get("setScaling") != null) {
+			String func = (String) argMap.get("setScaling");
+			switch (func) {
+			case "STD":
+				Configuration.normalizer = Vector.standard_normalization;
+				break;
+			case "MIN-MAX":
+				Configuration.normalizer = Vector.min_max_normalization;
+				break;
+			case "UNIT-LENGTH":
+				Configuration.normalizer = Vector.unit_length_normalization;
+				break;
+			default:
+				break;
+			}
+		}
+		if(argMap.get("setGlobalCostFunc") != null) {
+			String func = (String) argMap.get("setGlobalCostFunc");
+			switch (func) {
+			case "VAR":
+				Configuration.globalCostFunc = new VarCostFunction();
+				break;
+			case "RSS":
+				Configuration.globalCostFunc = new RSSCostFunction();
+				RSSCostFunction.populateGoalSignal();
+				break;
+			case "RMSE":
+				Configuration.globalCostFunc = new RMSECostFunction();
+				RMSECostFunction.populateGoalSignal();
+				break;
+			case "XCORR":
+				Configuration.globalCostFunc = new CrossCorrelationCostFunction();
+				CrossCorrelationCostFunction.populateGoalSignal();
+				break;
+			default:
+				break;
+			}
+		}
+		if(argMap.get("setLocalCostFunc") != null) {
+			String func = (String) argMap.get("setLocalCostFunc");
+			switch (func) {
+			case "COST":
+				Configuration.localCostFunc = new DiscomfortPlanCostFunction();
+				break;
+			case "PREF":
+				Configuration.localCostFunc = new PreferencePlanCostFunction();
+				break;
+			case "INDEX":
+				Configuration.localCostFunc = new IndexCostFunction();
+				break;
+			default:
+				break;
+			}
+		}				
 		if (argMap.get("logLevel") != null) {
 			String level = (String) argMap.get("logLevel");
 			switch(level) {
@@ -316,3 +330,35 @@ public class CommandLineArgumentReader {
 	}
 
 }
+
+//for(int i = 0; i < Configuration.datasets.length; i++) {
+//	if(Configuration.datasets[i].getDatasetName().equalsIgnoreCase(dataset)) {
+//		Configuration.selectedDataset = Configuration.datasets[i];
+//		Configuration.dataset = Configuration.selectedDataset.getDatasetName();
+//		Configuration.numDimensions	= Configuration.selectedDataset.getDimensionality();
+//		Configuration.numAgents = Configuration.selectedDataset.getTotalNumAgentsAvailable();
+//		Configuration.numPlans = Configuration.selectedDataset.getNumPlansAvailable();
+//		
+//		break;
+//	}
+//}
+//
+//if (argMap.get("sortingOrder") != null) {
+//	String sortingOrder = (String) argMap.get("sortingOrder");
+//	if (argMap.get("dataset") != null) {
+//		Configuration.dataset = (String) argMap.get("dataset");
+//	}
+//	if(sortingOrder.equalsIgnoreCase("asc") ||
+//	   sortingOrder.equalsIgnoreCase("ascending") ||
+//	   sortingOrder.equalsIgnoreCase("a")) {
+//		Configuration.initialSortingOrder = "ascending";	
+//		Configuration.permutationFile = Configuration.initialStructureBaseFilename + Configuration.dataset +
+//                Configuration.initialStructureSuffix + Configuration.initialSortingOrder + ".csv";
+//	} else if(sortingOrder.equalsIgnoreCase("desc") ||
+//			  sortingOrder.equalsIgnoreCase("descending") ||
+//			  sortingOrder.equalsIgnoreCase("d")) {
+//				Configuration.initialSortingOrder = "descending";
+//				Configuration.permutationFile = Configuration.initialStructureBaseFilename + Configuration.dataset +
+//                        Configuration.initialStructureSuffix + Configuration.initialSortingOrder + ".csv";
+//	}
+//}

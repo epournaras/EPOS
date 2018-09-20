@@ -66,8 +66,7 @@ public class GlobalResponseLogger extends AgentLogger<Agent<Vector>> {
     private static File defaultDstDir = new File(".");
     private Font font = new Font("Computer Modern", Font.PLAIN, 12);
 
-    public GlobalResponseLogger() {
-    }
+    public GlobalResponseLogger() { }
 
     public GlobalResponseLogger(String dir) {
         this.outputDir = "output-data/" + dir;
@@ -210,6 +209,7 @@ public class GlobalResponseLogger extends AgentLogger<Agent<Vector>> {
     private class Entry implements Serializable {
 
         public int iteration;
+        public int run;
         public Vector globalResponse;
         public Vector cumulatedResponse;
 
@@ -217,6 +217,7 @@ public class GlobalResponseLogger extends AgentLogger<Agent<Vector>> {
         public int hashCode() {
             int hash = 3;
             hash = 97 * hash + this.iteration;
+            hash = 97 * hash + this.run;
             return hash;
         }
 

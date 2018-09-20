@@ -14,7 +14,7 @@ public interface ReorganizationStrategy {
 		PERIODICALLY,
 		ON_CONVERGENCE,
 		PREDEFINED,
-		CONVERGENCE_SHORT,
+		GLOBAL_COST_REDUCTION,
 		NEVER
 	}
 	

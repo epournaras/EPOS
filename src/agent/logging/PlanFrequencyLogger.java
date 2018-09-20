@@ -119,13 +119,21 @@ public class PlanFrequencyLogger<V extends DataType<V>> extends AgentLogger<Agen
 		
 		sb.append(System.lineSeparator());
 		
+//		for(Integer key1: perRun.keySet()) {
+//			for(Integer plan: perRun.get(key1).keySet()) {
+//				System.out.println("Run = " + key1 + ", plan id = " + plan + ", size = " + perRun.get(key1).get(plan).size());
+//			}
+//		}
+		
 		for(int p = 0; p < Configuration.numPlans; p++) {
-			sb.append(perRun.get(0).get(p).get(0).idx)
+			int planID = p;
+			double score = perRun.get(0).containsKey(p) ? perRun.get(0).get(p).get(0).score : Double.NaN;
+			sb.append(planID)
 			  .append(",")
-			  .append(perRun.get(0).get(p).get(0).score);
+			  .append(score);
 			
 			for(int i = 0; i < sortedRuns.size(); i++) {
-				sb.append("," + perRun.get(i).get(p).size());
+				sb.append("," + (perRun.get(i).containsKey(p) ? perRun.get(i).get(p).size() : 0));
 			}
 			
 			sb.append(System.lineSeparator());

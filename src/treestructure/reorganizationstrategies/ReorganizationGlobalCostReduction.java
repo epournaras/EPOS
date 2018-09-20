@@ -21,7 +21,7 @@ import func.CostFunction;
  *
  * @param <V>
  */
-public class ReorganizationConvergenceShort<V extends DataType<V>> extends ReorganizationConvergence<V> {
+public class ReorganizationGlobalCostReduction<V extends DataType<V>> extends ReorganizationConvergence<V> {
 	
 	private static Random				random				=	new Random(Configuration.reorganizationOffsetSeed);
 	
@@ -29,7 +29,7 @@ public class ReorganizationConvergenceShort<V extends DataType<V>> extends Reorg
 	private CostFunction<V>				globalCostFunc;
 	
 
-	public ReorganizationConvergenceShort(ModifiableIeposAgent agent) {
+	public ReorganizationGlobalCostReduction(ModifiableIeposAgent agent) {
 		super(agent);
 		this.globalCostFunc = agent.getGlobalCostFunction();
 	}
@@ -43,7 +43,7 @@ public class ReorganizationConvergenceShort<V extends DataType<V>> extends Reorg
 			this.agent.forceReorganization();
 		}
 		//System.out.println("Global cost: " + globalCost + ", prev global cost: " + previousGlobalCost + ", % of change: " + (previousGlobalCost == 0 ? 0 : (previousGlobalCost-globalCost)/previousGlobalCost*100));
-		ReorganizationConvergenceShort.previousGlobalCost = globalCost;
+		ReorganizationGlobalCostReduction.previousGlobalCost = globalCost;
 	}
 	
 	@Override
@@ -81,10 +81,10 @@ public class ReorganizationConvergenceShort<V extends DataType<V>> extends Reorg
 	}
 	
 	private boolean globalCostProximity(double globalCost) {
-		if(ReorganizationConvergenceShort.previousGlobalCost == 0) {
+		if(ReorganizationGlobalCostReduction.previousGlobalCost == 0) {
 			return false;
 		}
-		double percentOfChange = Math.abs(ReorganizationConvergenceShort.previousGlobalCost - globalCost) / ReorganizationConvergenceShort.previousGlobalCost;
+		double percentOfChange = Math.abs(ReorganizationGlobalCostReduction.previousGlobalCost - globalCost) / ReorganizationGlobalCostReduction.previousGlobalCost;
 		return percentOfChange <= this.config.convergenceTolerance && percentOfChange > 0;
 	}
 	

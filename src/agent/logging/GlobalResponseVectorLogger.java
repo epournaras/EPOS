@@ -14,20 +14,19 @@ import config.Configuration;
 import data.DataType;
 import data.Vector;
 import func.PeriodicCostFunction;
-import func.SimilarityCostFunction;
+import func.RSSCostFunction;
 import protopeer.measurement.MeasurementLog;
 
 /**
+ * Dumps whole global response per run per iteration.
  * 
- * 
- * @author jovan
+ * @author Jovan N.
  *
  * @param <V>
  */
 public class GlobalResponseVectorLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> {
 	
-	private String 					filepath;
-	
+	private String 					filepath;	
 	
 	/**
      * Outputs the global response to the specified file.
@@ -45,10 +44,8 @@ public class GlobalResponseVectorLogger<V extends DataType<V>> extends AgentLogg
 	public void log(MeasurementLog log, int epoch, Agent<V> agent) {
 		if (agent.isRepresentative()) {
             V globalResponse = agent.getGlobalResponse();
-            Entry<V> e = new Entry<V>();
-            e.iteration = agent.getIteration();
-            e.globalResponse = globalResponse.cloneThis();
-            log.log(epoch, e, 0.0);
+            Entry<V> e = new Entry<V>(globalResponse.cloneThis(), agent.getIteration(), this.run);
+            log.log(epoch,GlobalResponseVectorLogger.class.getName(), e, 0.0);
         }		
 	}
 
@@ -72,34 +69,53 @@ public class GlobalResponseVectorLogger<V extends DataType<V>> extends AgentLogg
 	public String extractResponses(MeasurementLog log) {
 		Set<Object> entries = log.getTagsOfType(Entry.class);
 		
-		Set<Object> sortedEntries = new TreeSet<>((x, y) -> Integer.compare(((GlobalResponseVectorLogger.Entry) x).iteration,
-																			((GlobalResponseVectorLogger.Entry) y).iteration));
+		Set<Object> sortedEntries = new TreeSet<Object>();
 		sortedEntries.addAll(entries);
 		
 		StringBuilder sb = new StringBuilder();
-		if(Configuration.goalSignalSupplier != null) {
-			Vector globalSignal = Configuration.goalSignalSupplier.get();
-			sb.append("-1,").append(globalSignal.toString()).append(System.lineSeparator());
-		}
 		
-//		Vector globalSignal = Vector.convertWreal(
-//			Vector.inverseFourierTransform(
-//					Configuration.goalSignalSupplier.get().convert2complex()
-//			)
-//		);		
+		sb.append("Run")
+		  .append(",")
+		  .append("Iteration");
+		
+		Vector globalSignal = Configuration.goalSignalSupplier.get();
+		for(int i = 0; i < globalSignal.getNumDimensions(); i++) {
+			sb.append("," + "dim-" + i);
+		}
+		sb.append(System.lineSeparator());
+		
+		if(Configuration.goalSignalSupplier != null) {			
+			sb.append("-1")
+			  .append(",")
+			  .append("-1")
+			  .append(",")
+			  .append(globalSignal.toString()).append(System.lineSeparator());
+		}	
 		
 		sortedEntries.forEach(obj -> {
 			GlobalResponseVectorLogger.Entry entry = (GlobalResponseVectorLogger.Entry) obj;
-			sb.append(entry.iteration).append(",").append(entry.globalResponse.toString()).append(System.lineSeparator());
+			sb.append(entry.run)
+			  .append(",")
+			  .append(entry.iteration)
+			  .append(",")
+			  .append(entry.globalResponse.toString())
+			  .append(System.lineSeparator());
 		});
 		
 		return sb.toString();
 	}
 	
-	private class Entry<V> {
+	private class Entry<V> implements Comparable<Entry> {
 
         public int iteration;
+        public int run;
         public V globalResponse;
+        
+        public Entry(V globalresponse, int iteration, int run) {
+        	this.globalResponse = globalresponse;
+        	this.iteration = iteration;
+        	this.run = run;
+        }
 
         @Override
         public boolean equals(Object obj) {
@@ -118,6 +134,18 @@ public class GlobalResponseVectorLogger<V extends DataType<V>> extends AgentLogg
             }
             return true;
         }
+
+		@Override
+		public int compareTo(Entry other) {
+			if		(this.run > other.run)					return 1;
+			else if (this.run < other.run)					return -1;
+			
+			if		(this.iteration > other.iteration)		return 1;
+			else if (this.iteration < other.iteration)		return -1;
+			
+			return  0;
+		}
+		
     }
 
 }

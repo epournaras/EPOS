@@ -43,9 +43,9 @@ import protopeer.util.quantities.Time;
 import util.TreeArchitecture;
 
 /**
- * This class creates setup for all experiments related to Fairness
+ * This class describes multi-objective optimization with I-EPOS
  * 
- * @author jovan
+ * @author Jovan N.
  *
  */
 public class MultiObjectiveIEPOSExperiment {
@@ -58,30 +58,27 @@ public class MultiObjectiveIEPOSExperiment {
         TerminationLogger<Vector> 				TLogger 		= 	new TerminationLogger<Vector>(Configuration.getTerminationPath());
         SelectedPlanLogger<Vector> 				SPLogger		=	new SelectedPlanLogger<Vector>(Configuration.getSelectedPlansPath(), config.numAgents);
         GlobalResponseVectorLogger<Vector>  	GRVLogger		=	new GlobalResponseVectorLogger<Vector>(Configuration.getGlobalResponsePath());
-        DiscomfortLogger<Vector> 				DLogger			=	new DiscomfortLogger<Vector>(Configuration.getFairnessPath());
         PlanFrequencyLogger<Vector> 			DstLogger		=	new PlanFrequencyLogger<Vector>(Configuration.getDistributionPath());
         UnfairnessLogger<Vector> 				ULogger			=	new UnfairnessLogger<Vector>(Configuration.getUnfairnessPath());
         GlobalComplexCostLogger<Vector> 		GCXLogger		=	new GlobalComplexCostLogger<Vector>(Configuration.getGlobalComplexCostPath());
         WeightsLogger<Vector>					WLogger			=	new WeightsLogger<Vector>(Configuration.getWeightsPath());
         
         
-        GCLogger.setRun(Configuration.permutationOffset + Configuration.permutationID);
-        LCLogger.setRun(Configuration.permutationOffset + Configuration.permutationID);
-        TLogger.setRun(Configuration.permutationOffset + Configuration.permutationID);        
-        SPLogger.setRun(Configuration.permutationOffset + Configuration.permutationID);
-        GRVLogger.setRun(Configuration.permutationOffset + Configuration.permutationID);
-        DLogger.setRun(Configuration.permutationOffset + Configuration.permutationID);
-        DstLogger.setRun(Configuration.permutationOffset + Configuration.permutationID);
-        ULogger.setRun(Configuration.permutationOffset + Configuration.permutationID);
-        GCXLogger.setRun(Configuration.permutationOffset + Configuration.permutationID);
-        WLogger.setRun(Configuration.permutationOffset + Configuration.permutationID);
+        GCLogger.setRun(Configuration.permutationID);
+        LCLogger.setRun(Configuration.permutationID);
+        TLogger.setRun(Configuration.permutationID);        
+        SPLogger.setRun(Configuration.permutationID);
+        GRVLogger.setRun(Configuration.permutationID);
+        DstLogger.setRun(Configuration.permutationID);
+        ULogger.setRun(Configuration.permutationID);
+        GCXLogger.setRun(Configuration.permutationID);
+        WLogger.setRun(Configuration.permutationID);
         
         loggingProvider.add(GCLogger);
         loggingProvider.add(LCLogger);
         loggingProvider.add(TLogger);
         loggingProvider.add(SPLogger);
         loggingProvider.add(GRVLogger);
-        loggingProvider.add(DLogger);
         loggingProvider.add(DstLogger);
         loggingProvider.add(ULogger);
         loggingProvider.add(GCXLogger);
@@ -141,43 +138,37 @@ public class MultiObjectiveIEPOSExperiment {
         System.out.println("IEPOS Finished! It took: " + ((timeAfter-timeBefore)/1000) + " seconds.");
 	}
 	
+	private static Configuration generateConfiguration(String[] args) {
+		Configuration config = 	new Configuration();
+		CommandLineArgumentReader.setConfiguration(config, args);		
+		config.printConfiguration();
+		
+		return config;
+	}
+	
 	public static void main(String[] args) {
 		
-		Configuration config 								= 	new Configuration();
-		Configuration.populateDatasets();
-		CommandLineArgumentReader.setConfiguration(config, args);
-		
-		config.printConfiguration();
-    	
-    	LoggingProvider<MultiObjectiveIEPOSAgent<Vector>> loggingProvider = 	MultiObjectiveIEPOSExperiment.generateLoggers(config);    
-    	
-//    	Map<Integer, Integer> mapping;
-//    	if(!Configuration.shouldReadInitialPermutationFromFile()) {
-//    		mapping = config.generateMapping.apply(config);
-//    	} else {
-//    		mapping = config.readMapping.apply(config);
-//    	}
+		Configuration config = MultiObjectiveIEPOSExperiment.generateConfiguration(args);    	
+    	LoggingProvider<MultiObjectiveIEPOSAgent<Vector>> loggingProvider = 
+    								MultiObjectiveIEPOSExperiment.generateLoggers(config);
 		
 		for(int sim = 0; sim < Configuration.numSimulations; sim++) {
 			
 			System.out.println("Simultaion " + (sim+1));
 			
-			final int simulationId = sim;			
-			Configuration.permutationID = sim;
+			final int simulationId = sim;
 			config.permutationSeed = sim;
 			
 			for(AgentLogger al : loggingProvider.getLoggers()) {
 				al.setRun(sim);
 			}
 			
-			Map<Integer, Integer> mapping;
-	    	if(!Configuration.shouldReadInitialPermutationFromFile()) {
-	    		mapping = config.generateMappingForRepetitiveExperiments.apply(config);
-	    	} else {
-	    		mapping = config.readMapping.apply(config);
-	    	}
+			if(Configuration.numSimulations > 1 && sim > 0) {
+				Configuration.mapping = config.generateMappingForRepetitiveExperiments.apply(config);
+			}
 	        
-	        PlanSelector<MultiObjectiveIEPOSAgent<Vector>, Vector> planSelector = new MultiObjectiveIeposPlanSelector<Vector>();
+	        PlanSelector<MultiObjectiveIEPOSAgent<Vector>, Vector> planSelector = 
+	        									new MultiObjectiveIeposPlanSelector<Vector>();
 	        
 	        /**
 	         * Function that creates an Agent given the id of it's vertex in tree graph.
@@ -185,18 +176,16 @@ public class MultiObjectiveIEPOSExperiment {
 	         */
 	        Function<Integer, Agent> createAgent = agentIdx -> {
 	        	
-	            List<Plan<Vector>> possiblePlans 					= config.getDataset(Configuration.dataset).getPlans(mapping.get(agentIdx));
+	            List<Plan<Vector>> possiblePlans = config.getDataset(Configuration.dataset).getPlans(Configuration.mapping.get(agentIdx));
 
-	            AgentLoggingProvider<MultiObjectiveIEPOSAgent<Vector>> agentLP 	= loggingProvider.getAgentLoggingProvider(agentIdx, simulationId);
+	            AgentLoggingProvider<MultiObjectiveIEPOSAgent<Vector>> agentLP = loggingProvider.getAgentLoggingProvider(agentIdx, simulationId);
 
 	            MultiObjectiveIEPOSAgent<Vector> newAgent = new MultiObjectiveIEPOSAgent<Vector>(
 	            													 Configuration.numIterations,
 											                         possiblePlans,
 											                         config.globalCostFunc,
 											                         config.localCostFunc,
-											                         agentLP,
-											                         Configuration.localCostController,
-											                         Configuration.unfairnessController,											                         
+											                         agentLP,											                         
 											                         config.simulationSeed);
 	            
 	            newAgent.setUnfairnessWeight(config.alpha);
