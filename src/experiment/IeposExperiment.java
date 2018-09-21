@@ -40,7 +40,7 @@ import util.TreeArchitecture;
 public class IeposExperiment extends SimulatedExperiment {
     public static void runSimulation(int numChildren, int numIterations, int numAgents, Function<Integer, Agent> createAgent) {
         SimulatedExperiment experiment = new SimulatedExperiment() {};
-        TreeArchitecture architecture = new TreeArchitecture(numChildren);
+        TreeArchitecture architecture = new TreeArchitecture();
        
         SimulatedExperiment.initEnvironment();
         experiment.init();

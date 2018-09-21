@@ -195,7 +195,7 @@ public class ExperimentGUI extends SimulatedExperiment {
         ///////////
         // network
         ///////////
-        TreeArchitecture architecture = new TreeArchitecture(numChildren);
+        TreeArchitecture architecture = new TreeArchitecture();
 
         ////////////////////
         // Simulation setup

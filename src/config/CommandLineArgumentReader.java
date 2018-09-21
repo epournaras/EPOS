@@ -13,8 +13,8 @@ import org.apache.commons.cli.Options;
 import agent.dataset.DatasetDescriptor;
 import data.Vector;
 import func.CrossCorrelationCostFunction;
-import func.DiscomfortPlanCostFunction;
 import func.IndexCostFunction;
+import func.PlanScoreCostFunction;
 import func.PreferencePlanCostFunction;
 import func.RMSECostFunction;
 import func.RSSCostFunction;
@@ -43,7 +43,7 @@ public class CommandLineArgumentReader {
 		
 		opts.addOption("h","show helptext");
 		
-		opts.addOption("dataset",		true, "Dataset name to be used. This is the name of the directory located inside datasets/ directory thta contains all data.");
+		opts.addOption("dataset",		true, "Dataset name to be used. This is the name of the directory located inside datasets/ directory thta contains all data. No default value, must be set.");
 		opts.addOption("numSim", 		true, "Number of simulations. Default is 1.");
 		opts.addOption("numIterations",	true, "Number of iterations. Default is 40.");
 		
@@ -53,20 +53,20 @@ public class CommandLineArgumentReader {
 		
 		opts.addOption("numAgents", 	true, "Number of participating agents. Default is 100.");
 		opts.addOption("numPlans", 		true, "The maximum number of possible plans per agent. Lower than this is possible. If more exist in the file, only first numPlan rows are read. Default is 16.");
-		opts.addOption("planDim", 		true, "Dimension of every possible plan of every agent. Must be equal across the agents and must correspond to the dataset.");
+		opts.addOption("planDim", 		true, "Dimension of every possible plan of every agent. Must be equal across the agents and must correspond to the dataset. Default to -1 and must be set!");
 		opts.addOption("numChildren", 	true, "Number of children of each inner node. Default is 2.");
 	
 		opts.addOption("shuffle", 				true, "The number of the shuffles to make before assigning agents to the tree hierarchy. Default is 0.");
-		opts.addOption("reorganizationSeed", 	true, "The seed to be used in Random generator the shuffling is based on. Default is 0.");
 		opts.addOption("shuffleFile", 			true, "The path to a file containing already shuffled agents in one column, no header. Default is null.");
 		
+		opts.addOption("reorganizationSeed", 				true, "The seed to be used in Random generator the shuffling is based on. Default is 0.");
 		opts.addOption("enableNEVERstrategy", 				false,	"Enabling reorganization strategy NEVER. Works only for ModifiableIEPOSAgent. This is default.");
 		opts.addOption("enablePERIODICALLYstrategy", 		true, 	"Enabling reorganization strategy PERIODICALLY with indicated period. Default period is 3, but default strategy is to NEVER reorganize.");
 		opts.addOption("enableCONVERGENCEstrategy", 		true, 	"Enabling reorganization strategy ON_CONVERGENCE with indicated memorization offset. Default is 5, but default strategy is to NEVER reorganize.");
 		opts.addOption("enablePREDEFINEDstrategy", 			false, 	"Enabling starting IEPOS with predefined selected plans, but default strategy is to NEVER reorganize.");
 		opts.addOption("enableGLOBALCOSTREDUCTIONstrategy", true, 	"Enabling reorganization strategy based on GLOBAL_COST_REDUCTION strategy with indicated tolerance level. 0 <= Tolerane Level <= 1. Default is 0.5, but default strategy is to NEVER reorganize.");
 		
-		opts.addOption("goalSignalType", 		true, 	"The reference signal, paired with RSS, XCORR or RMSE global cost function, otherwise ignored. Options are: either an integer from [1, 19] to use predetermined signals, or path to a file with the signal in one column. The length of the signal from the file must correspond planDim option.");
+		opts.addOption("goalSignalType", 		true, 	"The reference signal, paired with RSS, XCORR or RMSE global cost function, otherwise ignored. Options are: either an integer from [1, 19] to use predetermined signals, or path to a file with the signal in one column. The length of the signal from the file must correspond planDim option. Default is signal type 1.");
 		opts.addOption("setGlobalCostFunc", 	true, 	"The global cost function to be used. Options are (case-sensitive): VAR for variance function, XCORR for negative cross-correlation, RSS for residual sum of squares and RMSE for residual mean square error. Default is VAR. XCORR uses standard normalization by definition, RMSE has its own way of scaling and RSS uses standard normalization by default.");
 		opts.addOption("setScaling", 			true, 	"The scaling technique to be used with RSS function, ignored otherwise. Options are (case-sensitive): STD for standard normalization, MIN-MAX for min-max scaling and UNIT-lENGTH for unit-length scaling. Default is STD.");
 		opts.addOption("setLocalCostFunc", 		true, 	"The local cost function. Options are (case-sensitive): COST for cost plan score, PREF for preference plan score, which is converted to COST by 1 - PREF, INDEX for plan indicies to be used as costs. Default is COST.");
@@ -286,7 +286,7 @@ public class CommandLineArgumentReader {
 			String func = (String) argMap.get("setLocalCostFunc");
 			switch (func) {
 			case "COST":
-				Configuration.localCostFunc = new DiscomfortPlanCostFunction();
+				Configuration.localCostFunc = new PlanScoreCostFunction();
 				break;
 			case "PREF":
 				Configuration.localCostFunc = new PreferencePlanCostFunction();

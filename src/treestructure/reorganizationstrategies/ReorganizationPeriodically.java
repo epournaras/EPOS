@@ -9,7 +9,7 @@ import data.DataType;
 
 /**
  * 
- * @author jovan
+ * @author Jovan N.
  *
  * @param <V>
  */
@@ -17,6 +17,7 @@ public class ReorganizationPeriodically<V extends DataType<V>> implements Reorga
 	
 	private Configuration 				config;
 	private ModifiableIeposAgent 		agent;
+	static int							numReorganizations = 0;
 	
 	public ReorganizationPeriodically(ModifiableIeposAgent agent) {
 		this.agent = agent;
@@ -27,6 +28,7 @@ public class ReorganizationPeriodically<V extends DataType<V>> implements Reorga
 	public void iterationAtRootEndedCallback() {
 		if(this.agent.getIteration() != 0	&&
 		   this.agent.getIteration() % this.config.reorganizationPeriod == 0) {
+			ReorganizationPeriodically.numReorganizations++;
 			this.agent.forceReorganization();
 		}
 	}
@@ -57,5 +59,15 @@ public class ReorganizationPeriodically<V extends DataType<V>> implements Reorga
 
 	@Override
 	public void prepareForReorganization() { }
+
+	@Override
+	public int getNumReorganizations() {
+		return ReorganizationPeriodically.numReorganizations;
+	}
+
+	@Override
+	public void resetCounter() {
+		ReorganizationPeriodically.numReorganizations = 0;
+	}
 
 }

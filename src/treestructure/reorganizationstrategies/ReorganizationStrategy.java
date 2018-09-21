@@ -25,5 +25,9 @@ public interface ReorganizationStrategy {
 	public void screenshotAfterDOWNphase();
 	
 	public void prepareForReorganization();
+	
+	public int getNumReorganizations();
+	
+	public void resetCounter();
 
 }

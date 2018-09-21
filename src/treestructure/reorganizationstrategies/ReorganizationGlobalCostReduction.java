@@ -1,10 +1,8 @@
 package treestructure.reorganizationstrategies;
 
-import java.util.Random;
 import java.util.logging.Level;
 
 import agent.ModifiableIeposAgent;
-import config.Configuration;
 import data.DataType;
 import func.CostFunction;
 
@@ -17,13 +15,11 @@ import func.CostFunction;
  *  - relative change should be strictly greater than 0. This is to prevent from pointless reorganization that
  *    don't lead to any change.
  * 
- * @author jovan
+ * @author Jovan N.
  *
  * @param <V>
  */
 public class ReorganizationGlobalCostReduction<V extends DataType<V>> extends ReorganizationConvergence<V> {
-	
-	private static Random				random				=	new Random(Configuration.reorganizationOffsetSeed);
 	
 	private static double				previousGlobalCost	=	0;
 	private CostFunction<V>				globalCostFunc;

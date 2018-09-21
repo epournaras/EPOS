@@ -29,15 +29,21 @@ public class ReorganizationConvergence<V extends DataType<V>> implements Reorgan
 		this.config = this.agent.getConfiguration();		
 	}
 	
+	@Override
     public int getNumReorganizations() {
-    	return this.numReorganizations;
+    	return ReorganizationConvergence.numReorganizations;
     }
+    
+	@Override
+	public void resetCounter() {
+		ReorganizationConvergence.numReorganizations = 0;
+	}
 
 	@Override
 	public void iterationAtRootEndedCallback() {
 		DataType<V> globalResponse = this.agent.getGlobalResponse();
 		if(this.shouldReorganize(globalResponse)) {
-			this.numReorganizations++;
+			ReorganizationConvergence.numReorganizations++;
 			this.agent.forceReorganization();
 		}
 		this.previousGlobalResponse = globalResponse.cloneThis();

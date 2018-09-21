@@ -120,7 +120,7 @@ public class SimpleLiveExperiment extends LiveExperiment {
         Dataset<Vector> dataset = new GaussianDataset(p, d, 0, 1, new Random(random.nextLong()));
 
         // network
-        TreeArchitecture architecture = new TreeArchitecture(c);
+        TreeArchitecture architecture = new TreeArchitecture();
 
         PeerFactory peerFactory = new PeerFactory() {
 

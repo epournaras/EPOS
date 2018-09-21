@@ -120,12 +120,13 @@ public class ModifiableIeposAgent<V extends DataType<V>> extends MultiObjectiveI
 	
 	@Override
 	public int getNumReorganizations() {
-		if(this.strategy instanceof ReorganizationConvergence) {
-			ReorganizationConvergence<V> convStrategy = (ReorganizationConvergence<V>) this.strategy;
-			return convStrategy.getNumReorganizations();
-		} else {
-			return super.getNumReorganizations();
-		}
+//		if(this.strategy instanceof ReorganizationConvergence) {
+//			ReorganizationConvergence<V> convStrategy = (ReorganizationConvergence<V>) this.strategy;
+//			return convStrategy.getNumReorganizations();
+//		} else {
+//			return super.getNumReorganizations();
+//		}
+		return this.strategy.getNumReorganizations();
 	}
 	
 	@Override
@@ -171,6 +172,13 @@ public class ModifiableIeposAgent<V extends DataType<V>> extends MultiObjectiveI
 		boolean condition = old & newCond;
 		//this.log(Level.FINEST, "ModifiableIeposAgent:: condition for initializing iteration is: " + condition);
 		return condition;
+	}
+	
+	@Override
+	void initAtIteration0() {
+		if(this.isRoot()  && this.iteration == 0) {
+			this.strategy.resetCounter();
+		}		
 	}
 
 	void doIfConditionToStartNewIterationIsNOTMet() { }

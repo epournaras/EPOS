@@ -343,13 +343,15 @@ public class MultiObjectiveIEPOSAgent<V extends DataType<V>> extends IterativeTr
         	this.log(Level.FINER, "globalDiscomfortSumSqr: " + this.globalDiscomfortSumSqr);
             
         } else {
-        	
+        	this.initAtIteration0();
         }
     }
     
     boolean conditionForInitializingIteration() {
     	return this.iteration > 0;
     }
+    
+    void initAtIteration0() { }
 
     @Override
     UpMessage up(List<UpMessage> childMsgs) {
@@ -485,13 +487,13 @@ public class MultiObjectiveIEPOSAgent<V extends DataType<V>> extends IterativeTr
         } else {
         	if(!this.prevSubtreeDiscomfortSum.isEmpty()) {
         		
-        		if(this.getPeer().getIndexNumber() == 189) {
-        			System.out.println("NUMBER OF CHILDREN >>>-->>> : " + this.children.size());
-        			System.out.println("NUMBER OF CHILDREN >>>-->>> : " + this.prevSubtreeDiscomfortSum.size());
-        			System.out.println("NUMBER OF CHILDREN >>>-->>> : " + this.subtreeDiscomfortSum.size());
-        			System.out.println("NUMBER OF CHILDREN >>>-->>> : " + this.prevSubtreeResponses.size());
-        			System.out.println("NUMBER OF CHILDREN >>>-->>> : " + this.subtreeResponses.size());
-        		}
+//        		if(this.getPeer().getIndexNumber() == 189) {
+//        			System.out.println("NUMBER OF CHILDREN >>>-->>> : " + this.children.size());
+//        			System.out.println("NUMBER OF CHILDREN >>>-->>> : " + this.prevSubtreeDiscomfortSum.size());
+//        			System.out.println("NUMBER OF CHILDREN >>>-->>> : " + this.subtreeDiscomfortSum.size());
+//        			System.out.println("NUMBER OF CHILDREN >>>-->>> : " + this.prevSubtreeResponses.size());
+//        			System.out.println("NUMBER OF CHILDREN >>>-->>> : " + this.subtreeResponses.size());
+//        		}
         		
         		if(this.children.size() > 1) {
         			this.log(Level.FINER, "prevSubtreeDiscomfortSum: " + this.prevSubtreeDiscomfortSum.get(0) + ", " + this.prevSubtreeDiscomfortSum.get(1));

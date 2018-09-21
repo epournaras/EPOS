@@ -11,12 +11,19 @@ import agent.Agent;
 import agent.ModifiableIeposAgent;
 import agent.MultiObjectiveIEPOSAgent;
 import agent.PlanSelector;
+import agent.logging.AgentLogger;
 import agent.logging.AgentLoggingProvider;
+import agent.logging.GlobalComplexCostLogger;
 import agent.logging.GlobalCostLogger;
+import agent.logging.GlobalResponseVectorLogger;
 import agent.logging.LocalCostMultiObjectiveLogger;
 import agent.logging.LoggingProvider;
+import agent.logging.PlanFrequencyLogger;
 import agent.logging.ReorganizationLogger;
+import agent.logging.SelectedPlanLogger;
 import agent.logging.TerminationLogger;
+import agent.logging.UnfairnessLogger;
+import agent.logging.WeightsLogger;
 import agent.logging.instrumentation.CustomFormatter;
 import agent.planselection.MultiObjectiveIeposPlanSelector;
 import config.CommandLineArgumentReader;
@@ -30,38 +37,62 @@ import protopeer.SimulatedExperiment;
 import protopeer.util.quantities.Time;
 import treestructure.ModifiableTreeArchitecture;
 
+/**
+ * 
+ * 
+ * @author Jovan N.
+ *
+ */
 public class ReorganizationExperiment {
 	
 	private static LoggingProvider<ModifiableIeposAgent<Vector>> generateLoggers(Configuration config) {
 		
 		LoggingProvider<ModifiableIeposAgent<Vector>>	loggingProvider = 	new LoggingProvider<ModifiableIeposAgent<Vector>>();        
-        GlobalCostLogger<Vector> 			GCLogger 		= 	new GlobalCostLogger<Vector>(config.getGlobalCostPath());
-        LocalCostMultiObjectiveLogger<Vector> 			LCLogger  		= 	new LocalCostMultiObjectiveLogger<Vector>(config.getLocalCostPath());
-        TerminationLogger<Vector> 			TLogger 		= 	new TerminationLogger<Vector>(config.getTerminationPath());
-        ReorganizationLogger<Vector> 		RLogger			=	new ReorganizationLogger<Vector>(config.getReorganizationPath());
+		GlobalCostLogger<Vector> 				GCLogger 		= 	new GlobalCostLogger<Vector>(Configuration.getGlobalCostPath());
+        LocalCostMultiObjectiveLogger<Vector> 	LCLogger  		= 	new LocalCostMultiObjectiveLogger<Vector>(Configuration.getLocalCostPath());
+        TerminationLogger<Vector> 				TLogger 		= 	new TerminationLogger<Vector>(Configuration.getTerminationPath());
+        SelectedPlanLogger<Vector> 				SPLogger		=	new SelectedPlanLogger<Vector>(Configuration.getSelectedPlansPath(), config.numAgents);
+        GlobalResponseVectorLogger<Vector>  	GRVLogger		=	new GlobalResponseVectorLogger<Vector>(Configuration.getGlobalResponsePath());
+        PlanFrequencyLogger<Vector> 			DstLogger		=	new PlanFrequencyLogger<Vector>(Configuration.getDistributionPath());
+        UnfairnessLogger<Vector> 				ULogger			=	new UnfairnessLogger<Vector>(Configuration.getUnfairnessPath());
+        GlobalComplexCostLogger<Vector> 		GCXLogger		=	new GlobalComplexCostLogger<Vector>(Configuration.getGlobalComplexCostPath());
+        WeightsLogger<Vector>					WLogger			=	new WeightsLogger<Vector>(Configuration.getWeightsPath());
+        ReorganizationLogger<Vector> 			RLogger			=	new ReorganizationLogger<Vector>(config.getReorganizationPath());
         
         GCLogger.setRun(Configuration.permutationID);
         LCLogger.setRun(Configuration.permutationID);
         TLogger.setRun(Configuration.permutationID);        
+        SPLogger.setRun(Configuration.permutationID);
+        GRVLogger.setRun(Configuration.permutationID);
+        DstLogger.setRun(Configuration.permutationID);
+        ULogger.setRun(Configuration.permutationID);
+        GCXLogger.setRun(Configuration.permutationID);
+        WLogger.setRun(Configuration.permutationID);
         RLogger.setRun(Configuration.permutationID);
         
         loggingProvider.add(GCLogger);
         loggingProvider.add(LCLogger);
         loggingProvider.add(TLogger);
+        loggingProvider.add(SPLogger);
+        loggingProvider.add(GRVLogger);
+        loggingProvider.add(DstLogger);
+        loggingProvider.add(ULogger);
+        loggingProvider.add(GCXLogger);
         loggingProvider.add(RLogger);
+        loggingProvider.add(WLogger);
 		
         return loggingProvider;
 	}
 	
 	public static void runSimulation(int numChildren, 						// number of children for each middle node
-			 int numIterations, 					// total number of iterations to run for
-			 int numAgents, 						// total number of nodes in the network
-			 Function<Integer, Agent> createAgent,	// lambda expression that creates an agent
-			 Configuration config) 	
+									 int numIterations, 					// total number of iterations to run for
+									 int numAgents, 						// total number of nodes in the network
+									 Function<Integer, Agent> createAgent,	// lambda expression that creates an agent
+									 Configuration config) 	
 	{
 	
 		SimulatedExperiment 		experiment 		= 	new SimulatedExperiment() {};
-		ModifiableTreeArchitecture 	architecture 	= 	new ModifiableTreeArchitecture(numChildren, config);
+		ModifiableTreeArchitecture 	architecture 	= 	new ModifiableTreeArchitecture(config);
 		
 		SimulatedExperiment.initEnvironment();
 		experiment.init();
@@ -102,31 +133,37 @@ public class ReorganizationExperiment {
         System.out.println("IEPOS Finished! It took: " + ((timeAfter-timeBefore)/1000) + " seconds.");
 	}
 	
+	private static Configuration generateConfiguration(String[] args) {
+		Configuration config = 	new Configuration();
+		CommandLineArgumentReader.setConfiguration(config, args);		
+		config.printConfiguration();
+		
+		return config;
+	}
+	
 	public static void main(String[] args) {
 		
-		Configuration config 								= 	new Configuration();
-		CommandLineArgumentReader.setConfiguration(config, args);
-		config.printConfiguration();	
-    	
-    	LoggingProvider<ModifiableIeposAgent<Vector>> loggingProvider = 	ReorganizationExperiment.generateLoggers(config);    
-    	
-//    	Map<Integer, Integer> mapping;
-//    	if(!Configuration.shouldReadInitialPermutationFromFile()) {
-//    		mapping = config.generateMapping.apply(config);
-//    	} else {
-//    		mapping = config.readMapping.apply(config);
-//    	}
+		Configuration config = ReorganizationExperiment.generateConfiguration(args);    	
+    	LoggingProvider<ModifiableIeposAgent<Vector>> loggingProvider = 	
+    								ReorganizationExperiment.generateLoggers(config);
 		
 		for(int sim = 0; sim < Configuration.numSimulations; sim++) {
 			
-			final int simulationId = Configuration.permutationID;
+			System.out.println("Simultaion " + (sim+1));
+			
+			final int simulationId = sim;
+			config.permutationSeed = sim;
+			
+			for(AgentLogger al : loggingProvider.getLoggers()) {
+				al.setRun(sim);
+			}
 			
 			if(Configuration.numSimulations > 1 && sim > 0) {
 				Configuration.mapping = config.generateMappingForRepetitiveExperiments.apply(config);
 			}
 	        
 			PlanSelector<MultiObjectiveIEPOSAgent<Vector>, Vector> planSelector = 
-					new MultiObjectiveIeposPlanSelector<Vector>();	        
+												new MultiObjectiveIeposPlanSelector<Vector>();	        
 	        
 	        /**
 	         * Function that creates an Agent given the id of it's vertex in tree graph.

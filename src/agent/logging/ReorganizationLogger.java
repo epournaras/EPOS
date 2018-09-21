@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
 import agent.Agent;
+import config.Configuration;
 import data.DataType;
 import protopeer.measurement.Aggregate;
 import protopeer.measurement.MeasurementLog;
@@ -19,7 +20,7 @@ import protopeer.measurement.MeasurementLog;
 /**
  * 
  * 
- * @author jovan
+ * @author Jovan N.
  *
  * @param <V>
  */
@@ -39,9 +40,9 @@ public class ReorganizationLogger<V extends DataType<V>> extends AgentLogger<Age
 	public void log(MeasurementLog log, int epoch, Agent<V> agent) {
 		if(agent.isRepresentative()) {
 			log.log(epoch, 
-					ReorganizationLogger.class.getName(), 			// tag1
-					
-					agent.getIteration(), 							// tag3
+					ReorganizationLogger.class.getName(), 			// tag1		
+					"run-" + this.run,								// tag2
+					"iteration-" + agent.getIteration(), 			// tag3
 					agent.getNumReorganizations());					// value
 		} else {
 			
@@ -66,11 +67,21 @@ public class ReorganizationLogger<V extends DataType<V>> extends AgentLogger<Age
 	}
 	
 	private String internalFetching(MeasurementLog log) {
+		HashMap<Integer, List<Double>> perRun = new HashMap<Integer, List<Double>>();
+		
+		for(int r = 0; r < Configuration.numSimulations; r++) {
+			perRun.put(r, this.internalFetchingperRun(log, r));
+		}
+		
+		return this.format(perRun);
+	}
+	
+	private List<Double> internalFetchingperRun(MeasurementLog log, int run) {
 		List<Double>	reorganizationsVsiterations = new ArrayList<Double>();
 		
 		int i = 0;
 		while(true) {
-			Aggregate aggregate = log.getAggregate(ReorganizationLogger.class.getName(), i);
+			Aggregate aggregate = log.getAggregate(ReorganizationLogger.class.getName(), "run-" + run, "iteration-" + i);
 			if (aggregate == null || aggregate.getNumValues() < 1) {
                 break;
             }
@@ -80,21 +91,29 @@ public class ReorganizationLogger<V extends DataType<V>> extends AgentLogger<Age
 		Logger.getLogger(SelectedPlanLogger.class.getName()).log(Level.INFO, 
         		" Number of samples: " + i);
 		
-		return this.format(reorganizationsVsiterations);
+		return reorganizationsVsiterations;
 	}
 	
 	
-	private String format(List<Double> thelist) {
+	private String format(HashMap<Integer, List<Double>> themap) {
 		StringBuilder sb = new StringBuilder();
-		int numIterations = thelist.size();
+		sb.append("Iteration");
 		
-		IntStream.range(0,  numIterations).forEach(i -> {
-			sb.append(thelist.get(i).intValue());
-			if(i < thelist.size()-1) {
-				sb.append(",");
-			}
-		});
+		for(int r = 0; r < Configuration.numSimulations; r++) {
+			sb.append(",")
+			  .append("Run-" + r);
+		}
+		
 		sb.append(System.lineSeparator());
+		
+		IntStream.range(0, themap.get(0).size()).forEach(i -> {
+			sb.append(i);
+			for(int r = 0; r < Configuration.numSimulations; r++) {
+				sb.append(",")
+				  .append(themap.get(r).get(i));
+			}
+			sb.append(System.lineSeparator());
+		});
 		
 		return sb.toString();
 	}

@@ -19,18 +19,21 @@ import util.TreeArchitecture;
 
 public class ModifiableTreeArchitecture implements Cloneable {
 	
-	public RankPriority 	priority 	= 	RankPriority.HIGH_RANK;
-    public DescriptorType 	rank 		= 	DescriptorType.RANK;
-    public TreeType 		type 		= 	TreeType.SORTED_LtH;			// LOW TO HIGH!
-    public BalanceType 		balance 	= 	BalanceType.WEIGHT_BALANCED;
-    public int 				maxChildren = 	2;
-    
-    public Configuration	config		=	null;
+	public RankPriority 	priority;
+    public DescriptorType 	rank;
+    public TreeType 		type;
+    public BalanceType 		balance;
+    public int 				maxChildren;
+    private Configuration	config;
     
     public BiFunction<Integer, Agent, Double> rankGenerator = (idx, agent) -> (double) idx;
     
-    public ModifiableTreeArchitecture(int maxChildren, Configuration config) {
-        this.maxChildren = maxChildren;
+    public ModifiableTreeArchitecture(Configuration config) {
+        this.maxChildren = Configuration.numChildren;
+        this.priority = Configuration.priority;
+        this.rank = Configuration.rank;
+        this.type = Configuration.type;
+        this.balance = Configuration.balance;
         this.config = config;
     }
     
@@ -42,7 +45,7 @@ public class ModifiableTreeArchitecture implements Cloneable {
             										 rank, 
             										 type, 
             										 balance,  
-            										 new Random(config.reorganizationSeed)));
+            										 new Random(this.config.reorganizationSeed)));
         }
         
         peer.addPeerlet(new ModifiableTreeClient(Experiment.getSingleton().getAddressToBindTo(0), 

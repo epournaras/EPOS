@@ -1,44 +1,34 @@
 package config;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
-import java.util.StringTokenizer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import agent.dataset.Dataset;
 import agent.dataset.DatasetDescriptor;
 import agent.dataset.DatasetShuffler;
 import agent.dataset.FileVectorDataset;
 import agent.dataset.GaussianDataset;
-import agent.multiobjectiveutils.ControllerCollection;
-import agent.multiobjectiveutils.LocalCostController;
-import agent.multiobjectiveutils.UnfairnessController;
 import agent.planselection.PlanSelectionOptimizationFunction;
 import agent.planselection.PlanSelectionOptimizationFunctionCollection;
 import data.Vector;
-import func.ConstrainedVarianceCostFunction;
-import func.ConstraintCostFunction;
+import dsutil.generic.RankPriority;
+import dsutil.protopeer.services.topology.trees.DescriptorType;
+import dsutil.protopeer.services.topology.trees.TreeType;
 import func.CrossCorrelationCostFunction;
 import func.DifferentiableCostFunction;
-import func.DiscomfortPlanCostFunction;
 import func.IndexCostFunction;
-import func.PeriodicCostFunction;
 import func.PlanCostFunction;
 import func.PreferencePlanCostFunction;
 import func.RMSECostFunction;
 import func.RSSCostFunction;
 import func.VarCostFunction;
 import func.goalsignals.GoalSignalsCollection;
+import tree.BalanceType;
 import treestructure.reorganizationstrategies.ReorganizationStrategy.ReorganizationStrategyType;
 
 
@@ -61,27 +51,32 @@ public class Configuration {
 	
 	public static DatasetDescriptor[]	datasets 			= 	null;
 	public static DatasetDescriptor 	selectedDataset		=	null;
-	public static String 				dataset				=	null; //selectedDataset.getDatasetName();
-	public static int					numDimensions		=	-1;   //selectedDataset.getDimensionality();
-	public static int					numAgents			=	-1;   //selectedDataset.getTotalNumAgentsAvailable(); //1000;
-	public static int					numPlans			=	-1;   //selectedDataset.getNumPlansAvailable(); //16;
+	public static String 				dataset				=	null; 
+	public static int					numDimensions		=	-1;   
+	public static int					numAgents			=	100;   
+	public static int					numPlans			=	16;
 	public static Map<Integer, Integer> mapping				=	null;
 	
-	public static int					numSimulations		=	3;
-	public static int					numIterations		=	40;	
-	public double						lambda				=	0;		
+	public static RankPriority 			priority			=	RankPriority.HIGH_RANK;
+	public static DescriptorType 		rank 				= 	DescriptorType.RANK;
+	public static TreeType		 		type 				= 	TreeType.SORTED_HtL;
+	public static BalanceType 			balance 			= 	BalanceType.WEIGHT_BALANCED;
+	
+	public static int					numSimulations		=	1;
+	public static int					numIterations		=	40;		
 	public static int					numChildren			=	2;	
 	
+	public static double				lambda				=	0;	
 	public double						alpha				=	0;
 	public double						beta				=	0;
 	
 	public static int					permutationID		=	0;
 	public static String 				permutationFile		=	null;
 	
-	public static DifferentiableCostFunction<Vector>	globalCostFunc				=	new VarCostFunction(); //new ConstraintCostFunction(); //new ConstrainedVarianceCostFunction(); //new SimilarityCostFunction(); // new VarCostFunction();
-	public static PlanCostFunction					localCostFunc				= 	new IndexCostFunction(); //new PreferencePlanCostFunction();
-	public static Supplier<Vector> 					goalSignalSupplier			=	null; //GoalSignalsCollection.constant_signal; //GoalSignalsCollection.fromOnelinerFile; // GoalSignalsCollection.lowerBound; //GoalSignalsCollection.gaussian_mixture_impulse;
-	public static UnaryOperator<Vector> 			normalizer					=	null; //Vector.no_normalization; //Vector.standard_normalization;
+	public static DifferentiableCostFunction<Vector>	globalCostFunc			=	new VarCostFunction();
+	public static PlanCostFunction					localCostFunc				= 	new IndexCostFunction();
+	public static Supplier<Vector> 					goalSignalSupplier			=	GoalSignalsCollection.sine_a100_o0; 
+	public static UnaryOperator<Vector> 			normalizer					=	Vector.standard_normalization;
 	public static PlanSelectionOptimizationFunction	planOptimizationFunction	=	PlanSelectionOptimizationFunctionCollection.complexFunction1;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,14 +85,13 @@ public class Configuration {
 	public long			permutationSeed 			=	0;
 	public long			simulationSeed				=	0;
 	public Random		simulationRNG				=	new Random(this.simulationSeed);
-	public static long	reorganizationOffsetSeed	=	0; // not used anywhere for now I think
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	// REGARDING REORGANIZATION:
 	public int							reorganizationPeriod	=	3;
-	public int							reorganizationOffset	=	2;
-	public ReorganizationStrategyType 	reorganizationType		=	ReorganizationStrategyType.PERIODICALLY;
-	public double						convergenceTolerance	=	0.1;
+	public int							reorganizationOffset	=	5;
+	public ReorganizationStrategyType 	reorganizationType		=	ReorganizationStrategyType.NEVER;
+	public double						convergenceTolerance	=	0.5;
 	
 	///////////////////////////////////////////////////////////////////////////////////////////////////
 	// LOGGING INSTRUMENTATION:

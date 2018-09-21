@@ -13,7 +13,6 @@ import agent.Agent;
 import config.Configuration;
 import data.DataType;
 import data.Vector;
-import func.PeriodicCostFunction;
 import func.RSSCostFunction;
 import protopeer.measurement.MeasurementLog;
 

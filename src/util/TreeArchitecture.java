@@ -22,6 +22,8 @@ import dsutil.protopeer.services.topology.trees.DescriptorType;
 import dsutil.protopeer.services.topology.trees.TreeProvider;
 import dsutil.protopeer.services.topology.trees.TreeType;
 import agent.Agent;
+import config.Configuration;
+
 import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,16 +46,20 @@ import tree.centralized.server.TreeServer;
  */
 public class TreeArchitecture implements Cloneable {
 	
-    public RankPriority 	priority 	= 	RankPriority.HIGH_RANK;
-    public DescriptorType 	rank 		= 	DescriptorType.RANK;
-    public TreeType 		type 		= 	TreeType.SORTED_HtL;
-    public BalanceType 		balance 	= 	BalanceType.WEIGHT_BALANCED;
-    public int 				maxChildren = 	2;
+    public RankPriority 	priority;
+    public DescriptorType 	rank;
+    public TreeType 		type;
+    public BalanceType 		balance;
+    public int 				maxChildren;
     
     public BiFunction<Integer, Agent, Double> rankGenerator = (idx, agent) -> (double) idx;
     
-    public TreeArchitecture(int maxChildren) {
-        this.maxChildren = maxChildren;
+    public TreeArchitecture() {
+        this.maxChildren = Configuration.numChildren;
+        this.priority = Configuration.priority;
+        this.rank = Configuration.rank;
+        this.type = Configuration.type;
+        this.balance = Configuration.balance;
     }
     
     public void addPeerlets(Peer peer, Agent agent, int peerIndex, int numNodes) {

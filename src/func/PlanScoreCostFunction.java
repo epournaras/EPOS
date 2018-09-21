@@ -11,17 +11,21 @@ import data.Plan;
 /**
  * Uses the score of a plan as it's cost value.
  *
- * @author Peter
+ * @author Peter P. & Jovan N.
  */
 public class PlanScoreCostFunction implements PlanCostFunction {
 
     @Override
     public double calcCost(Plan plan) {
-        return plan.getScore();
+    	if(Double.isNaN(plan.getScore())) {
+			return 0.0;
+		} else {
+			return plan.getScore();
+		}
     }
 
     @Override
     public String toString() {
-        return "score";
+        return "score as a cost plan cost function.";
     }
 }

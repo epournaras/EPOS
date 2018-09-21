@@ -34,7 +34,6 @@ public class WeightsLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> 
 	@Override
 	public void init(Agent<V> agent) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

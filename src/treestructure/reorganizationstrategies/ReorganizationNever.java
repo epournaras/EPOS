@@ -40,4 +40,12 @@ public class ReorganizationNever<V extends DataType<V>> implements Reorganizatio
 	@Override
 	public void prepareForReorganization() { }
 
+
+	@Override
+	public int getNumReorganizations() {
+		return 0;
+	}
+	@Override
+	public void resetCounter() { }
+
 }

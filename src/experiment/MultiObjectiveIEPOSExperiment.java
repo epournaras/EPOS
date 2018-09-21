@@ -95,7 +95,7 @@ public class MultiObjectiveIEPOSExperiment {
 	{
 	
 		SimulatedExperiment 		experiment 		= 	new SimulatedExperiment() {};
-		TreeArchitecture 			architecture 	= 	new TreeArchitecture(numChildren);
+		TreeArchitecture 			architecture 	= 	new TreeArchitecture();
 		
 		SimulatedExperiment.initEnvironment();
 		experiment.init();
