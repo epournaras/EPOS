@@ -34,8 +34,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import agent.Agent;
-//import agent.logging.LocalCostLogger.Token; //TODO ask Jovan
-import agent.logging.LocalCostMultiObjectiveLogger.Token;
+//import agent.logging.LocalCostLogger.Token; //TODO ask Jovan Use local token implementation
+//import agent.logging.LocalCostMultiObjectiveLogger.Token;
 
 import protopeer.measurement.Aggregate;
 import protopeer.measurement.MeasurementLog;
