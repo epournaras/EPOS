@@ -38,6 +38,7 @@ public class IeposAgent<V extends DataType<V>> extends IterativeTreeAgent<V, Iep
     Optimization 								optimization;
     double 										lambda; 					// parameter for lambda-PREF local cost minimization
     private PlanSelector<IeposAgent<V>, V> 		planSelector;
+    
 
     /**
      * Creates a new IeposAgent. Using the same RNG seed will result in the same

@@ -20,10 +20,10 @@ package func;
 import data.Vector;
 
 /**
- * The cost according to this cost function is the maximal value of the given
- * vector. This cost function can be used for peak reduction, for example.
- *
- * @author Peter
+ * The cost according to this cost function is the maximum value of the given
+ * vector. For example, this cost function can be used for peak reduction.
+ * 
+ * @author Peter, Thomas Asikis
  */
 public class MaxCostFunction extends CostFunction<Vector> {
 

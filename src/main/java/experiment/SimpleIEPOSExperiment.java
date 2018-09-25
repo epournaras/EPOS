@@ -31,9 +31,9 @@ public class SimpleIEPOSExperiment {
         // logging
         LoggingProvider<IeposAgent<Vector>> loggingProvider = new LoggingProvider<>();
         loggingProvider.add(new GlobalCostLogger());
-        loggingProvider.add(new LocalCostMultiObjectiveLogger());
+        //loggingProvider.add(new LocalCostMultiObjectiveLogger());
         loggingProvider.add(new TerminationLogger());
-        loggingProvider.add(new CostViewer());
+        //loggingProvider.add(new CostViewer());
         loggingProvider.add(new GraphLogger<>(GraphLogger.Type.Change));
 
         int numSimulations = 1;

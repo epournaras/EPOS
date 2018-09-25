@@ -21,15 +21,25 @@ import data.Plan;
 import data.DataType;
 
 /**
- * A function that assigns a cost value to any given data instance.
+ * The general abstraction of a cost function. This function is optimized during the EPOS runtime. 
+ * Often the objective is a minimization of a cost. Less often it is the maximizaiton
+ * of a gain. In case of maximization of (f), the optimization can be achieved by minimizng an
+ * opposite goal, such as (1-f).
  * 
- * @author Peter
+ * @author Peter, Thomas Asikis
  * @param <V> the type of the data this cost function should handle
  */
 public abstract class CostFunction<V extends DataType<V>> implements PlanCostFunction<V> {
-
+	
+	/***
+	 * Calculate cost is the function that 
+	 * @param value, an object that is used as the input of the objective function. 
+	 * The result of the objective function is a single digit real number that is 
+	 * used in the optimization
+	 * @return
+	 */
     public abstract double calcCost(V value);
-
+    
     @Override
     public final double calcCost(Plan<V> plan) {
         return calcCost(plan.getValue());

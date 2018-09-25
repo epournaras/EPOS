@@ -37,6 +37,7 @@ import util.TreeArchitecture;
  *
  * @author Peter
  */
+@Deprecated
 public class IeposExperiment extends SimulatedExperiment {
     public static void runSimulation(int numChildren, int numIterations, int numAgents, Function<Integer, Agent> createAgent) {
         SimulatedExperiment experiment = new SimulatedExperiment() {};

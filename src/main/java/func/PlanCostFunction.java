@@ -9,12 +9,19 @@ import data.Plan;
 import data.DataType;
 
 /**
- * A function that assigns a cost value to a given plan.
+ * A cost functionfunction that operates on a plan to calculate a scalar real value.
  * 
- * @author Peter
+ * @author Peter, Thomas Asikis
  * @param <V> the type of the data this cost function should handle
  */
 public interface PlanCostFunction<V extends DataType<V>> {
-
+	
+	/**
+	 * This method takes as an input any plan of type V and calculates the
+	 * real number that represents the cost of the plan. This function is used during
+	 * the minimization.
+	 * @param plan
+	 * @return
+	 */
     public double calcCost(Plan<V> plan);
 }

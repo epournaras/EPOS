@@ -8,15 +8,19 @@ package func;
 import data.Vector;
 
 /**
- * Computes the dot product of a cost vector and the given value.
+ * Computes the dot product of a cost vector and the given input vector in 
+ * a non thread safe way. This can be used when the objective includes the calculation of
+ * he dot product between vectors.
  * 
- * @author Peter
+ * @author Peter, Thomas Asikis
  */
 public class DotCostFunction extends DifferentiableCostFunction<Vector> {
     private Vector costVector;
     
     /**
-     * Sets the cost vector.
+     * Sets the cost vector in a non thread safe way.
+     * This cost vector will be used to calculate the 
+     * dot product each time the {@code calcCost} is called.
      * @param costVector the cost vector
      */
     public void setCostVector(Vector costVector) {

@@ -1,4 +1,4 @@
-package experiment;
+package deprecated;
 
 import agent.logging.GlobalCostLogger;
 import agent.logging.LoggingProvider;

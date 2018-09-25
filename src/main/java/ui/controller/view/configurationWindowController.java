@@ -7,12 +7,10 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
 
-
+import deprecated.ExperimentGUI;
 import ui.Utilities.ExceptionDialog;
 import ui.Utilities.ProgressForm;
 import ui.Utilities.ConfirmBox;
-//TODO:
-import experiment.ExperimentGUI;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;

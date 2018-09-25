@@ -1,8 +1,7 @@
 package ui.controller.view;
 
 import ui.controller.MainApplication;
-//TODO
-import experiment.ExperimentGUI;
+import deprecated.ExperimentGUI;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

@@ -1,6 +1,7 @@
 package func;
 
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import config.Configuration;
@@ -11,11 +12,12 @@ import data.Vector;
  * Similarity Cost Function is based on residual sum of squares between the normalized desired signal and 
  * normalized goal signal.
  * 
- * @author Jovan N.
+ * @author Jovan N., Thomas Asikis
  *
  */
 public class RSSCostFunction extends DifferentiableCostFunction<Vector> {
 	
+
 	private enum SignalType {
 		GOAL,
 		RESPONSE
@@ -43,8 +45,13 @@ public class RSSCostFunction extends DifferentiableCostFunction<Vector> {
 	
 	@Override
 	public Vector calcGradient(Vector value) {
-		System.err.println("I DON'T HAVE FUCKING GRADIENT!");
-		return null;
+		//FIXME test amth and functionality to see that the gradient is properly calculated.
+		logger.log(Level.WARNING, "Untested functionality and math, might lead to errorneous behavior when gradient is used");
+		
+		Vector result = value.cloneThis();
+		result.subtract(goalSignal);
+		result.multiply(2);
+		return result;
 	}
 	
 	@Override

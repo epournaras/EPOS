@@ -2,7 +2,7 @@ package ui.controller;
 
 import java.io.IOException;
 
-import experiment.ExperimentGUI;
+import deprecated.ExperimentGUI;
 import ui.controller.view.configurationWindowController;
 import ui.controller.view.reportWindowController;
 import javafx.application.Application;
