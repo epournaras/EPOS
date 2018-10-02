@@ -15,7 +15,6 @@ import protopeer.Experiment;
 import protopeer.Peer;
 import protopeer.servers.bootstrap.SimplePeerIdentifierGenerator;
 import tree.BalanceType;
-import util.TreeArchitecture;
 
 public class ModifiableTreeArchitecture implements Cloneable {
 	

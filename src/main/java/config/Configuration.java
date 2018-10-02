@@ -23,7 +23,7 @@ import func.CrossCorrelationCostFunction;
 import func.DifferentiableCostFunction;
 import func.IndexCostFunction;
 import func.PlanCostFunction;
-import func.PreferencePlanCostFunction;
+import func.PlanPreferenceFunction;
 import func.RMSECostFunction;
 import func.RSSCostFunction;
 import func.VarCostFunction;

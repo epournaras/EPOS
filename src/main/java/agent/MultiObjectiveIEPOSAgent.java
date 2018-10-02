@@ -6,12 +6,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.IntStream;
 
-import agent.IeposAgent.DownMessage;
-import agent.IeposAgent.UpMessage;
 import agent.logging.AgentLoggingProvider;
-import agent.multiobjectiveutils.ControllerCollection;
-import agent.multiobjectiveutils.LocalCostController;
-import agent.multiobjectiveutils.UnfairnessController;
 import agent.planselection.MultiObjectiveIeposPlanSelector;
 import config.Configuration;
 import data.DataType;
@@ -61,8 +56,6 @@ public class MultiObjectiveIEPOSAgent<V extends DataType<V>> extends IterativeTr
     double												delta;
     PlanSelector<MultiObjectiveIEPOSAgent<V>, V> 		planSelector;
     
-    private LocalCostController							lcController					=	null;
-    private UnfairnessController						ufController					=	null;
     
     private boolean										convergenceReached				=	false;
 
@@ -90,36 +83,6 @@ public class MultiObjectiveIEPOSAgent<V extends DataType<V>> extends IterativeTr
         this.alpha = 0;
         this.beta = 0;
         this.planSelector = new MultiObjectiveIeposPlanSelector<>();
-    }
-    
-    /**
-     * Creates a new IeposAgent. Using the same RNG seed will result in the same
-     * execution order in a simulation environment.
-     *
-     * @param numIterations the number of iterations
-     * @param possiblePlans the plans this agent can choose from
-     * @param globalCostFunc the global cost function
-     * @param localCostFunc the local cost function
-     * @param loggingProvider the object that extracts data from the agent and
-     * writes it into its log.
-     * @param seed a seed for the RNG
-     */
-    public MultiObjectiveIEPOSAgent(int numIterations, 
-    								List<Plan<V>> possiblePlans, 
-    								CostFunction<V> globalCostFunc, 
-    								PlanCostFunction<V> localCostFunc, 
-    								AgentLoggingProvider<? extends MultiObjectiveIEPOSAgent<V>> loggingProvider, 
-    								LocalCostController lcController,
-    								UnfairnessController ufController,
-    								long seed) {
-        super(numIterations, possiblePlans, globalCostFunc, localCostFunc, loggingProvider, seed);
-        this.optimization = new Optimization(this.random);
-        this.lambda = 0;
-        this.alpha = 0;
-        this.beta = 0;
-        this.planSelector = new MultiObjectiveIeposPlanSelector<>();
-        this.lcController = lcController;
-        this.ufController = ufController;
     }
     
     public void setLocalCostWeight(double beta) {
@@ -205,38 +168,6 @@ public class MultiObjectiveIEPOSAgent<V extends DataType<V>> extends IterativeTr
     
     public int getNumAgents() {
     	return this.numAgents;
-    }
-    
-    private void computeWeights() {
-    	double prelAlpha = this.updateUnfairnessWeight();
-    	double prelBeta = this.updateLocalCostWeight();
-//    	double prevRest = 1 - this.alpha - this.beta;
-//    	double currRest = 1 - prelAlpha - prelBeta;
-//    	if(Math.signum(prevRest) != Math.signum(currRest)) {
-//    		ControllerCollection.swapElementsInLocalCost();
-//    		ControllerCollection.swapElementsInUnfairness();
-//    	} else {
-    		this.alpha = prelAlpha;
-    		this.gamma = prelAlpha;
-    		this.beta = prelBeta;
-    		this.delta = prelBeta;
-//    	}
-    }
-    
-    private double updateUnfairnessWeight() {
-    	if(this.ufController != null) {
-    		return this.ufController.getNewWeight(this);
-    	} else {
-    		return this.alpha;
-    	}
-    }
-    
-    private double updateLocalCostWeight() {
-    	if(this.lcController != null) {
-    		return this.lcController.getNewWeight(this);
-    	} else {
-    		return this.beta;
-    	}
     }
     
     /**
@@ -406,7 +337,8 @@ public class MultiObjectiveIEPOSAgent<V extends DataType<V>> extends IterativeTr
     
     @Override
     void finalizeDownPhase(DownMessage parentMsg) { 
-    	this.computeWeights();
+    		//TODO for further implementations.
+    		this.log(Level.WARNING, "Non implemented.");
     }
     
     void processDownMessageMore(DownMessage parentMsg) { }

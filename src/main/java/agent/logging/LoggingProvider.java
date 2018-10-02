@@ -6,6 +6,7 @@
 package agent.logging;
 
 import agent.Agent;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import protopeer.measurement.LogReplayer;
 import protopeer.measurement.MeasurementLog;
-import util.Util;
 
 /**
  * Provides logging capabilities for a network of agents. Supports in-memory as
@@ -57,7 +57,7 @@ public class LoggingProvider<A extends Agent> {
         } else {
             log = null;
             File dir = new File(outputDir);
-            Util.clearDirectory(dir);
+            util.Util.clearDirectory(dir);
             dir.mkdir();
         }
     }

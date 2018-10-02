@@ -23,7 +23,6 @@ import tree.centralized.TreeViewReply;
 import tree.centralized.TreeViewRequest;
 import tree.centralized.server.TreeTopologyGenerator;
 import tree.centralized.server.TreeViewFacilitator;
-import util.TreeArchitecture;
 
 /**
  * The class that computes and maintains tree topology. Main functionalities include:

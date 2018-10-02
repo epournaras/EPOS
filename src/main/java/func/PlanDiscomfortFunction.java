@@ -13,7 +13,7 @@ import data.Plan;
  *
  * @author Peter P. & Jovan N.
  */
-public class PlanScoreCostFunction implements PlanCostFunction {
+public class PlanDiscomfortFunction implements PlanCostFunction {
 
     @Override
     public double calcCost(Plan plan) {

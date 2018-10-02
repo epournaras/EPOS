@@ -8,20 +8,14 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import agent.Agent;
-import agent.IeposAgent;
-import agent.IeposPlanSelector;
 import agent.MultiObjectiveIEPOSAgent;
 import agent.PlanSelector;
 import agent.logging.AgentLogger;
 import agent.logging.AgentLoggingProvider;
-import agent.logging.DiscomfortLogger;
 import agent.logging.GlobalComplexCostLogger;
 import agent.logging.GlobalCostLogger;
 import agent.logging.GlobalResponseVectorLogger;
-import agent.logging.GraphLogger;
-import agent.logging.GraphLogger.Type;
 import agent.logging.instrumentation.CustomFormatter;
-import agent.multiobjectiveutils.ControllerCollection;
 import agent.logging.LocalCostMultiObjectiveLogger;
 import agent.logging.LoggingProvider;
 import agent.logging.PlanFrequencyLogger;
@@ -40,7 +34,7 @@ import protopeer.Peer;
 import protopeer.PeerFactory;
 import protopeer.SimulatedExperiment;
 import protopeer.util.quantities.Time;
-import util.TreeArchitecture;
+import treestructure.TreeArchitecture;
 
 /**
  * This class describes multi-objective optimization with I-EPOS

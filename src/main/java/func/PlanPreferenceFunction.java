@@ -10,7 +10,7 @@ import data.Plan;
  * @author Jovan N., Thomas Asikis
  *
  */
-public class PreferencePlanCostFunction implements PlanCostFunction {
+public class PlanPreferenceFunction implements PlanCostFunction {
 
 	@Override
 	public double calcCost(Plan plan) {

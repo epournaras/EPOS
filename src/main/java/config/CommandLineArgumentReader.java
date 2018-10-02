@@ -14,13 +14,12 @@ import agent.dataset.DatasetDescriptor;
 import data.Vector;
 import func.CrossCorrelationCostFunction;
 import func.IndexCostFunction;
-import func.PlanScoreCostFunction;
-import func.PreferencePlanCostFunction;
+import func.PlanDiscomfortFunction;
+import func.PlanPreferenceFunction;
 import func.RMSECostFunction;
 import func.RSSCostFunction;
 import func.VarCostFunction;
 import func.goalsignals.GoalSignalsCollection;
-import treestructure.reorganizationstrategies.ReorganizationPredefined;
 import treestructure.reorganizationstrategies.ReorganizationStrategy.ReorganizationStrategyType;
 
 /**
@@ -63,7 +62,6 @@ public class CommandLineArgumentReader {
 		opts.addOption("enableNEVERstrategy", 				false,	"Enabling reorganization strategy NEVER. Works only for ModifiableIEPOSAgent. This is default.");
 		opts.addOption("enablePERIODICALLYstrategy", 		true, 	"Enabling reorganization strategy PERIODICALLY with indicated period. Default period is 3, but default strategy is to NEVER reorganize.");
 		opts.addOption("enableCONVERGENCEstrategy", 		true, 	"Enabling reorganization strategy ON_CONVERGENCE with indicated memorization offset. Default is 5, but default strategy is to NEVER reorganize.");
-		opts.addOption("enablePREDEFINEDstrategy", 			false, 	"Enabling starting IEPOS with predefined selected plans, but default strategy is to NEVER reorganize.");
 		opts.addOption("enableGLOBALCOSTREDUCTIONstrategy", true, 	"Enabling reorganization strategy based on GLOBAL_COST_REDUCTION strategy with indicated tolerance level. 0 <= Tolerane Level <= 1. Default is 0.5, but default strategy is to NEVER reorganize.");
 		
 		opts.addOption("goalSignalType", 		true, 	"The reference signal, paired with RSS, XCORR or RMSE global cost function, otherwise ignored. Options are: either an integer from [1, 19] to use predetermined signals, or path to a file with the signal in one column. The length of the signal from the file must correspond planDim option. Default is signal type 1.");
@@ -158,10 +156,6 @@ public class CommandLineArgumentReader {
 		if (argMap.get("enableCONVERGENCEstrategy") != null) {
 			config.reorganizationType = ReorganizationStrategyType.ON_CONVERGENCE;
 			config.reorganizationOffset = Integer.parseInt((String) argMap.get("enableCONVERGENCEstrategy"));
-		}
-		if (argMap.get("enablePREDEFINEDstrategy") != null) {
-			config.reorganizationType = ReorganizationStrategyType.PREDEFINED;
-			ReorganizationPredefined.readPredefinedSelectedPlans(Configuration.selectedPlanFilename);
 		}
 		if (argMap.get("enableGLOBALCOSTREDUCTIONstrategy") != null) {
 			config.reorganizationType = ReorganizationStrategyType.GLOBAL_COST_REDUCTION;
@@ -286,10 +280,10 @@ public class CommandLineArgumentReader {
 			String func = (String) argMap.get("setLocalCostFunc");
 			switch (func) {
 			case "COST":
-				Configuration.localCostFunc = new PlanScoreCostFunction();
+				Configuration.localCostFunc = new PlanDiscomfortFunction();
 				break;
 			case "PREF":
-				Configuration.localCostFunc = new PreferencePlanCostFunction();
+				Configuration.localCostFunc = new PlanPreferenceFunction();
 				break;
 			case "INDEX":
 				Configuration.localCostFunc = new IndexCostFunction();

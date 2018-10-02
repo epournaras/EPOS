@@ -17,7 +17,6 @@ import treestructure.reorganizationstrategies.ReorganizationConvergence;
 import treestructure.reorganizationstrategies.ReorganizationGlobalCostReduction;
 import treestructure.reorganizationstrategies.ReorganizationNever;
 import treestructure.reorganizationstrategies.ReorganizationPeriodically;
-import treestructure.reorganizationstrategies.ReorganizationPredefined;
 import treestructure.reorganizationstrategies.ReorganizationStrategy;
 
 /**
@@ -70,9 +69,6 @@ public class ModifiableIeposAgent<V extends DataType<V>> extends MultiObjectiveI
 			break;
 		case ON_CONVERGENCE:
 			this.strategy = new ReorganizationConvergence<V>(this);
-			break;
-		case PREDEFINED:
-			this.strategy = new ReorganizationPredefined<V>(this);
 			break;
 		case GLOBAL_COST_REDUCTION:
 			this.strategy = new ReorganizationGlobalCostReduction<V>(this);
