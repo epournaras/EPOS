@@ -79,8 +79,8 @@ public class ReorganizationConvergence<V extends DataType<V>> implements Reorgan
 
 	@Override
 	public void screenshotAfterDOWNphase() {
-		if(this.agent.getIteration() == this.config.reorganizationOffset || 
-		   this.agent.getIteration() == this.agent.getReorganizationIteration() + this.config.reorganizationOffset) {
+		if(this.agent.getIteration() == this.config.memorizationOffset || 
+		   this.agent.getIteration() == this.agent.getReorganizationIteration() + this.config.memorizationOffset) {
 			//System.out.println("SCREENSHOT TAKEN!");
 			if(this.shouldTakeScreenshot()) {
 				//System.out.println("SCREENSHOT VALID!");
@@ -94,14 +94,14 @@ public class ReorganizationConvergence<V extends DataType<V>> implements Reorgan
 	
 	boolean shouldTakeScreenshot() {
 		boolean cond1 = this.planToStartWithID != -1 && this.planToStartWithID != this.agent.getSelectedPlanID();
-		boolean cond2 = this.agent.getIteration() == this.config.reorganizationOffset;
+		boolean cond2 = this.agent.getIteration() == this.config.memorizationOffset;
 		return cond1 || cond2;
 	}
 	
 	@Override
 	public void prepareForReorganization() {
-		if(this.agent.getIteration() < this.config.reorganizationOffset || 
-		   this.agent.getIteration() < this.agent.getReorganizationIteration() + this.config.reorganizationOffset) {
+		if(this.agent.getIteration() < this.config.memorizationOffset || 
+		   this.agent.getIteration() < this.agent.getReorganizationIteration() + this.config.memorizationOffset) {
 			//System.out.println("PREPARATION FINISHED!");
 			this.planToStartWithID = -1;
 		} else {

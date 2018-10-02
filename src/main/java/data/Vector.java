@@ -596,7 +596,7 @@ public class Vector implements DataType<Vector> {
      * @return Vector representing only real parts of given complex numbers.
      */
     public static Vector convertWreal(Complex[] complex) {
-    	Vector v = new Vector(Configuration.numDimensions);
+    	Vector v = new Vector(Configuration.planDim);
     	for(int i = 0; i < v.getNumDimensions(); i++) {
     		v.setValue(i, complex[i].getReal());
     	}
@@ -614,7 +614,7 @@ public class Vector implements DataType<Vector> {
      * @return Vector representing only modulus of given complex numbers.
      */
     public static Vector convertWabs(Complex[] complex) {
-    	Vector v = new Vector(Configuration.numDimensions);
+    	Vector v = new Vector(Configuration.planDim);
     	for(int i = 0; i < v.getNumDimensions(); i++) {
     		v.setValue(i, complex[i].abs());
     	}

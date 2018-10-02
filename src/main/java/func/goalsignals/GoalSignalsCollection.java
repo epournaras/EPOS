@@ -23,8 +23,8 @@ public class GoalSignalsCollection {
 	 * 
 	 */	
 	public static Supplier<Vector> sine_a100_o0 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		IntStream.range(0, Configuration.numDimensions).
+		Vector newvector = new Vector(Configuration.planDim);
+		IntStream.range(0, Configuration.planDim).
 			forEach(i -> newvector.setValue(i,0 + 100*Math.sin(i * Math.PI / 45)));
 		return newvector;
 	};
@@ -34,8 +34,8 @@ public class GoalSignalsCollection {
 	 * Sine function with amplitude 100 and offset 500
 	 */
 	public static Supplier<Vector> sine_a100_o500 = () -> {		
-		Vector newvector = new Vector(Configuration.numDimensions);
-		IntStream.range(0, Configuration.numDimensions).
+		Vector newvector = new Vector(Configuration.planDim);
+		IntStream.range(0, Configuration.planDim).
 			forEach(i -> newvector.setValue(i,500 + 100*Math.sin(i * Math.PI / 45)));
 		return newvector;
 	};
@@ -44,8 +44,8 @@ public class GoalSignalsCollection {
 	 * Sine function with amplitude 1000 and offset 200
 	 */
 	public static Supplier<Vector> sine_a200_o1000 = () -> {	
-		Vector newvector = new Vector(Configuration.numDimensions);
-		IntStream.range(0, Configuration.numDimensions).
+		Vector newvector = new Vector(Configuration.planDim);
+		IntStream.range(0, Configuration.planDim).
 			forEach(i -> newvector.setValue(i,1000 + 200*Math.sin(i * Math.PI / 45)));
 		return newvector;		
 	};
@@ -55,13 +55,13 @@ public class GoalSignalsCollection {
 	 * Left quarter is 0, right quarter is 0, middle half is equal to amplitude value
 	 */
 	public static Supplier<Vector> singleImpulse_a100 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		int quarter = (int)Configuration.numDimensions/4;		
+		Vector newvector = new Vector(Configuration.planDim);
+		int quarter = (int)Configuration.planDim/4;		
 		IntStream.range(0, quarter).
 			forEach(i -> newvector.setValue(i, 0));		
-		IntStream.range(quarter, Configuration.numDimensions-quarter).
+		IntStream.range(quarter, Configuration.planDim-quarter).
 			forEach(i -> newvector.setValue(i, 100));
-		IntStream.range(Configuration.numDimensions-quarter, Configuration.numDimensions).
+		IntStream.range(Configuration.planDim-quarter, Configuration.planDim).
 			forEach(i -> newvector.setValue(i, 0));
 		return newvector;
 	};
@@ -71,13 +71,13 @@ public class GoalSignalsCollection {
 	 * Left quarter is 0, right quarter is 0, middle half is equal to amplitude value
 	 */
 	public static Supplier<Vector> singleImpulse_a500 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		int quarter = (int)Configuration.numDimensions/4;		
+		Vector newvector = new Vector(Configuration.planDim);
+		int quarter = (int)Configuration.planDim/4;		
 		IntStream.range(0, quarter).
 			forEach(i -> newvector.setValue(i, 0));		
-		IntStream.range(quarter, Configuration.numDimensions-quarter).
+		IntStream.range(quarter, Configuration.planDim-quarter).
 			forEach(i -> newvector.setValue(i, 500));
-		IntStream.range(Configuration.numDimensions-quarter, Configuration.numDimensions).
+		IntStream.range(Configuration.planDim-quarter, Configuration.planDim).
 			forEach(i -> newvector.setValue(i, 0));
 		return newvector;
 	};
@@ -87,13 +87,13 @@ public class GoalSignalsCollection {
 	 * Left quarter is 0, right quarter is 0, middle half is equal to amplitude value
 	 */
 	public static Supplier<Vector> singleImpulse_a1000 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		int quarter = (int)Configuration.numDimensions/4;		
+		Vector newvector = new Vector(Configuration.planDim);
+		int quarter = (int)Configuration.planDim/4;		
 		IntStream.range(0, quarter).
 			forEach(i -> newvector.setValue(i, 0));		
-		IntStream.range(quarter, Configuration.numDimensions-quarter).
+		IntStream.range(quarter, Configuration.planDim-quarter).
 			forEach(i -> newvector.setValue(i, 1000));
-		IntStream.range(Configuration.numDimensions-quarter, Configuration.numDimensions).
+		IntStream.range(Configuration.planDim-quarter, Configuration.planDim).
 			forEach(i -> newvector.setValue(i, 0));
 		return newvector;
 	};
@@ -104,13 +104,13 @@ public class GoalSignalsCollection {
 	 * Left quarter is 50, right quarter is 50, middle half is equal to amplitude value
 	 */
 	public static Supplier<Vector> singleImpulse_a100_b50 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		int quarter = (int)Configuration.numDimensions/4;		
+		Vector newvector = new Vector(Configuration.planDim);
+		int quarter = (int)Configuration.planDim/4;		
 		IntStream.range(0, quarter).
 			forEach(i -> newvector.setValue(i, 50));		
-		IntStream.range(quarter, Configuration.numDimensions-quarter).
+		IntStream.range(quarter, Configuration.planDim-quarter).
 			forEach(i -> newvector.setValue(i, 100));
-		IntStream.range(Configuration.numDimensions-quarter, Configuration.numDimensions).
+		IntStream.range(Configuration.planDim-quarter, Configuration.planDim).
 			forEach(i -> newvector.setValue(i, 50));
 		return newvector;
 	};
@@ -120,13 +120,13 @@ public class GoalSignalsCollection {
 	 * Left quarter is 250, right quarter is 250, middle half is equal to amplitude value
 	 */
 	public static Supplier<Vector> singleImpulse_a500_b250 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		int quarter = (int)Configuration.numDimensions/4;		
+		Vector newvector = new Vector(Configuration.planDim);
+		int quarter = (int)Configuration.planDim/4;		
 		IntStream.range(0, quarter).
 			forEach(i -> newvector.setValue(i, 250));		
-		IntStream.range(quarter, Configuration.numDimensions-quarter).
+		IntStream.range(quarter, Configuration.planDim-quarter).
 			forEach(i -> newvector.setValue(i, 500));
-		IntStream.range(Configuration.numDimensions-quarter, Configuration.numDimensions).
+		IntStream.range(Configuration.planDim-quarter, Configuration.planDim).
 			forEach(i -> newvector.setValue(i, 250));
 		return newvector;
 	};
@@ -136,13 +136,13 @@ public class GoalSignalsCollection {
 	 * Left quarter is 500, right quarter is 500, middle half is equal to amplitude value
 	 */
 	public static Supplier<Vector> singleImpulse_a1000_b500 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		int quarter = (int)Configuration.numDimensions/4;		
+		Vector newvector = new Vector(Configuration.planDim);
+		int quarter = (int)Configuration.planDim/4;		
 		IntStream.range(0, quarter).
 			forEach(i -> newvector.setValue(i, 500));		
-		IntStream.range(quarter, Configuration.numDimensions-quarter).
+		IntStream.range(quarter, Configuration.planDim-quarter).
 			forEach(i -> newvector.setValue(i, 1000));
-		IntStream.range(Configuration.numDimensions-quarter, Configuration.numDimensions).
+		IntStream.range(Configuration.planDim-quarter, Configuration.planDim).
 			forEach(i -> newvector.setValue(i, 500));
 		return newvector;
 	};
@@ -152,13 +152,13 @@ public class GoalSignalsCollection {
 	 * Left quarter is 1000, right quarter is 1000, middle half is equal to amplitude value
 	 */
 	public static Supplier<Vector> singleImpulse_a2000_b1000 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		int quarter = (int)Configuration.numDimensions/4;		
+		Vector newvector = new Vector(Configuration.planDim);
+		int quarter = (int)Configuration.planDim/4;		
 		IntStream.range(0, quarter).
 			forEach(i -> newvector.setValue(i, 1000));		
-		IntStream.range(quarter, Configuration.numDimensions-quarter).
+		IntStream.range(quarter, Configuration.planDim-quarter).
 			forEach(i -> newvector.setValue(i, 2000));
-		IntStream.range(Configuration.numDimensions-quarter, Configuration.numDimensions).
+		IntStream.range(Configuration.planDim-quarter, Configuration.planDim).
 			forEach(i -> newvector.setValue(i, 1000));
 		return newvector;
 	};
@@ -168,14 +168,14 @@ public class GoalSignalsCollection {
 	 * Monotonous linear step-like decrease from 400 to 50
 	 */
 	public static Supplier<Vector> monotonousDecrease_400_50 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		int eight = (int)Configuration.numDimensions/8;	
+		Vector newvector = new Vector(Configuration.planDim);
+		int eight = (int)Configuration.planDim/8;	
 		int batch_size = 50;
 		
 		for(int i = 1; i <= 8; i++) {
 			final int iter = i;
 			if(i == 8) {
-				IntStream.range((i-1)*eight, Configuration.numDimensions).
+				IntStream.range((i-1)*eight, Configuration.planDim).
 					forEach(j -> newvector.setValue(j, (8-iter+1)*batch_size));
 			} else {
 				IntStream.range((i-1)*eight, i*eight).
@@ -189,14 +189,14 @@ public class GoalSignalsCollection {
 	 * Monotonous linear step-like decrease from 400 to 50
 	 */
 	public static Supplier<Vector> monotonousDecrease_800_100 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		int eight = (int)Configuration.numDimensions/8;	
+		Vector newvector = new Vector(Configuration.planDim);
+		int eight = (int)Configuration.planDim/8;	
 		int batch_size = 100;
 		
 		for(int i = 1; i <= 8; i++) {
 			final int iter = i;
 			if(i == 8) {
-				IntStream.range((i-1)*eight, Configuration.numDimensions).
+				IntStream.range((i-1)*eight, Configuration.planDim).
 					forEach(j -> newvector.setValue(j, (8-iter+1)*batch_size));
 			} else {
 				IntStream.range((i-1)*eight, i*eight).
@@ -210,14 +210,14 @@ public class GoalSignalsCollection {
 	 * Monotonous linear step-like decrease from 400 to 50
 	 */
 	public static Supplier<Vector> monotonousDecrease_1600_200 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		int eight = (int)Configuration.numDimensions/8;	
+		Vector newvector = new Vector(Configuration.planDim);
+		int eight = (int)Configuration.planDim/8;	
 		int batch_size = 200;
 		
 		for(int i = 1; i <= 8; i++) {
 			final int iter = i;
 			if(i == 8) {
-				IntStream.range((i-1)*eight, Configuration.numDimensions).
+				IntStream.range((i-1)*eight, Configuration.planDim).
 					forEach(j -> newvector.setValue(j, (8-iter+1)*batch_size));
 			} else {
 				IntStream.range((i-1)*eight, i*eight).
@@ -232,11 +232,11 @@ public class GoalSignalsCollection {
 	 * Monotonously increasing function from -10 to 10
 	 */
 	public static Supplier<Vector> monotonousIncrease_m10_10 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		int half = (int)Configuration.numDimensions/2;		
+		Vector newvector = new Vector(Configuration.planDim);
+		int half = (int)Configuration.planDim/2;		
 		IntStream.range(0, half).
 			forEach(i -> newvector.setValue(i, -10));		
-		IntStream.range(half, Configuration.numDimensions).
+		IntStream.range(half, Configuration.planDim).
 			forEach(i -> newvector.setValue(i, 10));
 		return newvector;
 	};
@@ -245,11 +245,11 @@ public class GoalSignalsCollection {
 	 * Monotonously increasing function from -100 to 100
 	 */
 	public static Supplier<Vector> monotonousIncrease_m100_100 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		int half = (int)Configuration.numDimensions/2;		
+		Vector newvector = new Vector(Configuration.planDim);
+		int half = (int)Configuration.planDim/2;		
 		IntStream.range(0, half).
 			forEach(i -> newvector.setValue(i, -100));		
-		IntStream.range(half, Configuration.numDimensions).
+		IntStream.range(half, Configuration.planDim).
 			forEach(i -> newvector.setValue(i, 100));
 		return newvector;
 	};
@@ -258,11 +258,11 @@ public class GoalSignalsCollection {
 	 * Monotonously increasing function from 150 to 250
 	 */
 	public static Supplier<Vector> monotonousIncrease_150_250 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		int half = (int)Configuration.numDimensions/2;		
+		Vector newvector = new Vector(Configuration.planDim);
+		int half = (int)Configuration.planDim/2;		
 		IntStream.range(0, half).
 			forEach(i -> newvector.setValue(i, 150));		
-		IntStream.range(half, Configuration.numDimensions).
+		IntStream.range(half, Configuration.planDim).
 			forEach(i -> newvector.setValue(i, 250));
 		return newvector;
 	};
@@ -271,11 +271,11 @@ public class GoalSignalsCollection {
 	 * Monotonously increasing function from 1300 to 1500
 	 */
 	public static Supplier<Vector> monotonousIncrease_1300_1500 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		int half = (int)Configuration.numDimensions/2;		
+		Vector newvector = new Vector(Configuration.planDim);
+		int half = (int)Configuration.planDim/2;		
 		IntStream.range(0, half).
 			forEach(i -> newvector.setValue(i, 1300));		
-		IntStream.range(half, Configuration.numDimensions).
+		IntStream.range(half, Configuration.planDim).
 			forEach(i -> newvector.setValue(i, 1500));
 		return newvector;
 	};
@@ -284,11 +284,11 @@ public class GoalSignalsCollection {
 	 * Monotonously increasing function from 8 to 10
 	 */
 	public static Supplier<Vector> monotonousIncrease_8_10 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		int half = (int)Configuration.numDimensions/2;		
+		Vector newvector = new Vector(Configuration.planDim);
+		int half = (int)Configuration.planDim/2;		
 		IntStream.range(0, half).
 			forEach(i -> newvector.setValue(i, 8));		
-		IntStream.range(half, Configuration.numDimensions).
+		IntStream.range(half, Configuration.planDim).
 			forEach(i -> newvector.setValue(i, 10));
 		return newvector;
 	};
@@ -297,9 +297,9 @@ public class GoalSignalsCollection {
 	 * 2 single impulses, one twice as big as the other one.
 	 */
 	public static Supplier<Vector> camelImpulse_50_100 = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
+		Vector newvector = new Vector(Configuration.planDim);
 		
-		int five = (int)Configuration.numDimensions/5;
+		int five = (int)Configuration.planDim/5;
 		
 		IntStream.range(0, five).
 			forEach(i -> newvector.setValue(i, 0));
@@ -309,7 +309,7 @@ public class GoalSignalsCollection {
 			forEach(i -> newvector.setValue(i, 0));
 		IntStream.range(3*five, 4*five).
 			forEach(i -> newvector.setValue(i, 100));
-		IntStream.range(5*five, Configuration.numDimensions).
+		IntStream.range(5*five, Configuration.planDim).
 			forEach(i -> newvector.setValue(i, 0));
 		
 		return newvector;
@@ -319,12 +319,12 @@ public class GoalSignalsCollection {
 	 * 2 single gaussian impulses
 	 */
 	public static Supplier<Vector> gaussian_mixture_impulse = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
+		Vector newvector = new Vector(Configuration.planDim);
 		double mean_1 = 30;
 		double mean_2 = 75;
 		double std_1 = 10;
 		double std_2 = 15;
-		IntStream.range(0, Configuration.numDimensions).forEach(i -> {
+		IntStream.range(0, Configuration.planDim).forEach(i -> {
 			double value_1 = 20*Math.pow(Math.sqrt(2*Math.PI*Math.sqrt(std_1)), -1) * 
 					         Math.exp(-1*Math.pow(i - mean_1, 2)/(2*Math.pow(std_1, 2)));
 			double value_2 = 30*Math.pow(Math.sqrt(2*Math.PI*Math.sqrt(std_2)), -1) * 
@@ -338,9 +338,9 @@ public class GoalSignalsCollection {
 	 * constant to a reasonable value
 	 */
 	public static Supplier<Vector> constant_signal = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
+		Vector newvector = new Vector(Configuration.planDim);
 		double constant = 5;
-		IntStream.range(0, Configuration.numDimensions).forEach(i -> {
+		IntStream.range(0, Configuration.planDim).forEach(i -> {
 			newvector.setValue(i, constant);
 		});
 		return newvector;
@@ -350,8 +350,8 @@ public class GoalSignalsCollection {
 	 * This goal signal will be applied in frequency domain.
 	 */
 	public static Supplier<Vector> frequencyGoal = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		IntStream.range(0, Configuration.numDimensions).forEach(i -> {
+		Vector newvector = new Vector(Configuration.planDim);
+		IntStream.range(0, Configuration.planDim).forEach(i -> {
 			if(i == 3) {
 				newvector.setValue(i, 10);
 			} else if (i == 2) {
@@ -364,16 +364,16 @@ public class GoalSignalsCollection {
 	};
 	
 	public static Supplier<Vector> upperBound = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		IntStream.range(0, Configuration.numDimensions).forEach(i -> {
+		Vector newvector = new Vector(Configuration.planDim);
+		IntStream.range(0, Configuration.planDim).forEach(i -> {
 			newvector.setValue(i, 10e6);
 		});
 		return newvector;
 	};
 	
 	public static Supplier<Vector> lowerBound = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
-		IntStream.range(0, Configuration.numDimensions).forEach(i -> {
+		Vector newvector = new Vector(Configuration.planDim);
+		IntStream.range(0, Configuration.planDim).forEach(i -> {
 			newvector.setValue(i, -1);
 		});
 		return newvector;
@@ -383,7 +383,7 @@ public class GoalSignalsCollection {
 	 * Reads goal signal from a file. 
 	 */
 	public static Supplier<Vector> fromFile = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
+		Vector newvector = new Vector(Configuration.planDim);
 		File file = new File(Configuration.getGoalSignalPath());
 		try (Scanner scanner = new Scanner(file)) {
 			scanner.useLocale(Locale.US);
@@ -411,7 +411,7 @@ public class GoalSignalsCollection {
 	 * Reads goal signal from a file. 
 	 */
 	public static Supplier<Vector> fromOnelinerFile = () -> {
-		Vector newvector = new Vector(Configuration.numDimensions);
+		Vector newvector = new Vector(Configuration.planDim);
 		File file = new File(Configuration.getGoalSignalPath());
 		try (Scanner scanner = new Scanner(file)) {
 			scanner.useLocale(Locale.US);
@@ -419,7 +419,7 @@ public class GoalSignalsCollection {
 			String[] splitline = line.split(",");
 			for(int i = 0; i < splitline.length; i++) {
 				double val = Double.parseDouble(splitline[i]);
-				if(i >= Configuration.numDimensions) continue;
+				if(i >= Configuration.planDim) continue;
 				newvector.setValue(i, val);
 			}
 		} catch (FileNotFoundException ex) {

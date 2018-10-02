@@ -117,12 +117,12 @@ public class CommandLineArgumentReader {
 			Configuration.numPlans = Integer.parseInt((String) argMap.get("numPlans"));
 		}
 		if (argMap.get("planDim") != null) {
-			Configuration.numDimensions = Integer.parseInt((String) argMap.get("planDim"));
+			Configuration.planDim = Integer.parseInt((String) argMap.get("planDim"));
 		}
 		if (argMap.get("dataset") != null) {
 			String dataset = (String) argMap.get("dataset");
 			Configuration.dataset = dataset;
-			Configuration.selectedDataset = new DatasetDescriptor(dataset, Configuration.numDimensions, Configuration.numAgents, Configuration.numPlans);
+			Configuration.selectedDataset = new DatasetDescriptor(dataset, Configuration.planDim, Configuration.numAgents, Configuration.numPlans);
 		}		
 		if (argMap.get("lambda") != null) {
 			config.lambda = Double.parseDouble((String) argMap.get("lambda"));
@@ -147,18 +147,18 @@ public class CommandLineArgumentReader {
 			Configuration.mapping = config.generateShuffledMapping.apply(config);
 		}		
 		if (argMap.get("enableNEVERstrategy") != null) {
-			config.reorganizationType = ReorganizationStrategyType.NEVER;
+			config.reorganizationStrategy = ReorganizationStrategyType.NEVER;
 		}
 		if (argMap.get("enablePERIODICALLYstrategy") != null) {
-			config.reorganizationType = ReorganizationStrategyType.PERIODICALLY;
+			config.reorganizationStrategy = ReorganizationStrategyType.PERIODICALLY;
 			config.reorganizationPeriod = Integer.parseInt((String) argMap.get("enablePERIODICALLYstrategy"));
 		}
 		if (argMap.get("enableCONVERGENCEstrategy") != null) {
-			config.reorganizationType = ReorganizationStrategyType.ON_CONVERGENCE;
-			config.reorganizationOffset = Integer.parseInt((String) argMap.get("enableCONVERGENCEstrategy"));
+			config.reorganizationStrategy = ReorganizationStrategyType.ON_CONVERGENCE;
+			config.memorizationOffset = Integer.parseInt((String) argMap.get("enableCONVERGENCEstrategy"));
 		}
 		if (argMap.get("enableGLOBALCOSTREDUCTIONstrategy") != null) {
-			config.reorganizationType = ReorganizationStrategyType.GLOBAL_COST_REDUCTION;
+			config.reorganizationStrategy = ReorganizationStrategyType.GLOBAL_COST_REDUCTION;
 			config.convergenceTolerance = Double.parseDouble((String) argMap.get("enableGLOBALCOSTREDUCTIONstrategy"));
 		}		
 		if (argMap.get("reorganizationSeed") != null) {

@@ -63,7 +63,7 @@ public class ModifiableIeposAgent<V extends DataType<V>> extends MultiObjectiveI
 	}
 	
 	private void initStrategy() {
-		switch (this.config.reorganizationType) {
+		switch (this.config.reorganizationStrategy) {
 		case PERIODICALLY:
 			this.strategy = new ReorganizationPeriodically<V>(this);
 			break;

@@ -57,7 +57,7 @@ public class LoggingProvider<A extends Agent> {
         } else {
             log = null;
             File dir = new File(outputDir);
-            util.Util.clearDirectory(dir);
+            util.Helper.clearDirectory(dir);
             dir.mkdir();
         }
     }
