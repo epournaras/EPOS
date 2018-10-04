@@ -89,7 +89,7 @@ public class PlanFrequencyLogger<V extends DataType<V>> extends AgentLogger<Agen
 		allTokens.addAll(log.getTagsOfType(Token.class));
 		Iterator<Object> iter = allTokens.iterator();
 		
-		System.out.println("Size is: " + allTokens.size());
+		//System.out.println("Size is: " + allTokens.size());
 		
 		HashMap<Integer, HashMap<Integer, ArrayList<Token>>> perRun = 
 				new HashMap<Integer, HashMap<Integer, ArrayList<Token>>>();    // <run, <idx, list>>

@@ -268,7 +268,6 @@ public class Configuration {
 		return Configuration.outputDirectory + Configuration.pathDelimiter + Configuration.globalWeightsFilename;
 	}
 
-
 	public void printConfiguration() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("CONFIGURATION:").append(System.lineSeparator());
@@ -363,18 +362,6 @@ public class Configuration {
 			Configuration.numChildren = 2;
 		}
 
-		if (argMap.get("shuffleFile") != null) {
-			Configuration.permutationFile = (String) argMap.get("shuffleFile");
-			Configuration.mapping = config.readMapping.apply(config);
-		} else {
-			Configuration.mapping = config.generateDefaultMapping.apply(config);
-			Configuration.log.log(Level.WARNING, "Default agent mapping according to incremental index is applied.");
-		}
-
-		if (argMap.get("shuffle") != null) {
-			Configuration.permutationID = Helper.clearInt((String) argMap.get("shuffle"));
-			Configuration.mapping = config.generateShuffledMapping.apply(config);
-		}
 	}
 
 	public static Configuration fromFile(String path) {
@@ -391,7 +378,7 @@ public class Configuration {
 
 		propertyCleanUp(argMap);
 		setUpEposBasicParams(argMap, config);
-		prepareDataset(argMap);
+		prepareDataset(argMap, config);
 		prepareReorganization(argMap, config);
 		prepareCostFunctions(argMap, config);
 		prepareLoggers(argMap, config);
@@ -407,7 +394,7 @@ public class Configuration {
 			return false;
 		}
 	}
-	
+
 	private static void prepareLoggers(Properties argMap, Configuration config) {
 		if (argMap.get("logLevel") != null) {
 			String level = (String) argMap.get("logLevel");
@@ -454,7 +441,7 @@ public class Configuration {
 		Configuration.loggers = initializeLoggers(selectedLoggers);
 	}
 
-	public static void prepareDataset(Properties argMap) {
+	public static void prepareDataset(Properties argMap, Configuration config) {
 		if (argMap.get("dataset") != null) {
 			String dataset = (String) argMap.get("dataset");
 			Configuration.dataset = dataset;
@@ -522,6 +509,19 @@ public class Configuration {
 								+ maxPlanDims.get());
 			}
 		}
+
+		if (argMap.get("shuffleFile") != null) {
+			Configuration.permutationFile = (String) argMap.get("shuffleFile");
+			Configuration.mapping = config.readMapping.apply(config);
+		} else {
+			Configuration.mapping = config.generateDefaultMapping.apply(config);
+			Configuration.log.log(Level.WARNING, "Default agent mapping according to incremental index is applied.");
+		}
+
+		if (argMap.get("shuffle") != null) {
+			Configuration.permutationID = Helper.clearInt((String) argMap.get("shuffle"));
+			Configuration.mapping = config.generateShuffledMapping.apply(config);
+		}
 	}
 
 	public static void prepareCostFunctions(Properties argMap, Configuration config) {
@@ -553,6 +553,7 @@ public class Configuration {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 						return null;
+
 					}
 				}).collect(Collectors.toMap(c -> c.getLabel(), c -> c));
 
@@ -609,7 +610,7 @@ public class Configuration {
 		}
 
 	}
-	
+
 	public static void prepareReorganization(Properties argMap, Configuration config) {
 		if (argMap.get("strategy").equals("periodically")) {
 			config.reorganizationStrategy = ReorganizationStrategyType.PERIODICALLY;
