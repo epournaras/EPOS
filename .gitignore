@@ -181,6 +181,9 @@ hs_err_pid*
 unused
 /unused
 
+# maven
+dependency-reduced-pom.xml
+
 models/model.ckpt.*
 exhaustive/*
 experiments/
