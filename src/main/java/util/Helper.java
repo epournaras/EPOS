@@ -68,7 +68,7 @@ public class Helper {
 		try {
 			return Files.walk(Paths.get(path)).filter(f -> Files.isRegularFile(f)).map(p -> p.toString());
 		} catch (IOException ex) {
-			Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(Helper.class.getName()).log(Level.SEVERE, ex.toString(), ex);
 			
 			throw new IllegalStateException("Path not found or not a folder.");
 		}

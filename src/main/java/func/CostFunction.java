@@ -29,7 +29,7 @@ import data.DataType;
  * @author Peter, Thomas Asikis
  * @param <V> the type of the data this cost function should handle
  */
-public abstract class CostFunction<V extends DataType<V>> implements PlanCostFunction<V> {
+public interface CostFunction<V extends DataType<V>> extends PlanCostFunction<V> {
 	
 	/***
 	 * Calculate cost is the function that 
@@ -41,7 +41,8 @@ public abstract class CostFunction<V extends DataType<V>> implements PlanCostFun
     public abstract double calcCost(V value);
     
     @Override
-    public final double calcCost(Plan<V> plan) {
+    public default double calcCost(Plan<V> plan) {
         return calcCost(plan.getValue());
     }
+    
 }

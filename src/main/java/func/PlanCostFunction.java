@@ -24,4 +24,7 @@ public interface PlanCostFunction<V extends DataType<V>> {
 	 * @return
 	 */
     public double calcCost(Plan<V> plan);
+    
+    public abstract String getLabel();
+
 }

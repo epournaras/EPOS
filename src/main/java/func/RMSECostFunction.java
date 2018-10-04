@@ -11,7 +11,7 @@ import data.Vector;
  * @author Jovan N. Thomas Asikis
  *
  */
-public class RMSECostFunction extends DifferentiableCostFunction<Vector> {
+public class RMSECostFunction implements DifferentiableCostFunction<Vector>, HasGoal {
 
 	public static Vector goalSignal = null;
 	public static double goalMean;
@@ -22,7 +22,8 @@ public class RMSECostFunction extends DifferentiableCostFunction<Vector> {
 	/**
 	 * This method calculates the goal signal based on which the cost finction is calculated.
 	 */
-	public static void populateGoalSignal() {
+	@Override
+	public void populateGoalSignal() {
 		RMSECostFunction.goalSignal = Configuration.goalSignalSupplier.get();
 		RMSECostFunction.goalMean = RMSECostFunction.goalSignal.avg();
 		RMSECostFunction.goalStd = RMSECostFunction.goalSignal.std();
@@ -55,5 +56,10 @@ public class RMSECostFunction extends DifferentiableCostFunction<Vector> {
 		//FIXME check if the gradient affects things 
 		return difference;
 	}
-
+	
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return "RMSE";
+	}
 }

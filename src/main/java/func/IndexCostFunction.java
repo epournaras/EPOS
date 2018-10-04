@@ -26,5 +26,9 @@ public class IndexCostFunction implements PlanCostFunction {
 	public String toString() {
 		return "index";
 	}
-
+	
+	@Override
+	public String getLabel() {
+		return "INDEX";
+	}
 }

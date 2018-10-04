@@ -17,6 +17,7 @@
  */
 package func;
 
+import config.Configuration;
 import data.Vector;
 
 /**
@@ -25,7 +26,7 @@ import data.Vector;
  *
  * @author peter
  */
-public class SqrDistCostFunction extends DifferentiableCostFunction<Vector> {
+public class SqrDistCostFunction implements DifferentiableCostFunction<Vector>, HasGoal{
 
     private Vector target;
 
@@ -35,10 +36,14 @@ public class SqrDistCostFunction extends DifferentiableCostFunction<Vector> {
      *
      * @param target the target vector
      */
-    public SqrDistCostFunction(Vector target) {
-        this.target = target;
+    public SqrDistCostFunction() {
+        
     }
-
+    
+    public void setCostVector(Vector target) {
+    		this.target = target;
+    }
+    
     @Override
     public double calcCost(Vector vector) {
         Vector v = vector.cloneThis();
@@ -59,4 +64,15 @@ public class SqrDistCostFunction extends DifferentiableCostFunction<Vector> {
     public String toString() {
         return "squared distance";
     }
+
+	@Override
+	public void populateGoalSignal() {
+		this.target = Configuration.goalSignalSupplier.get();
+	}
+	
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return "SQR";
+	}
 }

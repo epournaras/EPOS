@@ -128,10 +128,12 @@ public class LoggingProvider<A extends Agent> {
 
     private MeasurementLog readExperiment(File experimentDir) {
         MeasurementLog log = new MeasurementLog();
-
+        
+        
         LogReplayer replayer = new LogReplayer();
         for (File file : experimentDir.listFiles()) {
             try {
+                System.out.println("yolo " + file.getPath());
                 MeasurementLog l = replayer.loadLogFromFile(file.getPath());
                 log.mergeWith(l);
             } catch (IOException | ClassNotFoundException ex) {

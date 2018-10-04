@@ -1,5 +1,9 @@
 package agent.dataset;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class DatasetDescriptor {
 	
 	private String		datasetGroup 				=	null;
@@ -45,15 +49,10 @@ public class DatasetDescriptor {
 	}
 	
 	public String getPath() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("datasets/");
-		if(this.datasetGroup != null && 
-		  (this.datasetGroup.contains("energy2") || this.datasetGroup.contains("EPOS-ELECTRIC-VEHICLES"))
-		  ) {
-			sb.append(this.datasetGroup).append("/");
-		}
-		sb.append(this.datasetName + "/");
-		return sb.toString();
+		String path = System.getProperty("user.dir");
+		Path p = Paths.get(path, "datasets", this.getDatasetName());
+		//path += File.separator + "datasets" +  File.separator + this.getDatasetName() + File.separator;
+		return p.toString() + File.separator;
 	}
 
 }

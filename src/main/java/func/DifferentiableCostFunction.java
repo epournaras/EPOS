@@ -15,7 +15,7 @@ import data.DataType;
  * @author Peter, Thomas Asikis
  * @param <V> the type of the data this cost function should handle. Preferably a numerical structure like a vector
  */
-public abstract class DifferentiableCostFunction<V extends DataType<V>> extends CostFunction<V> {
+public interface DifferentiableCostFunction<V extends DataType<V>> extends CostFunction<V> {
 	
 	/**
 	 * This method returns the gradient of the cost function

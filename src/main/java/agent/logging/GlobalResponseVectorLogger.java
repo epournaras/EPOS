@@ -77,13 +77,14 @@ public class GlobalResponseVectorLogger<V extends DataType<V>> extends AgentLogg
 		  .append(",")
 		  .append("Iteration");
 		
-		Vector globalSignal = Configuration.goalSignalSupplier.get();
-		for(int i = 0; i < globalSignal.getNumDimensions(); i++) {
+		//TODO confirm change with Jovan
+		for(int i = 0; i < Configuration.planDim; i++) {
 			sb.append("," + "dim-" + i);
 		}
 		sb.append(System.lineSeparator());
 		
-		if(Configuration.goalSignalSupplier != null) {			
+		if(Configuration.goalSignalSupplier != null) {
+			Vector globalSignal = Configuration.goalSignalSupplier.get(); //Moved after null check
 			sb.append("-1")
 			  .append(",")
 			  .append("-1")

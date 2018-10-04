@@ -26,7 +26,7 @@ import data.Vector;
  *
  * @author Peter
  */
-public class VarCostFunction extends DifferentiableCostFunction<Vector> {
+public class VarCostFunction implements DifferentiableCostFunction<Vector> {
 
     @Override
     public double calcCost(Vector vector) {
@@ -44,5 +44,10 @@ public class VarCostFunction extends DifferentiableCostFunction<Vector> {
     @Override
     public String toString() {
         return "variance";
+    }
+    @Override
+    public String getLabel() {
+    	// TODO Auto-generated method stub
+    	return "VAR";
     }
 }

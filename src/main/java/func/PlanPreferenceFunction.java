@@ -25,5 +25,10 @@ public class PlanPreferenceFunction implements PlanCostFunction {
 	public String toString() {
 		return "preference local cost function";
 	}
+	
+	@Override
+	public String getLabel() {
+		return "PREF";
+	}
 
 }

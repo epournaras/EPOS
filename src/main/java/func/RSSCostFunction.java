@@ -15,7 +15,7 @@ import data.Vector;
  * @author Jovan N., Thomas Asikis
  *
  */
-public class RSSCostFunction extends DifferentiableCostFunction<Vector> {
+public class RSSCostFunction implements DifferentiableCostFunction<Vector>, HasGoal {
 	
 
 	private enum SignalType {
@@ -29,7 +29,8 @@ public class RSSCostFunction extends DifferentiableCostFunction<Vector> {
 	
 	static Logger logger = Logger.getLogger(RSSCostFunction.class.getName());
 	
-	public static void populateGoalSignal() {
+	@Override
+	public void populateGoalSignal() {
 		RSSCostFunction.goalSignal = Configuration.goalSignalSupplier.get();
 		RSSCostFunction.goalNormalized = Configuration.normalizer.apply(RSSCostFunction.goalSignal);
 	}	
@@ -58,5 +59,9 @@ public class RSSCostFunction extends DifferentiableCostFunction<Vector> {
 	public String toString() {
 		return "Residual sum of Squares";
 	}
-
+	
+	@Override
+	public String getLabel() {
+		return "RSS";
+	}
 }

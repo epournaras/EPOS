@@ -25,15 +25,20 @@ import data.Vector;
  * 
  * @author Peter, Thomas Asikis
  */
-public class MaxCostFunction extends CostFunction<Vector> {
+public class MaxCostFunction implements CostFunction<Vector> {
 
-    @Override
-    public double calcCost(Vector vector) {
-        return vector.max();
-    }
+	@Override
+	public double calcCost(Vector vector) {
+		return vector.max();
+	}
 
-    @Override
-    public String toString() {
-        return "max";
-    }
+	@Override
+	public String toString() {
+		return "max";
+	}
+
+	@Override
+	public String getLabel() {
+		return "MAX";
+	}
 }

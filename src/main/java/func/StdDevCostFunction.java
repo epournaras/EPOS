@@ -26,7 +26,7 @@ import data.Vector;
  *
  * @author Peter
  */
-public class StdDevCostFunction extends DifferentiableCostFunction<Vector> {
+public class StdDevCostFunction implements DifferentiableCostFunction<Vector> {
 
     @Override
     public double calcCost(Vector vector) {
@@ -49,5 +49,10 @@ public class StdDevCostFunction extends DifferentiableCostFunction<Vector> {
     @Override
     public String toString() {
         return "std deviation";
+    }
+    
+    @Override
+    public String getLabel() {
+    	return "STD";
     }
 }

@@ -28,4 +28,9 @@ public class PlanDiscomfortFunction implements PlanCostFunction {
     public String toString() {
         return "score as a cost plan cost function.";
     }
+    
+    @Override
+    public String getLabel() {
+    		return "DISC";
+    }
 }

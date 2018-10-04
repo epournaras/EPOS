@@ -49,6 +49,10 @@ public class Vector implements DataType<Vector> {
         values = new double[numDimensions];
     }
     
+    public Vector(double[] values) {
+        this.values = values;
+    }
+    
     @Override
     public Vector getValue() {
         return this;
@@ -714,4 +718,9 @@ public class Vector implements DataType<Vector> {
     	return normalized;
     };
 
+	public double[] getValues() {
+		return values;
+	}
+    
+    
 }

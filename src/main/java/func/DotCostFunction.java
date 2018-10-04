@@ -5,6 +5,7 @@
  */
 package func;
 
+import config.Configuration;
 import data.Vector;
 
 /**
@@ -14,7 +15,7 @@ import data.Vector;
  * 
  * @author Peter, Thomas Asikis
  */
-public class DotCostFunction extends DifferentiableCostFunction<Vector> {
+public class DotCostFunction implements DifferentiableCostFunction<Vector>, HasGoal {
     private Vector costVector;
     
     /**
@@ -41,5 +42,15 @@ public class DotCostFunction extends DifferentiableCostFunction<Vector> {
     public String toString() {
         return "dot product";
     }
+
+	@Override
+	public void populateGoalSignal() {
+		this.costVector = Configuration.goalSignalSupplier.get();
+	}
+	
+	@Override
+	public String getLabel() {
+		return "DOT";
+	}
     
 }

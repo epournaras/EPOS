@@ -20,7 +20,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>experiment.CLIExample</mainClass>
+                  <mainClass>experiment.ReorganizationExperiment</mainClass>
                 </transformer>
               </transformers>
             </configuration>

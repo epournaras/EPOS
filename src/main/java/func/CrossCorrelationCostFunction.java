@@ -17,7 +17,7 @@ import data.Vector;
  * @author jovan
  *
  */
-public class CrossCorrelationCostFunction extends DifferentiableCostFunction<Vector> {
+public class CrossCorrelationCostFunction implements DifferentiableCostFunction<Vector>, HasGoal{
 	
 	private enum SignalType {
 		GOAL,
@@ -29,7 +29,8 @@ public class CrossCorrelationCostFunction extends DifferentiableCostFunction<Vec
 	
 	static Logger logger = Logger.getLogger(CrossCorrelationCostFunction.class.getName());
 	
-	public static void populateGoalSignal() {
+	@Override
+	public void populateGoalSignal() {
 		try {
 			goalSignal = Configuration.goalSignalSupplier.get();
 		} catch(NullPointerException e) {
@@ -43,7 +44,6 @@ public class CrossCorrelationCostFunction extends DifferentiableCostFunction<Vec
 		if(CrossCorrelationCostFunction.shouldSlide) {
 			return crossCorrelationWithSliding(value, CrossCorrelationCostFunction.goalSignal);
 		} else {
-//			Map<SignalType, Vector> normalized = CrossCorrelationCostFunction.normalize(value, CrossCorrelationCostFunction.goalSignal);
 			return crossCorrelationCoefficient(value, CrossCorrelationCostFunction.goalSignal);
 		}
 	}
@@ -71,13 +71,6 @@ public class CrossCorrelationCostFunction extends DifferentiableCostFunction<Vec
 		// Standard deviation of both signals
 		double goal_stdev = goal.std();
 		double response_stdev = response.std();
-		
-//		if(goal_stdev == 0) {
-//			System.out.println("Standard deviation of goal signal is 0");
-//		}
-//		if(response_stdev == 0) {
-//			System.out.println("Standard deviation of response signal is 0");
-//		}
 		
 		Vector goalReplicate = goal.cloneThis();
 		Vector responseReplicate = response.cloneThis();
@@ -192,5 +185,10 @@ public class CrossCorrelationCostFunction extends DifferentiableCostFunction<Vec
 	@Override
 	public String toString() {
 		return "cross-correlation global cost function";
+	}
+	
+	@Override
+	public String getLabel() {
+		return "XCORR";
 	}
 }
