@@ -155,7 +155,7 @@ public class ReorganizationExperiment {
 			ReorganizationExperiment.runOneSimulation(config, createAgent);
 		}
 
-		//loggingProvider.print();
+		loggingProvider.print();
 
 	}
 

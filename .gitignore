@@ -180,6 +180,8 @@ hs_err_pid*
 # custom
 unused
 /unused
+output
+/output
 
 # maven
 dependency-reduced-pom.xml
