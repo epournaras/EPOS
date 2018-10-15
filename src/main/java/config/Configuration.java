@@ -459,8 +459,8 @@ public class Configuration {
 			AtomicInteger maxPlans = new AtomicInteger();
 			AtomicInteger maxPlanDims = new AtomicInteger();
 
-			System.out.println(datasetPath + " " + Files.notExists(Paths.get(datasetPath)));
-
+			log.info("Loading dataset from:\n" + datasetPath);
+			
 			Set<Integer> requested = IntStream.range(0, Configuration.numAgents).boxed().collect(Collectors.toSet());
 			Set<Integer> found = new HashSet<>();
 

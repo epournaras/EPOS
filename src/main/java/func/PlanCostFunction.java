@@ -25,6 +25,10 @@ public interface PlanCostFunction<V extends DataType<V>> {
 	 */
     public double calcCost(Plan<V> plan);
     
+    /**
+     * Registers the function in the configuration, via reflection, so that it can be directly called from the conf file.
+     * @return
+     */
     public abstract String getLabel();
 
 }
