@@ -30,11 +30,13 @@ import protopeer.util.quantities.Time;
 import treestructure.TreeArchitecture;
 
 /**
- * This class describes multi-objective optimization with I-EPOS
+ * This class describes multi-objective optimization with I-EPOS. It is a class with a subset of capabilities of the {@code ReorganizationExperiment} class,
+ * so it is preffered to use that one!
  * 
  * @author Jovan N., Thomas Asikis
  *
  */
+@Deprecated
 public class MultiObjectiveIEPOSExperiment {
 
 	private static void runSimulation(int numChildren, // number of children for each middle node
@@ -106,8 +108,7 @@ public class MultiObjectiveIEPOSExperiment {
 				: confPath;
 
 		Configuration config = Configuration.fromFile(confPath);
-		LoggingProvider<MultiObjectiveIEPOSAgent<Vector>> loggingProvider = new LoggingProvider<>(
-				Configuration.outputDirectory);
+		LoggingProvider<MultiObjectiveIEPOSAgent<Vector>> loggingProvider = new LoggingProvider<>();
 
 		for (int sim = 0; sim < Configuration.numSimulations; sim++) {
 

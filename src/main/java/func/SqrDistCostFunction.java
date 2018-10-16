@@ -72,7 +72,6 @@ public class SqrDistCostFunction implements DifferentiableCostFunction<Vector>, 
 	
 	@Override
 	public String getLabel() {
-		// TODO Auto-generated method stub
 		return "SQR";
 	}
 }

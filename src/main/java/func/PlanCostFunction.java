@@ -9,26 +9,31 @@ import data.Plan;
 import data.DataType;
 
 /**
- * A cost functionfunction that operates on a plan to calculate a scalar real value.
+ * A cost functionfunction that operates on a plan to calculate a scalar real
+ * value.
  * 
  * @author Peter, Thomas Asikis
- * @param <V> the type of the data this cost function should handle
+ * @param <V>
+ *            the type of the data this cost function should handle
  */
 public interface PlanCostFunction<V extends DataType<V>> {
-	
+
 	/**
-	 * This method takes as an input any plan of type V and calculates the
-	 * real number that represents the cost of the plan. This function is used during
-	 * the minimization.
+	 * This method takes as an input any plan of type V and calculates the real
+	 * number that represents the cost of the plan. This function is used during the
+	 * minimization.
+	 * 
 	 * @param plan
 	 * @return
 	 */
-    public double calcCost(Plan<V> plan);
-    
-    /**
-     * Registers the function in the configuration, via reflection, so that it can be directly called from the conf file.
-     * @return
-     */
-    public abstract String getLabel();
+	public double calcCost(Plan<V> plan);
+
+	/**
+	 * Registers the function in the configuration, via reflection, so that it can
+	 * be directly called from the conf file.
+	 * 
+	 * @return
+	 */
+	public abstract String getLabel();
 
 }
