@@ -345,7 +345,6 @@ public class MultiObjectiveIEPOSAgent<V extends DataType<V>> extends IterativeTr
     
     private void aggregateExtended() {
 //    	System.out.println("EXTENDED!");
-    	
         if (this.isIterationAfterReorganization()) {
             for (int i = 0; i < this.children.size(); i++) {
                 approvals.add(true);

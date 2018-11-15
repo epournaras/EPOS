@@ -2,7 +2,6 @@ package func;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.math3.complex.Complex;
 import config.Configuration;
@@ -179,7 +178,7 @@ public class CrossCorrelationCostFunction implements DifferentiableCostFunction<
 
 	@Override
 	public Vector calcGradient(Vector value) {
-		logger.log(Level.WARNING, "No gradient is implement for cross-correlation cost function!");
+		System.out.println("I DON'T HAVE GRADIENT IMPLEMENTED.");
 		return null;
 	}
 	

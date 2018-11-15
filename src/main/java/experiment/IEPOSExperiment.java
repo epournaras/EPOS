@@ -36,7 +36,7 @@ import treestructure.ModifiableTreeArchitecture;
  * @author Jovan N., Thomas Asikis
  *
  */
-public class ReorganizationExperiment {
+public class IEPOSExperiment {
 
 	public static void runSimulation(int numChildren, // number of children for each middle node
 			int numIterations, // total number of iterations to run for
@@ -76,7 +76,7 @@ public class ReorganizationExperiment {
 
 	private static void runOneSimulation(Configuration config, Function<Integer, Agent> createAgent) {
 		long timeBefore = System.currentTimeMillis();
-		ReorganizationExperiment.runSimulation(Configuration.numChildren, Configuration.numIterations,
+		IEPOSExperiment.runSimulation(Configuration.numChildren, Configuration.numIterations,
 				Configuration.numAgents, createAgent, config);
 		long timeAfter = System.currentTimeMillis();
 		System.out.println("IEPOS Finished! It took: " + ((timeAfter - timeBefore) / 1000) + " seconds.");
@@ -84,7 +84,7 @@ public class ReorganizationExperiment {
 
 
 	public static void main(String[] args) {
-		Logger log = Logger.getLogger(ReorganizationExperiment.class.getName());
+		Logger log = Logger.getLogger(IEPOSExperiment.class.getName());
 
 		String confPath = null;
 
@@ -107,6 +107,7 @@ public class ReorganizationExperiment {
 
 		Configuration config = Configuration.fromFile(confPath);
 		config.printConfiguration();
+
 
 		LoggingProvider<MultiObjectiveIEPOSAgent<Vector>> loggingProvider = new LoggingProvider<>();
 		
@@ -145,14 +146,14 @@ public class ReorganizationExperiment {
 				ModifiableIeposAgent<Vector> newAgent = new ModifiableIeposAgent<Vector>(config, possiblePlans,
 						agentLP);
 
-				newAgent.setUnfairnessWeight(config.alpha);
-				newAgent.setLocalCostWeight(config.beta);
+				newAgent.setUnfairnessWeight(Double.parseDouble(config.weights[0]));
+				newAgent.setLocalCostWeight(Double.parseDouble(config.weights[1]));
 				newAgent.setPlanSelector(planSelector);
 				return newAgent;
 
 			};
 
-			ReorganizationExperiment.runOneSimulation(config, createAgent);
+			IEPOSExperiment.runOneSimulation(config, createAgent);
 		}
 
 		loggingProvider.print();

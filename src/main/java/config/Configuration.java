@@ -45,6 +45,7 @@ import agent.logging.ReorganizationLogger;
 import agent.logging.SelectedPlanLogger;
 import agent.logging.TerminationLogger;
 import agent.logging.UnfairnessLogger;
+import agent.logging.VisualizerLogger;
 import agent.logging.WeightsLogger;
 import agent.planselection.PlanSelectionOptimizationFunction;
 import agent.planselection.PlanSelectionOptimizationFunctionCollection;
@@ -99,9 +100,11 @@ public class Configuration {
 	public static int numIterations = 40;
 	public static int numChildren = 2;
 
+	public static double numberOfWeights = 0;
+	public static String[] weights;
 	public static double lambda = 0;
-	public double alpha = 0;
-	public double beta = 0;
+//	public double alpha = 0;
+//	public double beta = 0;
 
 	public static int permutationID = 0;
 	public static String permutationFile = null;
@@ -268,6 +271,7 @@ public class Configuration {
 		return Configuration.outputDirectory + Configuration.pathDelimiter + Configuration.globalWeightsFilename;
 	}
 
+
 	public void printConfiguration() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("CONFIGURATION:").append(System.lineSeparator());
@@ -282,8 +286,8 @@ public class Configuration {
 		sb.append("numIterations = ").append(Configuration.numIterations).append(System.lineSeparator());
 		sb.append("numChildren = ").append(Configuration.numChildren).append(System.lineSeparator());
 		sb.append("--------------").append(System.lineSeparator());
-		sb.append("alpha = ").append(this.alpha).append(System.lineSeparator());
-		sb.append("beta = ").append(this.beta).append(System.lineSeparator());
+		sb.append("alpha = ").append(this.weights[0]).append(System.lineSeparator());
+		sb.append("beta = ").append(this.weights[1]).append(System.lineSeparator());
 		sb.append("global cost function = ").append(Configuration.globalCostFunc.toString())
 				.append(System.lineSeparator());
 		sb.append("local cost function = ").append(Configuration.localCostFunc.toString())
@@ -362,6 +366,18 @@ public class Configuration {
 			Configuration.numChildren = 2;
 		}
 
+		if (argMap.get("shuffleFile") != null) {
+			Configuration.permutationFile = (String) argMap.get("shuffleFile");
+			Configuration.mapping = config.readMapping.apply(config);
+		} else {
+			Configuration.mapping = config.generateDefaultMapping.apply(config);
+			Configuration.log.log(Level.WARNING, "Default agent mapping according to incremental index is applied.");
+		}
+
+		if (argMap.get("shuffle") != null) {
+			Configuration.permutationID = Helper.clearInt((String) argMap.get("shuffle"));
+			Configuration.mapping = config.generateShuffledMapping.apply(config);
+		}
 	}
 
 	public static Configuration fromFile(String path) {
@@ -378,7 +394,7 @@ public class Configuration {
 
 		propertyCleanUp(argMap);
 		setUpEposBasicParams(argMap, config);
-		prepareDataset(argMap, config);
+		prepareDataset(argMap);
 		prepareReorganization(argMap, config);
 		prepareCostFunctions(argMap, config);
 		prepareLoggers(argMap, config);
@@ -394,7 +410,7 @@ public class Configuration {
 			return false;
 		}
 	}
-
+	
 	private static void prepareLoggers(Properties argMap, Configuration config) {
 		if (argMap.get("logLevel") != null) {
 			String level = (String) argMap.get("logLevel");
@@ -432,7 +448,7 @@ public class Configuration {
 		String[] possLoggers = { "logger.GlobalCostLogger", "logger.LocalCostMultiObjectiveLogger",
 				"logger.TerminationLogger", "logger.SelectedPlanLogger", "logger.GlobalResponseVectorLogger",
 				"logger.PlanFrequencyLogger", "logger.UnfairnessLogger", "logger.GlobalComplexCostLogger",
-				"logger.WeightsLogger", "logger.ReorganizationLogger" };
+				"logger.WeightsLogger", "logger.ReorganizationLogger", "logger.VisualizerLogger" };
 
 		Set<String> selectedLoggers = Arrays.stream(possLoggers)
 				.filter(key -> argMap.containsKey(key) && argMap.getProperty(key).equals("true"))
@@ -441,7 +457,7 @@ public class Configuration {
 		Configuration.loggers = initializeLoggers(selectedLoggers);
 	}
 
-	public static void prepareDataset(Properties argMap, Configuration config) {
+	public static void prepareDataset(Properties argMap) {
 		if (argMap.get("dataset") != null) {
 			String dataset = (String) argMap.get("dataset");
 			Configuration.dataset = dataset;
@@ -459,8 +475,8 @@ public class Configuration {
 			AtomicInteger maxPlans = new AtomicInteger();
 			AtomicInteger maxPlanDims = new AtomicInteger();
 
-			log.info("Loading dataset from:\n" + datasetPath);
-			
+			System.out.println(datasetPath + " " + Files.notExists(Paths.get(datasetPath)));
+
 			Set<Integer> requested = IntStream.range(0, Configuration.numAgents).boxed().collect(Collectors.toSet());
 			Set<Integer> found = new HashSet<>();
 
@@ -509,37 +525,20 @@ public class Configuration {
 								+ maxPlanDims.get());
 			}
 		}
-
-		if (argMap.get("shuffleFile") != null) {
-			Configuration.permutationFile = (String) argMap.get("shuffleFile");
-			Configuration.mapping = config.readMapping.apply(config);
-		} else {
-			Configuration.mapping = config.generateDefaultMapping.apply(config);
-			Configuration.log.log(Level.WARNING, "Default agent mapping according to incremental index is applied.");
-		}
-
-		if (argMap.get("shuffle") != null) {
-			Configuration.permutationID = Helper.clearInt((String) argMap.get("shuffle"));
-			Configuration.mapping = config.generateShuffledMapping.apply(config);
-		}
 	}
 
 	public static void prepareCostFunctions(Properties argMap, Configuration config) {
 
 		Reflections reflections = new Reflections("func");
 
-		if (argMap.get("alpha") != null) {
-			config.alpha = Double.parseDouble(Helper.clearNumericString((String) argMap.get("alpha")));
-		} else {
-			Configuration.log.log(Level.WARNING, "Default value for alpha = 0");
-			config.alpha = 0;
-		}
+		weights = new String[Integer.parseInt(argMap.get("numberOfWeights").toString())];
 
-		if (argMap.get("beta") != null) {
-			config.beta = Double.parseDouble(Helper.clearNumericString((String) argMap.get("beta")));
-		} else {
-			Configuration.log.log(Level.WARNING, "Default value for beta = 0");
-			config.beta = 0;
+		if (argMap.get("weightsString") != null) {
+			String[] inputWeight = argMap.get("weightsString").toString().split(",");
+			for (int i = 0;i<inputWeight.length;i++){
+				weights[i] = inputWeight[i];
+			}
+
 		}
 
 		Set<Class<? extends PlanCostFunction>> allClasses = reflections.getSubTypesOf(PlanCostFunction.class);
@@ -553,7 +552,6 @@ public class Configuration {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 						return null;
-
 					}
 				}).collect(Collectors.toMap(c -> c.getLabel(), c -> c));
 
@@ -610,7 +608,7 @@ public class Configuration {
 		}
 
 	}
-
+	
 	public static void prepareReorganization(Properties argMap, Configuration config) {
 		if (argMap.get("strategy").equals("periodically")) {
 			config.reorganizationStrategy = ReorganizationStrategyType.PERIODICALLY;
@@ -730,6 +728,7 @@ public class Configuration {
 				Configuration.getGlobalComplexCostPath());
 		WeightsLogger<Vector> WLogger = new WeightsLogger<Vector>(Configuration.getWeightsPath());
 		ReorganizationLogger<Vector> RLogger = new ReorganizationLogger<Vector>(Configuration.getReorganizationPath());
+		VisualizerLogger<Vector> VLogger = new VisualizerLogger<Vector>();
 
 		GCLogger.setRun(Configuration.permutationID);
 		LCLogger.setRun(Configuration.permutationID);
@@ -741,10 +740,11 @@ public class Configuration {
 		GCXLogger.setRun(Configuration.permutationID);
 		WLogger.setRun(Configuration.permutationID);
 		RLogger.setRun(Configuration.permutationID);
+		VLogger.setRun(Configuration.permutationID);
 
 		Map<String, AgentLogger> result = Arrays
 				.stream(new AgentLogger[] { GCLogger, LCLogger, TLogger, SPLogger, GRVLogger, DstLogger, ULogger,
-						GCXLogger, WLogger, RLogger })
+						GCXLogger, WLogger, RLogger, VLogger })
 				.collect(Collectors.toMap(a -> a.getClass().getSimpleName(), a -> a));
 
 		Set<AgentLogger> res = new HashSet<>();

@@ -25,7 +25,6 @@ import config.Configuration;
 public class DatasetShuffler {
 	
 	public static int row = -1;
-	public static Logger log = Logger.getLogger(DatasetShuffler.class.getName());
 	
 	/**
 	 * Default mapping is 0->0, 1->1, 2->2, ..
@@ -62,8 +61,8 @@ public class DatasetShuffler {
 		
 		long timeAfter = System.currentTimeMillis();
 		
-		log.info("Permuting time: " + ((timeAfter-timeBefore)/1000) + " seconds.");		
-		log.info(Configuration.mapping.toString());
+		System.out.println("Permuting time: " + ((timeAfter-timeBefore)/1000) + " seconds.");		
+		System.out.println(Configuration.mapping.toString());
 		
 		return Configuration.mapping;
 	}
@@ -81,7 +80,7 @@ public class DatasetShuffler {
 		
 		long timeAfter = System.currentTimeMillis();
 		
-		log.info("Permuting time: " + ((timeAfter-timeBefore)/1000) + " seconds.");
+		System.out.println("Permuting time: " + ((timeAfter-timeBefore)/1000) + " seconds.");
 		
 		return Configuration.mapping;
 	}
@@ -131,7 +130,7 @@ public class DatasetShuffler {
 			Logger.getLogger(DatasetShuffler.class.getName()).log(Level.SEVERE, null, e);
 		}
 		
-		//System.out.println(mapping.toString());		
+		System.out.println(mapping.toString());		
 		return mapping;
 	}
 	
