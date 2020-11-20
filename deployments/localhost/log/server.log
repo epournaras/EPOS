@@ -1,0 +1,719 @@
+PostgresPersistenceDaemon (2019-04-23)
+database : epos
+listenPort : 7433
+listenHost : localhost
+commitRate : 1000
+commitPeriodSeconds : 10
+zeroMQueueSize : 1000000
+useTransactions : true
+debug : false
+ZeroMQ Context created
+ZeroMQ Pull socket created on 'tcp://localhost:7433'
+GSON serialisation created
+Connected to database
+AutoCommit thread started
+
+Listening for messages on tcp://localhost:7433 -> epos
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 12:53:14
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 12:53:14
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 12:53:14
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 12:53:14
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 12:53:14
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 12:53:14
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 12:53:14
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 12:53:14
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 12:53:17
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 12:53:17
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 12:53:17
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 12:53:17
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 12:53:17
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 12:53:18
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 12:53:18
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 12:53:18
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 12:53:18
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 12:53:18
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 12:53:18
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+.
+commit start
+dt : 2020-09-03 12:53:22
+msgCountSinceLastCommit : 10
+totalMessageCount : 10
+writing...ok
+
+Listening for messages on tcp://localhost:7433 -> epos...........
+commit start
+dt : 2020-09-03 12:53:32
+msgCountSinceLastCommit : 119
+totalMessageCount : 129
+writing...ok
+
+Listening for messages on tcp://localhost:7433 -> epos...............
+commit start
+dt : 2020-09-03 12:53:42
+msgCountSinceLastCommit : 150
+totalMessageCount : 279
+writing...ok
+
+Listening for messages on tcp://localhost:7433 -> epos...............
+commit start
+dt : 2020-09-03 12:53:52
+msgCountSinceLastCommit : 150
+totalMessageCount : 429
+writing...ok
+
+Listening for messages on tcp://localhost:7433 -> epos...............
+commit start
+dt : 2020-09-03 12:54:02
+msgCountSinceLastCommit : 150
+totalMessageCount : 579
+writing...ok
+
+Listening for messages on tcp://localhost:7433 -> epos....
+commit start
+dt : 2020-09-03 12:54:13
+msgCountSinceLastCommit : 41
+totalMessageCount : 620
+writing...ok
+
+Listening for messages on tcp://localhost:7433 -> epos....
+commit start
+dt : 2020-09-03 12:54:23
+msgCountSinceLastCommit : 41
+totalMessageCount : 661
+writing...ok
+
+Listening for messages on tcp://localhost:7433 -> epos
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 14:11:34
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 14:11:34
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 14:11:34
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 14:11:34
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 14:11:34
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 14:11:34
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 14:11:34
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 14:11:34
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 14:11:38
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 14:11:38
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 14:11:38
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 14:11:38
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 14:11:38
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'eventlog'
+dt : 2020-09-03 14:11:38
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 14:11:38
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 14:11:38
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+
+New template : 'GlobalCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalCostLogger(sim,run,peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'TerminationLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO TerminationLogger(sim,run,peer,termination) VALUES({sim},{run}, {peer}, {termination})
+
+New template : 'UnfairnessLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO UnfairnessLogger(sim,run, peer,iteration,unfairness) VALUES({sim},{run}, {peer}, {iteration}, {unfairness})
+
+New template : 'LocalCostMultiObjectiveLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO LocalCostMultiObjectiveLogger(sim,run,peer,iteration,cost) VALUES({sim},{run}, {peer}, {iteration}, {cost})
+
+New template : 'SelectedPlanLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO SelectedPlanLogger(sim,run,peer,iteration,planID,unfairnessWeight,localcostWeight) VALUES({sim},{run}, {peer}, {iteration}, {planID},{unfairnessWeight},{localcostWeight})
+
+New template : 'globalComplexCostLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO globalComplexCostLogger(sim,run, peer,iteration,cost) VALUES({sim}, {run}, {peer}, {iteration}, {cost})
+
+New template : 'GlobalResponseVectorLogger'
+dt : 2020-09-03 14:11:38
+INSERT INTO GlobalResponseVectorLogger(sim,run,peer,iteration,globalresponse) VALUES({sim},{run}, {peer}, {iteration}, {globalresponse})
+
+New template : 'eventlog'
+dt : 2020-09-03 14:11:38
+INSERT INTO eventlog(dt,current_time_millis,network,peer,epoch,peer_event_counter,thread_id,classname,func,key,value) VALUES ( {dt}, {current_time_millis}, {network}, {peer}, {epoch}, {peer_event_counter}, {thread_id}, {classname}, {func}, {key}, {value})
+.
+commit start
+dt : 2020-09-03 14:11:44
+msgCountSinceLastCommit : 10
+totalMessageCount : 671
+writing...ok
+
+Listening for messages on tcp://localhost:7433 -> epos....
+commit start
+dt : 2020-09-03 14:11:54
+msgCountSinceLastCommit : 44
+totalMessageCount : 715
+writing...ok
+
+Listening for messages on tcp://localhost:7433 -> epos

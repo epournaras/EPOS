@@ -1,0 +1,71 @@
+   // ------------
+        // -- RawLog --
+        // ------------
+
+        // set loggng level
+        // log all (1); only log warnings (2); errors (3)
+        final int				rawLogLevel = 1;
+        RawLog.setPeristenceClient(persistenceClient);
+        RawLog.setErrorLevelThreshold(rawLogLevel);
+
+        // set Protopeer peer
+        // if this program is running a Protopeer peer, then pass a reference to the instantiated Protopeer peer
+        // this will add the peer id and the epoch number for the log
+        // e.g you would obtain the reference to the peer after the following Protopeer call
+        //Peer 						newPeer = new Peer(peerIndex);
+
+        // if you don't have a Protopeer peer, simply set this to null (the log will write -1 for the peer and also for the epoch number)
+        RawLog.setPeerId(null);
+
+        // set DIAS Network Id
+        // in the case where you have multiple DIAS networks that are persisting data to the same daemon
+        // the DIAS networks can be differentiated by specifiying a diasNetworkId
+        final 	int				diasNetworkId = 0;
+        RawLog.setDIASNetworkId(diasNetworkId);
+
+        System.out.printf( "RawLog setup with rawLogLevel %d\n", rawLogLevel );
+
+        // --------------
+        // -- EventLog --
+        // --------------
+
+        // setup EventLog
+        EventLog.setPeristenceClient(persistenceClient);
+        EventLog.setPeerId(null);
+        EventLog.setDIASNetworkId(diasNetworkId);
+
+
+        // ------------
+        // -- MemLog --
+        // ------------
+
+        // memory logging is more complicated to setup because it requires a memory meter agent, that runs inside the JVM
+        // the loading of the agent is handled inside the launch script (e.g. start.test.sh)
+        // the loading of the agent can fail for a number of reasons; thus we must check with hasInstrumentation() if the agent was correctly loaded
+
+        final ArrayList<String>				someList = new ArrayList<String>();
+
+        // initialise MemLog
+        final MemoryMeter instrument = new MemoryMeter();
+
+        if( !MemoryMeter.hasInstrumentation() )
+            System.out.printf( "MemLog: No instrumentation\n" );
+        else
+        {
+            MemLog.setPersistenceClient(persistenceClient);
+            MemLog.setMeasurementInstrument(instrument);
+            MemLog.setPeerId(null);
+            MemLog.setDIASNetworkId(diasNetworkId);
+            MemLog.startTimer(60);
+
+            System.out.printf( "MemLog setup\n" );
+
+            // add an object that we wish to track the memory footprint
+            MemLog.add_object("TestBasicLog", "someList", someList);
+        }
+
+        RawLog.print(1,"Hello!");
+        EventLog.logEvent("TestBasicLog", "main", "loop start");
+
+        //initiate DBLogger
+    }

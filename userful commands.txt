@@ -1,0 +1,56 @@
+###
+#Start DB
+pg_ctl -D /usr/local/var/postgres start
+
+#CheckDB
+cd /tmp
+sudo -u postgres psql
+
+#change db:
+\c <db_name>
+
+#Launch the daemon 
+./start.daemon.sh deployments/localhost
+
+#launch rest:
+
+java -jar EPOSRequester.jar
+
+#kill EPOS
+PID=`ps -ef | grep IEPOSnode | awk '{ print $2 }'`; kill -9 $PID;
+/bin/bash;
+PID=`ps -ef | grep IEPOSnode | awk '{ print $2 }'`; kill -9 $PID;
+
+#all row counts in DB
+SELECT schemaname,relname,n_live_tup FROM pg_stat_user_tables ORDER BY n_live_tup DESC;
+
+#duplicate port assignment
+SELECT value, COUNT(value) FROM eventlog where classname = 'GateWay' GROUP BY value HAVING COUNT(value) > 1;
+
+#save DB as CSV
+COPY globalcostlogger TO '/tmp/GLC.csv' DELIMITER ',' CSV HEADER;
+
+#truncate all tables
+Truncate unfairnesslogger;
+Truncate globalcostlogger;
+Truncate globalresponsevectorlogger;
+Truncate globalcomplexcostlogger ;
+Truncate selectedplanlogger;
+Truncate localcostmultiobjectivelogger;
+Truncate terminationlogger;
+Truncate eventlog;
+
+#if the process limit is reached
+sudo sysctl -w kern.maxfilesperproc=1048576
+sudo sysctl -w kern.maxfiles=10485760
+
+
+#kill all screen session
+screen -ls | grep Detached | cut -d. -f1 | awk '{print $1}' | xargs kill
+
+#find open ports and applications
+sudo lsof -i -P -n | grep LISTEN 
+
+# restarting the DB
+sudo chown -R postgres:postgres /var/lib/postgresql/9.4/
+sudo chmod -R u=rwX,go= /var/lib/postgresql/9.4/
