@@ -38,6 +38,8 @@ import treestructure.ModifiableTreeArchitecture;
  */
 public class IEPOSExperiment {
 
+	public static Integer[][] mappings; // store the shuffled mapping of agents sequence in each simulation
+
 	public static void runSimulation(int numChildren, // number of children for each middle node
 			int numIterations, // total number of iterations to run for
 			int numAgents, // total number of nodes in the network
@@ -115,6 +117,7 @@ public class IEPOSExperiment {
 			loggingProvider.add(logger);
 		}
 
+		mappings = new Integer[Configuration.numSimulations-1][Configuration.numAgents]; // generate the mappings matrix
 		for (int sim = 0; sim < Configuration.numSimulations; sim++) {
 
 			System.out.println("Simulation " + (sim + 1));
@@ -128,6 +131,11 @@ public class IEPOSExperiment {
 
 			if (Configuration.numSimulations > 1 && sim > 0) {
 				Configuration.mapping = config.generateMappingForRepetitiveExperiments.apply(config);
+				// the shuffling begins at the second simulation, so the mappings begins to store the shuffled mapping
+				// i is the identification of vertices, the stored value is the identification of agent
+				for (int i = 0; i < Configuration.numAgents; i++) {
+					mappings[sim-1][i] = Configuration.mapping.get(i);
+				}
 			}
 
 			PlanSelector<MultiObjectiveIEPOSAgent<Vector>, Vector> planSelector = new MultiObjectiveIeposPlanSelector<Vector>();

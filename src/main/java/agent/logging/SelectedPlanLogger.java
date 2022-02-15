@@ -14,6 +14,7 @@ import java.util.stream.IntStream;
 import agent.Agent;
 import config.Configuration;
 import data.DataType;
+import experiment.IEPOSExperiment;
 import protopeer.measurement.Aggregate;
 import protopeer.measurement.MeasurementLog;
 
@@ -104,6 +105,10 @@ public class SelectedPlanLogger<V extends DataType<V>> extends AgentLogger<Agent
 		}
 		
 		selectedPlans.keySet().forEach(agentIdx -> {
+			// define the new index, and it fetches data from the mappings matrix after the first simulation
+			int shuffledIdx = agentIdx;
+			if (run > 0) shuffledIdx = IEPOSExperiment.mappings[run-1][agentIdx];
+
 			int i = 0;
 			for (; true; i++) {
 	            Aggregate aggregate = log.getAggregate(SelectedPlanLogger.class.getName(), "ID-run" + run + "-agent" + agentIdx, i);
@@ -111,7 +116,7 @@ public class SelectedPlanLogger<V extends DataType<V>> extends AgentLogger<Agent
 	                break;
 	            }
 	            
-	            selectedPlans.get(agentIdx).add(aggregate.getAverage());
+	            selectedPlans.get(shuffledIdx).add(aggregate.getAverage()); // match the selected plans to the right agent index in the "selected-plans.csv"
 	        }
 			Logger.getLogger(SelectedPlanLogger.class.getName()).log(Level.INFO, 
             		"NODE: " + agentIdx + " Number of samples: " + i);
