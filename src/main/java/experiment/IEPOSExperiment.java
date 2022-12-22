@@ -15,6 +15,7 @@ import agent.Agent;
 import agent.ModifiableIeposAgent;
 import agent.MultiObjectiveIEPOSAgent;
 import agent.PlanSelector;
+import agent.dataset.AgentsBehaviour;
 import agent.logging.AgentLogger;
 import agent.logging.AgentLoggingProvider;
 import agent.logging.LoggingProvider;
@@ -154,8 +155,31 @@ public class IEPOSExperiment {
 				ModifiableIeposAgent<Vector> newAgent = new ModifiableIeposAgent<Vector>(config, possiblePlans,
 						agentLP);
 
-				newAgent.setUnfairnessWeight(Double.parseDouble(config.weights[0]));
-				newAgent.setLocalCostWeight(Double.parseDouble(config.weights[1]));
+				/**
+				 * Different behaviours: read from a file 
+				 */
+				if (config.behaviours.equals("different")) {
+					AgentsBehaviour p = new AgentsBehaviour(Configuration.dataset);
+				
+						p.readBehaviours();
+						Double alphaValue = p.alphaMap.get(agentIdx.toString());
+						Double betaValue = p.betaMap.get(agentIdx.toString());
+				
+				
+					newAgent.setUnfairnessWeight(alphaValue);
+					newAgent.setLocalCostWeight(betaValue);
+					}
+	
+				/**
+				 * For same behaviours: read from properties
+				 */
+
+				else {
+		
+					newAgent.setUnfairnessWeight(Double.parseDouble(config.weights[0]));		
+					newAgent.setLocalCostWeight(Double.parseDouble(config.weights[1]));	
+	
+				}
 				newAgent.setPlanSelector(planSelector);
 				return newAgent;
 

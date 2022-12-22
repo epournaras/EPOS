@@ -105,6 +105,11 @@ public class Configuration {
 	public static double lambda = 0;
 //	public double alpha = 0;
 //	public double beta = 0;
+	
+	//Behaviour
+		public static String agentsBehavioursPath = null;
+		public static String behaviours = null;
+	///////////////////////////////////
 
 	public static int permutationID = 0;
 	public static String permutationFile = null;
@@ -377,6 +382,16 @@ public class Configuration {
 		if (argMap.get("shuffle") != null) {
 			Configuration.permutationID = Helper.clearInt((String) argMap.get("shuffle"));
 			Configuration.mapping = config.generateShuffledMapping.apply(config);
+		}
+		if (argMap.get("agentsBehavioursPath") != null ) {
+			Configuration.agentsBehavioursPath = (String) argMap.get("agentsBehavioursPath");
+			log.log(Level.INFO, "A valid behaviour path is found, attempting to laod");
+	} else {
+		log.log(Level.WARNING, "No valid path provided for a behaviour!");	
+	}	
+		
+		if (argMap.get("behaviours")!= null) {
+			Configuration.behaviours = (String) argMap.get("behaviours");
 		}
 	}
 
