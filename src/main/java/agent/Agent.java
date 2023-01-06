@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package agent;
+package src.main.java.agent;
 
 import data.Plan;
 import func.CostFunction;
