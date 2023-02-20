@@ -57,6 +57,11 @@ public class Vector implements DataType<Vector> {
     public Vector getValue() {
         return this;
     }
+    
+    public double[] getArray() {
+    	return this.values;
+    }
+
 
     /**
      * 

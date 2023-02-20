@@ -1,9 +1,11 @@
 package config;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -12,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
@@ -110,6 +113,10 @@ public class Configuration {
 		public static String agentsBehavioursPath = null;
 		public static String behaviours = null;
 	///////////////////////////////////
+		
+	// Hard constraint
+	public static String hardConstraint = null;
+	public static double[][] hardArray = new double[4][];
 
 	public static int permutationID = 0;
 	public static String permutationFile = null;
@@ -539,6 +546,36 @@ public class Configuration {
 						"You requested to load more plan elements than the dataset has. Using maximum available plane elements per vector: "
 								+ maxPlanDims.get());
 			}
+		}
+		
+		if (argMap.get("hardConstraint") != null) {
+			Configuration.hardConstraint = (String) argMap.get("hardConstraint");
+			try {
+				if (!Objects.equals(Configuration.hardConstraint, "SOFT")) {
+					String hard_path = null;
+					if (Objects.equals(Configuration.hardConstraint, "PLAN") || Objects.equals(Configuration.hardConstraint, "PLAN_DOUBLE"))
+						hard_path = Configuration.selectedDataset.getPath() + "hard_constraint.csv";
+					if (Objects.equals(Configuration.hardConstraint, "COST"))
+						hard_path = Configuration.selectedDataset.getPath() + "local_constraint.csv";
+					assert hard_path != null;
+					BufferedReader reader = new BufferedReader(new FileReader(hard_path));
+					String[] hardList1 = reader.readLine().split(",");
+					Configuration.hardArray[0] = Arrays.stream(hardList1).mapToDouble(Double::parseDouble).toArray();
+					String[] compareList1 = reader.readLine().split(",");
+					Configuration.hardArray[1] = Arrays.stream(compareList1).mapToDouble(Double::parseDouble).toArray();
+					if (Objects.equals(Configuration.hardConstraint, "PLAN_DOUBLE")) {
+						String[] hardList2 = reader.readLine().split(",");
+						Configuration.hardArray[2] = Arrays.stream(hardList2).mapToDouble(Double::parseDouble).toArray();
+						String[] compareList2 = reader.readLine().split(",");
+						Configuration.hardArray[3] = Arrays.stream(compareList2).mapToDouble(Double::parseDouble).toArray();
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			Configuration.log.log(Level.WARNING, "Default value for hardConstraint = SOFT");
+			Configuration.hardConstraint = "SOFT";
 		}
 	}
 

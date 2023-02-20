@@ -7,13 +7,16 @@ package agent;
 
 import data.HasValue;
 import data.Plan;
+import data.Vector;
 import func.CostFunction;
 import func.PlanCostFunction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 import agent.planselection.OptimizationFactor;
@@ -249,6 +252,12 @@ public class Optimization {
 		double[] discomfortSums = new double[choices.size()];
 		double[] discomfortSumSqrs = new double[choices.size()];
 
+        boolean isFirstIter = (agent.getIteration() == 0); // First iteration
+        boolean isPlanConst = (Objects.equals(Configuration.hardConstraint, "PLAN"));
+        boolean isDoubleConst = (Objects.equals(Configuration.hardConstraint, "PLAN_DOUBLE"));
+        boolean isCostConst = (Objects.equals(Configuration.hardConstraint, "COST"));
+        AtomicInteger countsOfHardViolated = new AtomicInteger(0);
+
 		IntStream.range(0, choices.size()).forEach(i -> {
 			V combined;
 			if(constant != null) {
@@ -259,18 +268,78 @@ public class Optimization {
 			}
 			double cost = costFunction.calcCost(combined);
 
-			costs[i] = cost;
 			double score = localCostFunction.calcCost(choices.get(i));
 			discomfortSums[i] = discomfortSumConstant + score;
 			discomfortSumSqrs[i] = discomfortSumSqrConstant + score*score;
+
+            if (isPlanConst) {
+                DataType<Vector> taskV = (DataType<Vector>) combined.getValue();
+                double[] response = taskV.getValue().getArray();
+                if (isFirstIter) {
+                    // calculate the initial plan that satisfy the hard constraint in an extreme way
+                    cost = costOfHardConstraint(response);
+
+                } else {
+                    // exclude the plan that violates the hard constraint
+                    if (agent.getIteration() > (Configuration.numIterations / 2)
+                            && isHardConstraintViolated(response, false, response.length)) {
+                        countsOfHardViolated.getAndIncrement();
+                        cost = Configuration.numAgents * cost;
+                    }
+                }
+            }
+
+            // PLAN_DOUBLE: double constraints that the plan should be within two thresholds
+            if (isDoubleConst) {
+                DataType<Vector> taskV = (DataType<Vector>) combined.getValue();
+                double[] response = taskV.getValue().getArray();
+                if (isFirstIter) {
+                    // calculate the initial plan that satisfy the hard constraint in an extreme way
+//                    cost = 1/costOfDoubleHardConstraint(response);
+
+                } else {
+                    // exclude the plan that violates the hard constraint
+                    int length = Math.max(response.length * (agent.getIteration()-5) / (Configuration.numIterations / 2), 0);
+                    if (isHardConstraintViolated(response, true, Math.min(length, response.length))) {
+                        countsOfHardViolated.getAndIncrement();
+                        cost = Configuration.numAgents * cost;
+                    }
+                }
+            }
+
+            // COST constraint: each agent selects the plan with the lowest cost in the first iteration
+            if (isCostConst) {
+//                int agent_idx = agent.getPeer().getIndexNumber();
+                double[] local = new double[] {discomfortSums[i] / Configuration.numAgents};
+                if (isFirstIter) {
+                    // calculate the initial plan that satisfy the hard constraint in an extreme way
+//                    if (score == 1) {
+//                        cost = Configuration.numAgents * cost;
+//                    }
+                    cost = costOfHardConstraint(local);
+
+                } else {
+                    // exclude the plan that violates the hard constraint
+                    if (isHardConstraintViolated(local, false, local.length)) {
+                        countsOfHardViolated.getAndIncrement();
+                        cost = Configuration.numAgents * cost;
+                    }
+                }
+            }
+
+            costs[i] = cost;
 			//System.out.print("agent: " + agent.getPeer().getIndexNumber() + ", SumConst = " + discomfortSumConstant + ", Sum2const = " + discomfortSumSqrConstant);
 			//System.out.println("Sum is " + discomfortSums[i] + ", sum^2 is " + discomfortSumSqrs[i] + ", num agents = " + numAgents);
 		});
 
+        // If all elements violate, report that agents cannot follow hard constraint and change to soft constraint (variance)
+        if (countsOfHardViolated.get() == choices.size()) {
+            return agent.prevSelectedPlanID;
+        }
+
 		return this.extendedOptimization(costs, alpha, beta, discomfortSums, discomfortSumSqrs, numAgents);
 
-    }
-    
+    }    
     private <V extends DataType<V>> int extendedOptimization(double[] costs,				double alpha,
 			 												 double beta,					double[] discomfortSums, 
 			 												 double[] discomfortSumSqrs,	double numAgents) {
@@ -309,5 +378,73 @@ public class Optimization {
 			}		
 			return selected;		
 	}
+    
+    private double costOfHardConstraint(double[] array) {
+
+        double sum = 0;
+
+        for (int j = 0; j < array.length; j++) {
+            // 0: not influence;
+            if (Configuration.hardArray[1][j] == 0) continue;
+            // 1: smaller than hard constraint
+            if (Configuration.hardArray[1][j] == 1)
+                sum += Configuration.hardArray[0][j] - array[j];
+            // 2: larger than hard constraint
+            if (Configuration.hardArray[1][j] == 2)
+                sum += array[j] - Configuration.hardArray[0][j];
+            // 3: must equal
+            if (Configuration.hardArray[1][j] == 3)
+                sum += Math.abs(Configuration.hardArray[0][j] - array[j]) * 2;
+        }
+
+        return 1 / Math.exp(sum / Configuration.numAgents);
+    }
+
+    private double costOfDoubleHardConstraint(double[] array) {
+        double sum = 0;
+
+        for (int j = 0; j < array.length; j++) {
+            int compare1 = (int) Configuration.hardArray[1][j];
+            int compare2 = (int) Configuration.hardArray[3][j];
+            double hard1 = Configuration.hardArray[0][j];
+            double hard2 = Configuration.hardArray[2][j];
+            if (compare1 == 0 && compare2 == 0)
+                continue;
+            
+            sum += Math.abs((hard1 + hard2) / 2 - array[j]);
+        }
+
+        return sum;
+    }
+
+    private boolean isHardConstraintViolated(double[] array, boolean isDoubleConst, int length) {
+
+
+        for (int i = 0; i < length; i++) {
+            // 0: not influenced by hard constraint
+            if (Configuration.hardArray[1][i] == 0) continue;
+            // 1: no larger than hard constraint
+            if (Configuration.hardArray[1][i] == 1 && Configuration.hardArray[0][i] < array[i]) return true;
+            // 2: no smaller than hard constraint
+            if (Configuration.hardArray[1][i] == 2 && Configuration.hardArray[0][i] > array[i]) return true;
+            // 3: must equal to hard constraint
+            if (Configuration.hardArray[1][i] == 3 && Configuration.hardArray[0][i] != array[i]) return true;
+        }
+
+        if (isDoubleConst) {
+            for (int i = 0; i < length; i++) {
+                // 0: not influenced by hard constraint
+                if (Configuration.hardArray[3][i] == 0) continue;
+                // 1: no larger than hard constraint
+                if (Configuration.hardArray[3][i] == 1 && Configuration.hardArray[2][i] < array[i]) return true;
+                // 2: no smaller than hard constraint
+                if (Configuration.hardArray[3][i] == 2 && Configuration.hardArray[2][i] > array[i]) return true;
+                // 3: must equal to hard constraint
+                if (Configuration.hardArray[3][i] == 3 && Configuration.hardArray[2][i] != array[i]) return true;
+            }
+        }
+
+        return false;
+    }
     
 }

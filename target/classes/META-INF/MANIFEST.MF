@@ -1,3 +1,5 @@
 Manifest-Version: 1.0
-Main-Class: experiment.IEPOSExperiment
+Built-By: chuhaoqin
+Build-Jdk: 17.0.4.1
+Created-By: Maven Integration for Eclipse
 
