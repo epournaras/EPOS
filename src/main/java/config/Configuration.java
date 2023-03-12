@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import agent.logging.*;
 import org.reflections.Reflections;
 
 import com.google.common.collect.Sets;
@@ -37,19 +38,6 @@ import agent.dataset.DatasetDescriptor;
 import agent.dataset.DatasetShuffler;
 import agent.dataset.FileVectorDataset;
 import agent.dataset.GaussianDataset;
-import agent.logging.AgentLogger;
-import agent.logging.GlobalComplexCostLogger;
-import agent.logging.GlobalCostLogger;
-import agent.logging.GlobalResponseVectorLogger;
-import agent.logging.LocalCostMultiObjectiveLogger;
-import agent.logging.LoggingProvider;
-import agent.logging.PlanFrequencyLogger;
-import agent.logging.ReorganizationLogger;
-import agent.logging.SelectedPlanLogger;
-import agent.logging.TerminationLogger;
-import agent.logging.UnfairnessLogger;
-import agent.logging.VisualizerLogger;
-import agent.logging.WeightsLogger;
 import agent.planselection.PlanSelectionOptimizationFunction;
 import agent.planselection.PlanSelectionOptimizationFunctionCollection;
 import data.Vector;
@@ -163,6 +151,7 @@ public class Configuration {
 	public static final String initialStructureSuffix = "-all-permutations-";
 	public static final String globalComplexCostFilename = "global-complex-cost.csv";
 	public static final String globalWeightsFilename = "weights-alpha-beta.csv";
+	public static final String hardConstraintFilename = "hard-constraint-violation.csv";
 	public static String initialSortingOrder = "ASC";
 	public static String goalSignalFilename = "TIS-GENERATION-FAILURE.txt";
 
@@ -281,6 +270,10 @@ public class Configuration {
 
 	public static String getWeightsPath() {
 		return Configuration.outputDirectory + Configuration.pathDelimiter + Configuration.globalWeightsFilename;
+	}
+
+	public static String getHardConstraintPath() {
+		return Configuration.outputDirectory + Configuration.pathDelimiter + Configuration.hardConstraintFilename;
 	}
 
 
@@ -470,7 +463,7 @@ public class Configuration {
 		String[] possLoggers = { "logger.GlobalCostLogger", "logger.LocalCostMultiObjectiveLogger",
 				"logger.TerminationLogger", "logger.SelectedPlanLogger", "logger.GlobalResponseVectorLogger",
 				"logger.PlanFrequencyLogger", "logger.UnfairnessLogger", "logger.GlobalComplexCostLogger",
-				"logger.WeightsLogger", "logger.ReorganizationLogger", "logger.VisualizerLogger" };
+				"logger.WeightsLogger", "logger.ReorganizationLogger", "logger.VisualizerLogger", "logger.HardConstraintLogger" };
 
 		Set<String> selectedLoggers = Arrays.stream(possLoggers)
 				.filter(key -> argMap.containsKey(key) && argMap.getProperty(key).equals("true"))
@@ -554,9 +547,9 @@ public class Configuration {
 				if (!Objects.equals(Configuration.hardConstraint, "SOFT")) {
 					String hard_path = null;
 					if (Objects.equals(Configuration.hardConstraint, "PLAN") || Objects.equals(Configuration.hardConstraint, "PLAN_DOUBLE"))
-						hard_path = Configuration.selectedDataset.getPath() + "hard_constraint.csv";
+						hard_path = Configuration.selectedDataset.getPath() + "plan.csv";
 					if (Objects.equals(Configuration.hardConstraint, "COST"))
-						hard_path = Configuration.selectedDataset.getPath() + "local_constraint.csv";
+						hard_path = Configuration.selectedDataset.getPath() + "cost.csv";
 					assert hard_path != null;
 					BufferedReader reader = new BufferedReader(new FileReader(hard_path));
 					String[] hardList1 = reader.readLine().split(",");
@@ -781,6 +774,8 @@ public class Configuration {
 		WeightsLogger<Vector> WLogger = new WeightsLogger<Vector>(Configuration.getWeightsPath());
 		ReorganizationLogger<Vector> RLogger = new ReorganizationLogger<Vector>(Configuration.getReorganizationPath());
 		VisualizerLogger<Vector> VLogger = new VisualizerLogger<Vector>();
+		HardConstraintLogger<Vector> HCLogger = new HardConstraintLogger<Vector>(Configuration.getHardConstraintPath(),
+				Objects.equals(Configuration.hardConstraint, "COST"));
 
 		GCLogger.setRun(Configuration.permutationID);
 		LCLogger.setRun(Configuration.permutationID);
@@ -793,10 +788,11 @@ public class Configuration {
 		WLogger.setRun(Configuration.permutationID);
 		RLogger.setRun(Configuration.permutationID);
 		VLogger.setRun(Configuration.permutationID);
+		HCLogger.setRun(Configuration.permutationID);
 
 		Map<String, AgentLogger> result = Arrays
 				.stream(new AgentLogger[] { GCLogger, LCLogger, TLogger, SPLogger, GRVLogger, DstLogger, ULogger,
-						GCXLogger, WLogger, RLogger, VLogger })
+						GCXLogger, WLogger, RLogger, VLogger, HCLogger })
 				.collect(Collectors.toMap(a -> a.getClass().getSimpleName(), a -> a));
 
 		Set<AgentLogger> res = new HashSet<>();
