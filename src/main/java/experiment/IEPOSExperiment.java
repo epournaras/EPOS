@@ -1,10 +1,10 @@
 package experiment;
 
-import java.io.File;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -35,6 +35,9 @@ import treestructure.ModifiableTreeArchitecture;
  * 
  * 
  * @author Jovan N., Thomas Asikis
+ *
+ */
+/**
  *
  */
 public class IEPOSExperiment {
@@ -84,8 +87,8 @@ public class IEPOSExperiment {
 		long timeAfter = System.currentTimeMillis();
 		System.out.println("IEPOS Finished! It took: " + ((timeAfter - timeBefore) / 1000) + " seconds.");
 	}
-
-
+	
+	
 	public static void main(String[] args) {
 		Logger log = Logger.getLogger(IEPOSExperiment.class.getName());
 
@@ -119,9 +122,13 @@ public class IEPOSExperiment {
 		}
 
 		mappings = new Integer[Configuration.numSimulations-1][Configuration.numAgents]; // generate the mappings matrix
+
 		for (int sim = 0; sim < Configuration.numSimulations; sim++) {
 
 			System.out.println("Simulation " + (sim + 1));
+			
+			
+	
 
 			final int simulationId = sim;
 			config.permutationSeed = sim;
@@ -136,9 +143,14 @@ public class IEPOSExperiment {
 				// i is the identification of vertices, the stored value is the identification of agent
 				for (int i = 0; i < Configuration.numAgents; i++) {
 					mappings[sim-1][i] = Configuration.mapping.get(i);
+
 				}
 			}
-
+			
+//			for (Integer key: Configuration.mapping.keySet()){
+//	            System.out.println(key +" ---> "+Configuration.mapping.get(key));
+//	        }
+			
 			PlanSelector<MultiObjectiveIEPOSAgent<Vector>, Vector> planSelector = new MultiObjectiveIeposPlanSelector<Vector>();
 
 			/**
@@ -154,7 +166,6 @@ public class IEPOSExperiment {
 
 				ModifiableIeposAgent<Vector> newAgent = new ModifiableIeposAgent<Vector>(config, possiblePlans,
 						agentLP);
-
 				/**
 				 * Different behaviours: read from a file 
 				 */
@@ -170,7 +181,7 @@ public class IEPOSExperiment {
 					newAgent.setLocalCostWeight(betaValue);
 					}
 	
-				/**
+				/**\
 				 * For same behaviours: read from properties
 				 */
 
@@ -187,9 +198,11 @@ public class IEPOSExperiment {
 
 			IEPOSExperiment.runOneSimulation(config, createAgent);
 		}
-
+		// copy the behaviours form the dataset to the output file 
+		
+	//	behaviourWriter();
 		loggingProvider.print();
-
+		
+	}
 	}
 
-}
