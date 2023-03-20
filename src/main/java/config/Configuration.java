@@ -41,6 +41,7 @@ import agent.logging.GlobalResponseVectorLogger;
 import agent.logging.LocalCostMultiObjectiveLogger;
 import agent.logging.LoggingProvider;
 import agent.logging.PlanFrequencyLogger;
+import agent.logging.PositionLogger;
 import agent.logging.ReorganizationLogger;
 import agent.logging.SelectedPlanLogger;
 import agent.logging.TerminationLogger;
@@ -53,15 +54,11 @@ import data.Vector;
 import dsutil.generic.RankPriority;
 import dsutil.protopeer.services.topology.trees.DescriptorType;
 import dsutil.protopeer.services.topology.trees.TreeType;
-import func.CrossCorrelationCostFunction;
 import func.DifferentiableCostFunction;
 import func.HasGoal;
 import func.IndexCostFunction;
 import func.PlanCostFunction;
 import func.PlanDiscomfortFunction;
-import func.PlanPreferenceFunction;
-import func.RMSECostFunction;
-import func.RSSCostFunction;
 import func.VarCostFunction;
 import javassist.Modifier;
 import tree.BalanceType;
@@ -158,7 +155,10 @@ public class Configuration {
 	public static final String globalWeightsFilename = "weights-alpha-beta.csv";
 	public static String initialSortingOrder = "ASC";
 	public static String goalSignalFilename = "TIS-GENERATION-FAILURE.txt";
-
+	// Amal
+	public static final String behavioursFilename = "behaviours.csv";
+	public static final String agentsMappingOrder = "agents-mapping-order.csv";
+	
 	public static Set<AgentLogger> loggers = new HashSet<>();
 	/**
 	 * Default mapping is 0->0, 1->1, 2->2, ...
@@ -182,6 +182,7 @@ public class Configuration {
 	public Function<Configuration, Map<Integer, Integer>> generateMappingForRepetitiveExperiments = config -> {
 		return DatasetShuffler.getMappingForRepetitiveExperiments(config);
 	};
+	
 
 	/**
 	 * Returns vertex ID -> agent Plans ID
@@ -223,7 +224,11 @@ public class Configuration {
 	public static String getLocalCostPath() {
 		return Configuration.outputDirectory + Configuration.pathDelimiter + Configuration.localCostFilename;
 	}
-
+	//Amal
+	public static String getAgentsMappingOderPath() {
+		return Configuration.outputDirectory + Configuration.pathDelimiter + Configuration.agentsMappingOrder;
+	}
+	
 	public static String getTerminationPath() {
 		return Configuration.outputDirectory + Configuration.pathDelimiter + Configuration.terminationFilename;
 	}
@@ -463,7 +468,7 @@ public class Configuration {
 		String[] possLoggers = { "logger.GlobalCostLogger", "logger.LocalCostMultiObjectiveLogger",
 				"logger.TerminationLogger", "logger.SelectedPlanLogger", "logger.GlobalResponseVectorLogger",
 				"logger.PlanFrequencyLogger", "logger.UnfairnessLogger", "logger.GlobalComplexCostLogger",
-				"logger.WeightsLogger", "logger.ReorganizationLogger", "logger.VisualizerLogger" };
+				"logger.WeightsLogger", "logger.ReorganizationLogger", "logger.VisualizerLogger", "logger.PositionLogger" };
 
 		Set<String> selectedLoggers = Arrays.stream(possLoggers)
 				.filter(key -> argMap.containsKey(key) && argMap.getProperty(key).equals("true"))
@@ -744,6 +749,8 @@ public class Configuration {
 		WeightsLogger<Vector> WLogger = new WeightsLogger<Vector>(Configuration.getWeightsPath());
 		ReorganizationLogger<Vector> RLogger = new ReorganizationLogger<Vector>(Configuration.getReorganizationPath());
 		VisualizerLogger<Vector> VLogger = new VisualizerLogger<Vector>();
+		PositionLogger<Vector> PLogger = new PositionLogger<Vector>(Configuration.getAgentsMappingOderPath(),Configuration.numAgents);
+		
 
 		GCLogger.setRun(Configuration.permutationID);
 		LCLogger.setRun(Configuration.permutationID);
@@ -756,10 +763,11 @@ public class Configuration {
 		WLogger.setRun(Configuration.permutationID);
 		RLogger.setRun(Configuration.permutationID);
 		VLogger.setRun(Configuration.permutationID);
+		PLogger.setRun(Configuration.permutationID);
 
 		Map<String, AgentLogger> result = Arrays
 				.stream(new AgentLogger[] { GCLogger, LCLogger, TLogger, SPLogger, GRVLogger, DstLogger, ULogger,
-						GCXLogger, WLogger, RLogger, VLogger })
+						GCXLogger, WLogger, RLogger, VLogger, PLogger })
 				.collect(Collectors.toMap(a -> a.getClass().getSimpleName(), a -> a));
 
 		Set<AgentLogger> res = new HashSet<>();
