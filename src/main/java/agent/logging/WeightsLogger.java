@@ -1,16 +1,20 @@
 package agent.logging;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import agent.Agent;
 import agent.MultiObjectiveIEPOSAgent;
+import agent.dataset.AgentsBehaviour;
+import config.Configuration;
 import data.DataType;
 import protopeer.measurement.Aggregate;
 import protopeer.measurement.MeasurementLog;
@@ -22,6 +26,9 @@ import protopeer.measurement.MeasurementLog;
  * @author jovan
  *
  * @param <V>
+ */
+/**
+
  */
 public class WeightsLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> {
 	
@@ -86,12 +93,18 @@ public class WeightsLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> 
             avgBeta.add(aggregate.getAverage());
             stdBeta.add(aggregate.getStdDev());
         }
-        
+          
+        File f = new File(AgentsBehaviour.getBehavioursFilename() );
+
+     if (Configuration.behaviours.equals("different") && f.exists() ) {
+			return this.behaviourWriter();
+		}
+		else {
         return this.format(avgAlpha, avgBeta);
     }
-	
-	private String format(List<Double> avgAlpha, List<Double> avgBeta) {
-//		return this.formatOneList(avgAlpha) + this.formatOneList(avgBeta);
+     }
+  
+	private String format(List<Double> avgAlpha, List<Double> avgBeta) {		
 		StringBuilder sb = new StringBuilder();
     	sb.append("Unfairness weight").append(",").append("Local cost weight").append(",").append("Global cost weight").append(System.lineSeparator());
     	for(int i = 0; i < avgAlpha.size(); i++) {
@@ -99,16 +112,51 @@ public class WeightsLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> 
     	}
     	sb.append(System.lineSeparator());
     	return sb.toString(); 
+		
     }
 	
-//	private String formatOneList(List<Double> avgs) {
-//		StringBuilder sb = new StringBuilder();
-//    	sb.append(this.run);
-//    	for(Double e : avgs) {
-//    		sb.append("," + e);
-//    	}
-//    	sb.append(System.lineSeparator());
-//    	return sb.toString(); 
-//	}
+	/**
+	 * 
+	 *  @author AmalAldawsari
+	 *  
+	 * @return String
+	 *  runs only when the behaviours of the agents are different.
+	 * It copy the unfairness and local cost weights from the input file, then calculate the global cost weight.
+	 */
+	private String behaviourWriter() {
+		StringBuilder sb = new StringBuilder();
+    	sb.append("agentID").append(",").append("Unfairness weight").append(",").append("Local cost weight").append(",").append("Global cost weight");
+    	sb.append(System.lineSeparator());
+    	
+    	File file = new File(AgentsBehaviour.getBehavioursFilename());
+		 try {
+	       	
+	       		FileReader fr = new FileReader(file);
+			
+			BufferedReader br = new BufferedReader(fr);
+	 		double alpha = 0;
+	 		double beta = 0;
+	         String line = "";
+	         String[] tempArr;
+	         while((line = br.readLine()) != null) {
+	            tempArr = line.split(",");
+	            for(int i=0; i<tempArr.length; i++){
+	            	 alpha = Double.parseDouble(tempArr[1]);
+	            	 beta = Double.parseDouble(tempArr[2]);
+	                }
+	                double gamma = 1-(alpha+beta);
+	                 sb.append(tempArr[0]).append(",").append(alpha).append(",").append(beta).append(",").append(gamma).append(",");
+	                 sb.append(System.lineSeparator());	                
+	            }
+
+	         br.close();
+	        
+	      
+	       	} catch(IOException ioe) {
+	            ioe.printStackTrace();
+	         }	    	         
+		 return sb.toString();
+		
+	}
 
 }

@@ -154,6 +154,8 @@ public class Configuration {
 	public static final String hardConstraintFilename = "hard-constraint-violation.csv";
 	public static String initialSortingOrder = "ASC";
 	public static String goalSignalFilename = "TIS-GENERATION-FAILURE.txt";
+	public static final String behavioursFilename = "behaviours.csv";
+	public static final String agentsMappingOrder = "agents-position.csv";
 
 	public static Set<AgentLogger> loggers = new HashSet<>();
 	/**
@@ -218,6 +220,10 @@ public class Configuration {
 
 	public static String getLocalCostPath() {
 		return Configuration.outputDirectory + Configuration.pathDelimiter + Configuration.localCostFilename;
+	}
+
+	public static String getAgentsMappingOderPath() {
+		return Configuration.outputDirectory + Configuration.pathDelimiter + Configuration.agentsMappingOrder;
 	}
 
 	public static String getTerminationPath() {
@@ -463,7 +469,8 @@ public class Configuration {
 		String[] possLoggers = { "logger.GlobalCostLogger", "logger.LocalCostMultiObjectiveLogger",
 				"logger.TerminationLogger", "logger.SelectedPlanLogger", "logger.GlobalResponseVectorLogger",
 				"logger.PlanFrequencyLogger", "logger.UnfairnessLogger", "logger.GlobalComplexCostLogger",
-				"logger.WeightsLogger", "logger.ReorganizationLogger", "logger.VisualizerLogger", "logger.HardConstraintLogger" };
+				"logger.WeightsLogger", "logger.ReorganizationLogger", "logger.VisualizerLogger",
+				"logger.PositionLogger", "logger.HardConstraintLogger" };
 
 		Set<String> selectedLoggers = Arrays.stream(possLoggers)
 				.filter(key -> argMap.containsKey(key) && argMap.getProperty(key).equals("true"))
@@ -774,6 +781,7 @@ public class Configuration {
 		WeightsLogger<Vector> WLogger = new WeightsLogger<Vector>(Configuration.getWeightsPath());
 		ReorganizationLogger<Vector> RLogger = new ReorganizationLogger<Vector>(Configuration.getReorganizationPath());
 		VisualizerLogger<Vector> VLogger = new VisualizerLogger<Vector>();
+		PositionLogger<Vector> PLogger = new PositionLogger<Vector>(Configuration.getAgentsMappingOderPath(),Configuration.numAgents);
 		HardConstraintLogger<Vector> HCLogger = new HardConstraintLogger<Vector>(Configuration.getHardConstraintPath(),
 				Objects.equals(Configuration.hardConstraint, "COST"));
 
@@ -788,11 +796,12 @@ public class Configuration {
 		WLogger.setRun(Configuration.permutationID);
 		RLogger.setRun(Configuration.permutationID);
 		VLogger.setRun(Configuration.permutationID);
+		PLogger.setRun(Configuration.permutationID);
 		HCLogger.setRun(Configuration.permutationID);
 
 		Map<String, AgentLogger> result = Arrays
 				.stream(new AgentLogger[] { GCLogger, LCLogger, TLogger, SPLogger, GRVLogger, DstLogger, ULogger,
-						GCXLogger, WLogger, RLogger, VLogger, HCLogger })
+						GCXLogger, WLogger, RLogger, VLogger, PLogger, HCLogger })
 				.collect(Collectors.toMap(a -> a.getClass().getSimpleName(), a -> a));
 
 		Set<AgentLogger> res = new HashSet<>();

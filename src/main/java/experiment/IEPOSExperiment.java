@@ -119,6 +119,7 @@ public class IEPOSExperiment {
 		}
 
 		mappings = new Integer[Configuration.numSimulations-1][Configuration.numAgents]; // generate the mappings matrix
+
 		for (int sim = 0; sim < Configuration.numSimulations; sim++) {
 
 			System.out.println("Simulation " + (sim + 1));

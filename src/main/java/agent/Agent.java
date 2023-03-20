@@ -47,6 +47,7 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
     V 										globalResponse;
     int[]                                   hardConstraintPlan;
     int                                     hardConstraintCost;
+    private int								positionIdx;
     final List<Plan<V>> 					possiblePlans 		= 	new ArrayList<>();
     final CostFunction<V> 					globalCostFunc;
     final PlanCostFunction<V> 				localCostFunc;
@@ -132,6 +133,13 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
 
     public int getHardConstraintCost() { return hardConstraintCost; }
     public void  setHardConstraintCost(int hardConstraintCost) { this.hardConstraintCost = hardConstraintCost; }
+
+    public int getPositionIdx() {
+        return positionIdx;
+    }
+    public void setPoPositionIdx(int positionIdx) {
+        this.positionIdx=positionIdx;
+    }
 
     public List<Plan<V>> getPossiblePlans() {
         return possiblePlans;
