@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package src.main.java.agent;
+package agent;
 
 import data.Plan;
 import func.CostFunction;
@@ -54,6 +54,7 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
     private int 							numComputed;
     private int 							cumTransmitted;
     private int 							cumComputed;
+    private int								positionIdx;
     
     int										iterationAfterReorganization =	0;	// iteration at which reorganization was requested and executed
 
@@ -140,7 +141,14 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
     public int getNumIterations() {
         return 1;
     }
-    
+
+    public int getPositionIdx() {
+    	return positionIdx;
+    }
+    public void setPoPositionIdx(int positionIdx) {
+    	this.positionIdx=positionIdx;
+    }
+
     /**
      * Returns iterations at which reorganization was requested and executed.
      * @return

@@ -157,7 +157,7 @@ public class Configuration {
 	public static String goalSignalFilename = "TIS-GENERATION-FAILURE.txt";
 	// Amal
 	public static final String behavioursFilename = "behaviours.csv";
-	public static final String agentsMappingOrder = "agents-mapping-order.csv";
+	public static final String agentsMappingOrder = "agents-position.csv";
 	
 	public static Set<AgentLogger> loggers = new HashSet<>();
 	/**
