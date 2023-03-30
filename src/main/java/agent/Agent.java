@@ -24,7 +24,7 @@ import data.DataType;
 
 /**
  * An agent that performs combinatorial optimization.
- * 
+ *
  * @author Peter
  * @param <V> the type of the data this agent should handle
  */
@@ -36,7 +36,7 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
     // logging
     private final AgentLoggingProvider 		loggingProvider;
     Logger 									logger 				= 		Logger.getLogger(Agent.class.getName());
-    
+
     // timings
     private final int						bootstrapPeriod		=	2000;	//ms
     private final int						activeStatePeriod	=	1000;	//ms
@@ -45,9 +45,6 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
     Plan<V> 								selectedPlan;
     int										selectedPlanID;
     V 										globalResponse;
-    int[]                                   hardConstraintPlan;
-    int                                     hardConstraintCost;
-    private int								positionIdx;
     final List<Plan<V>> 					possiblePlans 		= 	new ArrayList<>();
     final CostFunction<V> 					globalCostFunc;
     final PlanCostFunction<V> 				localCostFunc;
@@ -57,8 +54,10 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
     private int 							numComputed;
     private int 							cumTransmitted;
     private int 							cumComputed;
-    
+
     int										iterationAfterReorganization =	0;	// iteration at which reorganization was requested and executed
+    private int								positionIdx;
+    private double[]                        hard_costs_arr;
 
     /**
      * Initializes the agent with the given combinatorial optimization problem
@@ -115,30 +114,13 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
     public Plan getSelectedPlan() {
         return selectedPlan;
     }
-    
+
     public int getSelectedPlanID() {
-    	return this.selectedPlanID;
+        return this.selectedPlanID;
     }
 
     public V getGlobalResponse() {
         return globalResponse;
-    }
-
-    public int[] getHardConstraintPlan() {
-        return hardConstraintPlan;
-    }
-    public void setHardConstraintPlan(int[] hardConstraintPlan) {
-        this.hardConstraintPlan = hardConstraintPlan;
-    }
-
-    public int getHardConstraintCost() { return hardConstraintCost; }
-    public void  setHardConstraintCost(int hardConstraintCost) { this.hardConstraintCost = hardConstraintCost; }
-
-    public int getPositionIdx() {
-        return positionIdx;
-    }
-    public void setPoPositionIdx(int positionIdx) {
-        this.positionIdx=positionIdx;
     }
 
     public List<Plan<V>> getPossiblePlans() {
@@ -160,13 +142,20 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
     public int getNumIterations() {
         return 1;
     }
-    
+
+    public int getPositionIdx() {
+        return positionIdx;
+    }
+    public void setPoPositionIdx(int positionIdx) {
+        this.positionIdx=positionIdx;
+    }
+
     /**
      * Returns iterations at which reorganization was requested and executed.
      * @return
      */
     public int getIterationAfterReorganization() {
-    	return this.iterationAfterReorganization;
+        return this.iterationAfterReorganization;
     }
 
     public boolean isRepresentative() {
@@ -176,33 +165,33 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
     public int getNumTransmitted() {
         return numTransmitted;
     }
-    
+
     public void setNumTransmitted(int val) {
-    	this.numTransmitted = val;
+        this.numTransmitted = val;
     }
 
     public int getNumComputed() {
         return numComputed;
     }
-    
+
     public void setNumComputed(int val) {
-    	this.numComputed = val;
+        this.numComputed = val;
     }
 
     public int getCumTransmitted() {
         return cumTransmitted;
     }
-    
+
     public void setCumTransmitted(int val) {
-    	this.cumTransmitted = val;
+        this.cumTransmitted = val;
     }
 
     public int getCumComputed() {
         return cumComputed;
     }
-    
+
     public void setCumComputed(int val) {
-    	this.cumComputed = val;
+        this.cumComputed = val;
     }
 
     private void runBootstrap() {
@@ -226,7 +215,7 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
 
     private void initPhase() {
         loggingProvider.init(this);
-        
+
         this.log(Level.FINER, "initPhase()");
 
         numTransmitted = 0;
@@ -242,26 +231,33 @@ public abstract class Agent<V extends DataType<V>> extends BasePeerlet {
             loggingProvider.log(log, epochNumber, this);
         });
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //																									BY JOVAN: //
-    
+
     public void reset() {
-    	this.numTransmitted 	= 	0;
+        this.numTransmitted 	= 	0;
         this.numComputed 		= 	0;
         this.cumTransmitted		= 	0;
         this.cumComputed 		= 	0;
     }
-    
+
     void log(Level level, String message) {
-    	this.logger.log(level, "NODE: " + this.getPeer().getIndexNumber() + message);
+        this.logger.log(level, "NODE: " + this.getPeer().getIndexNumber() + message);
     }
-    
+
     public boolean isIterationAfterReorganization() {
-    	return this.getIteration() == 0;
+        return this.getIteration() == 0;
     }
-    
+
     public int getNumReorganizations() {
-    	return 0;
+        return 0;
+    }
+
+    public double[] getHardCostsArr() {
+        return this.hard_costs_arr;
+    }
+    public void setHardCostsArr(double[] hard_costs_arr) {
+        this.hard_costs_arr = hard_costs_arr;
     }
 }

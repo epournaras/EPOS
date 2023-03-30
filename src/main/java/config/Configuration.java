@@ -44,15 +44,11 @@ import data.Vector;
 import dsutil.generic.RankPriority;
 import dsutil.protopeer.services.topology.trees.DescriptorType;
 import dsutil.protopeer.services.topology.trees.TreeType;
-import func.CrossCorrelationCostFunction;
 import func.DifferentiableCostFunction;
 import func.HasGoal;
 import func.IndexCostFunction;
 import func.PlanCostFunction;
 import func.PlanDiscomfortFunction;
-import func.PlanPreferenceFunction;
-import func.RMSECostFunction;
-import func.RSSCostFunction;
 import func.VarCostFunction;
 import javassist.Modifier;
 import tree.BalanceType;
@@ -61,7 +57,7 @@ import util.Helper;
 
 /**
  * Class that keeps all global parameters for IEPOS run.
- * 
+ *
  * @author Jovan N.
  */
 public class Configuration {
@@ -96,14 +92,16 @@ public class Configuration {
 	public static double lambda = 0;
 //	public double alpha = 0;
 //	public double beta = 0;
-	
+
 	//Behaviour
-		public static String agentsBehavioursPath = null;
-		public static String behaviours = null;
+	public static String agentsBehavioursPath = null;
+	public static String behaviours = null;
 	///////////////////////////////////
-		
+
 	// Hard constraint
-	public static String hardConstraint = null;
+	public static String constraint = null;
+	public static String constraintPlansPath = null;
+	public static String constraintCostsPath = null;
 	public static double[][] hardArray = new double[4][];
 
 	public static int permutationID = 0;
@@ -304,7 +302,7 @@ public class Configuration {
 		sb.append("local cost function = ").append(Configuration.localCostFunc.toString())
 				.append(System.lineSeparator());
 		sb.append("goal signal = ").append(
-				Configuration.goalSignalSupplier == null ? "null" : Configuration.goalSignalSupplier.get().toString())
+						Configuration.goalSignalSupplier == null ? "null" : Configuration.goalSignalSupplier.get().toString())
 				.append(System.lineSeparator());
 		sb.append("--------------").append(System.lineSeparator());
 		sb.append("permutationID = ").append(Configuration.permutationID).append(System.lineSeparator());
@@ -391,11 +389,11 @@ public class Configuration {
 		}
 		if (argMap.get("agentsBehavioursPath") != null ) {
 			Configuration.agentsBehavioursPath = (String) argMap.get("agentsBehavioursPath");
-			log.log(Level.INFO, "A valid behaviour path is found, attempting to laod");
-	} else {
-		log.log(Level.WARNING, "No valid path provided for a behaviour!");	
-	}	
-		
+//			log.log(Level.INFO, "A valid behaviour path is found, attempting to load");
+		} else {
+			log.log(Level.WARNING, "No valid path provided for a behaviour!");
+		}
+
 		if (argMap.get("behaviours")!= null) {
 			Configuration.behaviours = (String) argMap.get("behaviours");
 		}
@@ -431,35 +429,35 @@ public class Configuration {
 			return false;
 		}
 	}
-	
+
 	private static void prepareLoggers(Properties argMap, Configuration config) {
 		if (argMap.get("logLevel") != null) {
 			String level = (String) argMap.get("logLevel");
 			switch (level) {
-			case "SEVERE":
-				Configuration.loggingLevel = Level.SEVERE;
-				break;
-			case "ALL":
-				Configuration.loggingLevel = Level.ALL;
-				break;
-			case "INFO":
-				Configuration.loggingLevel = Level.INFO;
-				break;
-			case "WARNING":
-				Configuration.loggingLevel = Level.WARNING;
-				break;
-			case "FINE":
-				Configuration.loggingLevel = Level.FINE;
-				break;
-			case "FINER":
-				Configuration.loggingLevel = Level.FINER;
-				break;
-			case "FINEST":
-				Configuration.loggingLevel = Level.FINEST;
-				break;
-			default:
-				Configuration.loggingLevel = Level.SEVERE;
-				break;
+				case "SEVERE":
+					Configuration.loggingLevel = Level.SEVERE;
+					break;
+				case "ALL":
+					Configuration.loggingLevel = Level.ALL;
+					break;
+				case "INFO":
+					Configuration.loggingLevel = Level.INFO;
+					break;
+				case "WARNING":
+					Configuration.loggingLevel = Level.WARNING;
+					break;
+				case "FINE":
+					Configuration.loggingLevel = Level.FINE;
+					break;
+				case "FINER":
+					Configuration.loggingLevel = Level.FINER;
+					break;
+				case "FINEST":
+					Configuration.loggingLevel = Level.FINEST;
+					break;
+				default:
+					Configuration.loggingLevel = Level.SEVERE;
+					break;
 			}
 		} else {
 			Configuration.loggingLevel = Level.SEVERE;
@@ -547,35 +545,73 @@ public class Configuration {
 								+ maxPlanDims.get());
 			}
 		}
-		
-		if (argMap.get("hardConstraint") != null) {
-			Configuration.hardConstraint = (String) argMap.get("hardConstraint");
+
+		if (argMap.get("constraint") != null) {
+			Configuration.constraint = (String) argMap.get("constraint");
+		} else {
+			Configuration.log.log(Level.WARNING, "Default value for hardConstraint = SOFT");
+			Configuration.constraint = "SOFT";
+		}
+
+		prepareHardConstraints(argMap);
+	}
+
+	public static void prepareHardConstraints(Properties argMap) {
+
+		if (!Objects.equals(Configuration.constraint, "SOFT")) {
+			String hard_path = null;
+			boolean isHardPlans = Objects.equals(Configuration.constraint, "HARD_PLANS");
+			boolean isHardCosts = Objects.equals(Configuration.constraint, "HARD_COSTS");
+			if (isHardPlans) {
+				if (argMap.get("constraintPlansPath") == null) {
+					Configuration.constraintPlansPath = (String) argMap.get("constraintPlansPath");
+				} else {
+					Configuration.log.log(Level.WARNING, "Default value for constraintPlansPath = default");
+					Configuration.constraintPlansPath = "default";
+				}
+				if (Objects.equals(Configuration.constraintPlansPath, "default")) {
+					hard_path = Configuration.selectedDataset.getPath() + "hard_constraints_plans.csv";
+				} else {
+					hard_path = Configuration.constraintPlansPath;
+				}
+			}
+			if (isHardCosts) {
+				if (argMap.get("constraintCostsPath") != null) {
+					Configuration.constraintCostsPath = (String) argMap.get("constraintCostsPath");
+				} else {
+					Configuration.log.log(Level.WARNING, "Default value for constraintCostsPath = default");
+					Configuration.constraintCostsPath = "default";
+				}
+				if (Objects.equals(Configuration.constraintCostsPath, "default")) {
+					hard_path = Configuration.selectedDataset.getPath() + "hard_constraints_costs.csv";
+				} else {
+					hard_path = Configuration.constraintCostsPath;
+				}
+			}
+
 			try {
-				if (!Objects.equals(Configuration.hardConstraint, "SOFT")) {
-					String hard_path = null;
-					if (Objects.equals(Configuration.hardConstraint, "PLAN") || Objects.equals(Configuration.hardConstraint, "PLAN_DOUBLE"))
-						hard_path = Configuration.selectedDataset.getPath() + "plan.csv";
-					if (Objects.equals(Configuration.hardConstraint, "COST"))
-						hard_path = Configuration.selectedDataset.getPath() + "cost.csv";
-					assert hard_path != null;
-					BufferedReader reader = new BufferedReader(new FileReader(hard_path));
-					String[] hardList1 = reader.readLine().split(",");
-					Configuration.hardArray[0] = Arrays.stream(hardList1).mapToDouble(Double::parseDouble).toArray();
-					String[] compareList1 = reader.readLine().split(",");
-					Configuration.hardArray[1] = Arrays.stream(compareList1).mapToDouble(Double::parseDouble).toArray();
-					if (Objects.equals(Configuration.hardConstraint, "PLAN_DOUBLE")) {
-						String[] hardList2 = reader.readLine().split(",");
-						Configuration.hardArray[2] = Arrays.stream(hardList2).mapToDouble(Double::parseDouble).toArray();
-						String[] compareList2 = reader.readLine().split(",");
+				assert hard_path != null;
+				BufferedReader reader = new BufferedReader(new FileReader(hard_path));
+				String[] hardList1 = reader.readLine().split(",");
+				Configuration.hardArray[0] = Arrays.stream(hardList1).mapToDouble(Double::parseDouble).toArray();
+				String[] compareList1 = reader.readLine().split(",");
+				Configuration.hardArray[1] = Arrays.stream(compareList1).mapToDouble(Double::parseDouble).toArray();
+				String r1 = reader.readLine();
+				if (r1 != null) {
+					String[] hardList2 = r1.split(",");
+					Configuration.hardArray[2] = Arrays.stream(hardList2).mapToDouble(Double::parseDouble).toArray();
+					String r2 = reader.readLine();
+					if (r2 != null) {
+						String[] compareList2 = r2.split(",");
 						Configuration.hardArray[3] = Arrays.stream(compareList2).mapToDouble(Double::parseDouble).toArray();
+					} else {
+						Configuration.log.log(Level.WARNING, "YOU FORGET to give the decisions for the second bound! EPOS will run with only first bound.");
 					}
 				}
 			} catch (IOException e) {
+				Configuration.log.log(Level.WARNING, "Did not find the file of hard constraints!");
 				e.printStackTrace();
 			}
-		} else {
-			Configuration.log.log(Level.WARNING, "Default value for hardConstraint = SOFT");
-			Configuration.hardConstraint = "SOFT";
 		}
 	}
 
@@ -645,22 +681,22 @@ public class Configuration {
 		if (argMap.get("scaling") != null) {
 			String func = (String) argMap.get("scaling");
 			switch (func) {
-			case "STD":
-				Configuration.normalizer = Vector.standard_normalization;
-				break;
-			case "MIN-MAX":
-				Configuration.normalizer = Vector.min_max_normalization;
-				break;
-			case "UNIT-LENGTH":
-				Configuration.normalizer = Vector.unit_length_normalization;
-				break;
-			default:
-				break;
+				case "STD":
+					Configuration.normalizer = Vector.standard_normalization;
+					break;
+				case "MIN-MAX":
+					Configuration.normalizer = Vector.min_max_normalization;
+					break;
+				case "UNIT-LENGTH":
+					Configuration.normalizer = Vector.unit_length_normalization;
+					break;
+				default:
+					break;
 			}
 		}
 
 	}
-	
+
 	public static void prepareReorganization(Properties argMap, Configuration config) {
 		if (argMap.get("strategy").equals("periodically")) {
 			config.reorganizationStrategy = ReorganizationStrategyType.PERIODICALLY;
@@ -783,7 +819,7 @@ public class Configuration {
 		VisualizerLogger<Vector> VLogger = new VisualizerLogger<Vector>();
 		PositionLogger<Vector> PLogger = new PositionLogger<Vector>(Configuration.getAgentsMappingOderPath(),Configuration.numAgents);
 		HardConstraintLogger<Vector> HCLogger = new HardConstraintLogger<Vector>(Configuration.getHardConstraintPath(),
-				Objects.equals(Configuration.hardConstraint, "COST"));
+				Objects.equals(Configuration.constraint, "HARD_COSTS"));
 
 		GCLogger.setRun(Configuration.permutationID);
 		LCLogger.setRun(Configuration.permutationID);

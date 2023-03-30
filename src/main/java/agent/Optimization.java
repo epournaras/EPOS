@@ -8,7 +8,6 @@ package agent;
 import data.HasValue;
 import data.Plan;
 import data.Vector;
-import experiment.IEPOSExperiment;
 import func.CostFunction;
 import func.PlanCostFunction;
 
@@ -250,13 +249,11 @@ public class Optimization {
         double[] discomfortSumSqrs = new double[choices.size()];
 
         boolean isFirstIter = (agent.getIteration() == 0); // First iteration
-        boolean isPlanConst = Objects.equals(Configuration.hardConstraint, "PLAN");
-        boolean isDoubleConst = Objects.equals(Configuration.hardConstraint, "PLAN_DOUBLE");
-        boolean isCostConst = Objects.equals(Configuration.hardConstraint, "COST");
+        boolean isDoubleConst = (Objects.equals(Configuration.constraint, "HARD_PLANS") &&
+                Configuration.hardArray[2] != null && Configuration.hardArray[3] != null);
+        boolean isPlanConst = (Objects.equals(Configuration.constraint, "HARD_PLANS") && !isDoubleConst);
+        boolean isCostConst = Objects.equals(Configuration.constraint, "HARD_COSTS");
         AtomicInteger countsOfHardViolated = new AtomicInteger(0);
-        int[] isviolation = new int[Configuration.planDim];
-        agent.setHardConstraintPlan(isviolation);
-        agent.setHardConstraintCost(0);
 
         IntStream.range(0, choices.size()).forEach(i -> {
             V combined;
@@ -278,13 +275,11 @@ public class Optimization {
                 if (isFirstIter) {
                     // calculate the initial plan that satisfy the hard constraint in an extreme way
                     cost = costOfHardConstraint(response);
-                    // Set the violation for hard constraint in the first iteration
-                    Arrays.fill(isviolation, 1);
-                    agent.setHardConstraintPlan(isviolation);
 
                 } else {
                     // exclude the plan that violates the hard constraint
 //                    int length = Math.max(response.length * (agent.getIteration()-5) / (Configuration.numIterations / 2), 0);
+//                    double[] sumArray = valueOfConstraintViolated(response, true, Math.min(length, response.length));
                     double[] sumArray = valueOfConstraintViolated(response, false, response.length);
                     double sum = Arrays.stream(sumArray).sum();
                     // Define the cost of violation
@@ -292,11 +287,6 @@ public class Optimization {
                         countsOfHardViolated.getAndIncrement();
                         cost = Configuration.numAgents * sum;
                     }
-                    // Set the satisfaction/violation for hard constraint
-                    for (int v = 0; v < isviolation.length; v++) {
-                        isviolation[v] = (sumArray[v] > 0) ? 1 : 0;
-                    }
-                    agent.setHardConstraintPlan(isviolation);
                 }
             }
 
@@ -306,45 +296,39 @@ public class Optimization {
                 double[] response = taskV.getValue().getArray();
                 if (isFirstIter) {
                     cost = costOfDoubleHardConstraint(response);
-                    // Set the violation for hard constraint in the first iteration
-                    Arrays.fill(isviolation, 1);
-                    agent.setHardConstraintPlan(isviolation);
 
                 } else {
                     // exclude the plan that violates the hard constraint
-//                    int length = Math.max(response.length * (agent.getIteration()-5) / (Configuration.numIterations / 2), 0);
-                    double[] sumArray = valueOfConstraintViolated(response, true, response.length);
-//                    double[] sumArray = valueOfConstraintViolated(response, true, Math.min(length, response.length));
+                    int length = Math.max(response.length * (agent.getIteration()-5) / (Configuration.numIterations / 2), 0);
+//                    double[] sumArray = valueOfConstraintViolated(response, true);
+                    double[] sumArray = valueOfConstraintViolated(response, true, Math.min(length, response.length));
                     double sum = Arrays.stream(sumArray).sum();
                     // Define the cost of violation
                     if (sum > 0) {
                         countsOfHardViolated.getAndIncrement();
                         cost = Configuration.numAgents * sum;
                     }
-                    // Set the satisfaction/violation for hard constraint
-                    for (int v = 0; v < isviolation.length; v++) {
-                        isviolation[v] = (sumArray[v] > 0) ? 1 : 0;
-                    }
-                    agent.setHardConstraintPlan(isviolation);
                 }
             }
 
             // COST constraint: each agent selects the plan with the lowest cost in the first iteration
             if (isCostConst) {
-//                int agent_idx = agent.getPeer().getIndexNumber();
-                double[] local = new double[] {discomfortSums[i] / Configuration.numAgents};
+                // build the array of local cost, global cost and global complex cost
+                double local = discomfortSums[i] / Configuration.numAgents;
+                double complex = local * beta + (1 - alpha - beta) * cost;
+                double[] cost_arr = new double[] {local, cost, complex};
+                agent.setHardCostsArr(cost_arr);
                 if (isFirstIter) {
                     // calculate the initial plan that satisfy the hard constraint in an extreme way
-                    cost = costOfHardConstraint(local);
+                    cost = costOfHardConstraint(cost_arr);
 
                 } else {
                     // exclude the plan that violates the hard constraint
-                    double[] sumArray = valueOfConstraintViolated(local, false, local.length);
+                    double[] sumArray = valueOfConstraintViolated(cost_arr, false, cost_arr.length);
                     double sum = Arrays.stream(sumArray).sum();
                     if (sum > 0) {
                         countsOfHardViolated.getAndIncrement();
                         cost = Configuration.numAgents * sum;
-                        agent.setHardConstraintCost(1);
                     }
                 }
             }
@@ -354,6 +338,15 @@ public class Optimization {
             //System.out.println("Sum is " + discomfortSums[i] + ", sum^2 is " + discomfortSumSqrs[i] + ", num agents = " + numAgents);
         });
 
+        // If all elements violate, report that agents cannot follow hard constraint and change to soft constraint (variance)
+        if (countsOfHardViolated.get() == choices.size()) {
+            return agent.prevSelectedPlanID;
+        }
+
+        // Set the initial cost in the first iteration
+//        if (isCostConst && isFirstIter) {
+//            beta = Math.min(IEPOSExperiment.phaseIdx * 0.05, 1);
+//        }
 
         return this.extendedOptimization(costs, alpha, beta, discomfortSums, discomfortSumSqrs, numAgents);
 
@@ -428,23 +421,15 @@ public class Optimization {
             double hard1 = Configuration.hardArray[0][j];
             double hard2 = Configuration.hardArray[2][j];
             double mid = (hard1 + hard2) / 2;
-            if (compare1 == 0 && compare2 == 0)
-                continue;
+            if (compare1 == 0 && compare2 == 0) continue;
 //            if (compare1 == 0) {
-//                if (compare2 == 1)
-//                    sum += hard2 - array[j];
-//                if (compare2 == 2)
-//                    sum += array[j] - hard2;
-//                continue;
+//                if (compare2 == 1) sum += hard2 - array[j];
+//                if (compare2 == 2) sum += array[j] - hard2; continue;
 //            }
 //            if (compare2 == 0) {
-//                if (compare1 == 1)
-//                    sum += hard1 - array[j];
-//                if (compare1 == 2)
-//                    sum += array[j] - hard1;
-//                continue;
+//                if (compare1 == 1) sum += hard1 - array[j];
+//                if (compare1 == 2) sum += array[j] - hard1;continue;
 //            }
-//            sum += Math.abs(mid - array[j]);
             sum += Math.pow(mid - array[j], 2);
         }
 

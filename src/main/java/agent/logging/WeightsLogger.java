@@ -97,11 +97,13 @@ public class WeightsLogger<V extends DataType<V>> extends AgentLogger<Agent<V>> 
         File f = new File(AgentsBehaviour.getBehavioursFilename() );
 
      if (Configuration.behaviours.equals("different") && f.exists() ) {
+
 			return this.behaviourWriter();
-		}
-		else {
-        return this.format(avgAlpha, avgBeta);
-    }
+
+		} else {
+
+        	return this.format(avgAlpha, avgBeta);
+    	}
      }
   
 	private String format(List<Double> avgAlpha, List<Double> avgBeta) {		
