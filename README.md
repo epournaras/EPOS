@@ -2,7 +2,7 @@
 
 ## Installation and setup
 
-1. Download the EPOS source code from the **latest release**.
+1. Download the EPOS source code from the latest release **0.0.4**.
 
 2. Make sure that a version of Oracle Java 8 is installed. You can download it from [here](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
 
@@ -14,13 +14,7 @@
 
 2. Config parameters in `conf/epos.properties` based on the dataset you choose, including the number of agents, plans, iterations, simulations, children and the plan dimension. Fixed configs constain `conf/log4j.properties`, `conf/measurement.conf`, and `conf/protopeer.conf`.
 
-3. Config the constraints. There are three types in the prop `constraint`.
-- `SOFT`: soft constraints, agents select plan following the global cost function
-- `HARD_PLANS`: hard constraints for the agents' plans, should input a file `gaussian/hard_constraints_plans.csv`, which needs two rows (length=planDim), one denotes the values of hard constraints for plans, the other denotes the decision for plans. Set 4 rows when have two bounds (upper and lower)
-- `HARD_COSTS`: hard constraints for the agents' cost, should input a file `gaussian/hard_constraints_costs.csv`, which needs the values of hard constraint and the decisions for local cost (1st column), global cost (2nd column) and global complex cost (3rd column).
-You should make the decisions (**0**: ignore constraints, **1**: no larger than constraints, **2**: no less than constraints, **3**: equal to constraints).
-
-4. Run from command line. Navigate to the project directory and execute:
+3. Run from command line. Navigate to the project directory and execute:
 
 ```
 cd EPOS
@@ -35,6 +29,7 @@ After running, results are shown in `output/` directory. The output constains:
 - A copy of the applied configuration for sanity checks named "used_conf.txt"
 - Visualization of the tree & the plan selections
 
-The results of hard constraints show in the file named `output/hard-constraint-violation.csv`, from which you can find the violation as iteration increases ("1" is violated, "0" is not violated).
-
 For more information of EPOS, you can read the EPOS-Documentation from [here](https://github.com/epournaras/EPOS-Documentation).
+
+## Reference
+Pournaras, Evangelos, Peter Pilgerstorfer, and Thomas Asikis. "Decentralized collective learning for self-managed sharing economies." ACM Transactions on Autonomous and Adaptive Systems (TAAS) 13.2 (2018): 1-33.
