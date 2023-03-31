@@ -30,6 +30,6 @@ Once it successfully finishes, the project can be opened via your IDE of choice 
 
 After running, results are shown in `output` directory. You can also set the types of outputs in `epos.properties`.
 
-The results of hard constraints show in the file named "hard-constraint-violation.csv", from which you can find the violation as iteration increases ("1" is violated, "0" is not violated).
+The results of hard constraints show in the file named `output/hard-constraint-violation.csv`, from which you can find the violation as iteration increases ("1" is violated, "0" is not violated).
 
 For more information of EPOS, you can read the EPOS-Documentation from [here](https://github.com/epournaras/EPOS-Documentation).
