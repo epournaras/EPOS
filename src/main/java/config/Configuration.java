@@ -570,7 +570,7 @@ public class Configuration {
 					Configuration.constraintPlansPath = "default";
 				}
 				if (Objects.equals(Configuration.constraintPlansPath, "default")) {
-					hard_path = Configuration.selectedDataset.getPath() + "hard_constraints_plans.csv";
+					hard_path = Configuration.selectedDataset.getPath() + "hard-constraints-plans.csv";
 				} else {
 					hard_path = Configuration.constraintPlansPath;
 				}
@@ -583,7 +583,7 @@ public class Configuration {
 					Configuration.constraintCostsPath = "default";
 				}
 				if (Objects.equals(Configuration.constraintCostsPath, "default")) {
-					hard_path = Configuration.selectedDataset.getPath() + "hard_constraints_costs.csv";
+					hard_path = Configuration.selectedDataset.getPath() + "hard-constraints-costs.csv";
 				} else {
 					hard_path = Configuration.constraintCostsPath;
 				}
