@@ -125,6 +125,7 @@ public class HardConstraintLogger<V extends DataType<V>> extends AgentLogger<Age
 
             sb.append("," + "Local cost")
                     .append("," + "Global cost")
+                    .append("," + "Unfairness")
                     .append("," + "Global complex cost")
                     .append(System.lineSeparator());
 

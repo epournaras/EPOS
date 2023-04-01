@@ -5,6 +5,7 @@
  */
 package agent;
 
+import agent.planselection.PlanSelectionOptimizationFunctionCollection;
 import data.HasValue;
 import data.Plan;
 import data.Vector;
@@ -315,8 +316,9 @@ public class Optimization {
             if (isCostConst) {
                 // build the array of local cost, global cost and global complex cost
                 double local = discomfortSums[i] / Configuration.numAgents;
-                double complex = local * beta + (1 - alpha - beta) * cost;
-                double[] cost_arr = new double[] {local, cost, complex};
+                double unfairness = PlanSelectionOptimizationFunctionCollection.unfairness(discomfortSums[i], discomfortSumSqrs[i], numAgents);
+                double complex = unfairness * alpha + local * beta + (1 - alpha - beta) * cost;
+                double[] cost_arr = new double[] {local, cost, unfairness, complex};
                 agent.setHardCostsArr(cost_arr);
                 if (isFirstIter) {
                     // calculate the initial plan that satisfy the hard constraint in an extreme way
