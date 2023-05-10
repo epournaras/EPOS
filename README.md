@@ -20,6 +20,13 @@
 cd EPOS
 mvn clean install –U #or where the project pom.xml is
 ```
+
+Or, navigate the **Release-0.0.4.zip**, and run from command line:
+
+```
+java -jar IEPOS-Tutorial.jar
+```
+
 Once it successfully finishes, the project can be opened via your IDE of choice as a **Maven project**.
 
 ## Results output
