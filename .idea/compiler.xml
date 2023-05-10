@@ -7,10 +7,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="tutorial" />
+        <module name="EPOS" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="tutorial" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>

@@ -63,6 +63,10 @@ public class HardConstraintLogger<V extends DataType<V>> extends AgentLogger<Age
     private int[] isConstraintViolated(double[] array, boolean isDoubleConst) {
         int[] v_array = new int[array.length];
 
+        if (Objects.equals(Configuration.constraint, "SOFT")) {
+            return v_array;
+        }
+
         if (isDoubleConst) {
             for (int i = 0; i < array.length; i++) {
                 int compare1 = (int) Configuration.hardArray[1][i];
