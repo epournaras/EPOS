@@ -300,9 +300,9 @@ public class Optimization {
 
                 } else {
                     // exclude the plan that violates the hard constraint
-                    int length = Math.max(response.length * (agent.getIteration()-5) / (Configuration.numIterations / 2), 0);
-//                    double[] sumArray = valueOfConstraintViolated(response, true);
-                    double[] sumArray = valueOfConstraintViolated(response, true, Math.min(length, response.length));
+//                    int length = Math.max(response.length * (agent.getIteration()-5) / (Configuration.numIterations / 2), 0);
+                    double[] sumArray = valueOfConstraintViolated(response, true, response.length);
+//                    double[] sumArray = valueOfConstraintViolated(response, true, Math.min(length, response.length));
                     double sum = Arrays.stream(sumArray).sum();
                     // Define the cost of violation
                     if (sum > 0) {
@@ -340,10 +340,10 @@ public class Optimization {
             //System.out.println("Sum is " + discomfortSums[i] + ", sum^2 is " + discomfortSumSqrs[i] + ", num agents = " + numAgents);
         });
 
-        // If all elements violate, report that agents cannot follow hard constraint and change to soft constraint (variance)
-        if (countsOfHardViolated.get() == choices.size()) {
-            return agent.prevSelectedPlanID;
-        }
+//        // If all elements violate, report that agents cannot follow hard constraint and change to soft constraint (variance)
+//        if (countsOfHardViolated.get() == choices.size()) {
+//            return agent.prevSelectedPlanID;
+//        }
 
         // Set the initial cost in the first iteration
 //        if (isCostConst && isFirstIter) {
