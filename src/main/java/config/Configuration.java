@@ -668,16 +668,6 @@ public class Configuration {
 			Configuration.log.log(Level.WARNING, "Default localCostFunc=COST is applied.");
 		}
 
-		prepareGoalSignal(argMap);
-
-		if (Configuration.globalCostFunc instanceof HasGoal) {
-			((HasGoal) Configuration.globalCostFunc).populateGoalSignal();
-		}
-
-		if (Configuration.localCostFunc instanceof HasGoal) {
-			((HasGoal) Configuration.globalCostFunc).populateGoalSignal();
-		}
-
 		if (argMap.get("scaling") != null) {
 			String func = (String) argMap.get("scaling");
 			switch (func) {
@@ -693,6 +683,16 @@ public class Configuration {
 				default:
 					break;
 			}
+		}
+
+		prepareGoalSignal(argMap);
+
+		if (Configuration.globalCostFunc instanceof HasGoal) {
+			((HasGoal) Configuration.globalCostFunc).populateGoalSignal();
+		}
+
+		if (Configuration.localCostFunc instanceof HasGoal) {
+			((HasGoal) Configuration.globalCostFunc).populateGoalSignal();
 		}
 
 	}
@@ -744,7 +744,7 @@ public class Configuration {
 		// Default goal signal is a zero vector of planDim
 		double[] baseSignal = new double[Configuration.planDim];
 
-		if (argMap.get("goalSignalPath") != null && Files.notExists(Paths.get((String) argMap.get("goalSignalPath")))
+		if (argMap.get("goalSignalPath") != null && Files.exists(Paths.get((String) argMap.get("goalSignalPath")))
 				&& Files.isRegularFile(Paths.get((String) argMap.get("goalSignalPath")))) {
 			log.log(Level.INFO, "A valid goal singnal path is found, attempting to laod");
 			baseSignal = Arrays
